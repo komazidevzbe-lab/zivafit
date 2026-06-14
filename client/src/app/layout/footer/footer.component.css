@@ -1,0 +1,152 @@
+.zivafit-footer {
+  background: #fffaf4;
+  border-top: 1px solid #eadbcd;
+}
+
+.newsletter-strip {
+  background: #2b1b13;
+  color: #fff;
+  padding: 2rem 4rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: 2rem;
+}
+
+.newsletter-strip h2 {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 2rem;
+  text-transform: uppercase;
+  margin: 0 0 0.3rem;
+}
+
+.newsletter-strip p {
+  margin: 0;
+  color: #e5d8ca;
+}
+
+.newsletter-form {
+  display: flex;
+}
+
+.newsletter-form input {
+  flex: 1;
+  padding: 0.8rem 1rem;
+  border: none;
+  outline: none;
+}
+
+.newsletter-form button {
+  border: none;
+  background: #b47a4f;
+  color: #fff;
+  padding: 0 1.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.newsletter-form button:hover {
+  background: #9e6843;
+}
+
+.footer-main {
+  padding: 2.5rem 4rem;
+  display: grid;
+  grid-template-columns: 1.7fr repeat(4, 1fr);
+  gap: 2rem;
+}
+
+.footer-brand h3 {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 2rem;
+  letter-spacing: 0.04rem;
+  margin: 0;
+  color: #2b1b13;
+}
+
+.footer-brand p,
+.footer-help p {
+  color: #735f52;
+  font-size: 0.9rem;
+}
+
+.socials {
+  display: flex;
+  gap: 0.8rem;
+  margin-top: 1rem;
+  color: #2b1b13;
+}
+
+.socials i {
+  font-size: 1.05rem;
+  cursor: pointer;
+}
+
+.socials i:hover {
+  color: #b47a4f;
+}
+
+.footer-col,
+.footer-help {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.footer-col h4,
+.footer-help h4 {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+  color: #2b1b13;
+}
+
+.footer-col a,
+.footer-bottom a {
+  color: #735f52;
+  font-size: 0.85rem;
+  text-decoration: none;
+}
+
+.footer-col a:hover,
+.footer-bottom a:hover {
+  color: #b47a4f;
+}
+
+.footer-bottom {
+  border-top: 1px solid #eadbcd;
+  padding: 1rem 4rem;
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: #735f52;
+}
+
+.footer-bottom div {
+  display: flex;
+  gap: 2rem;
+}
+
+@media (max-width: 900px) {
+  .newsletter-strip,
+  .footer-main {
+    grid-template-columns: 1fr;
+    padding: 2rem;
+  }
+
+  .newsletter-form {
+    flex-direction: column;
+  }
+
+  .newsletter-form button {
+    min-height: 46px;
+  }
+
+  .footer-bottom {
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem 2rem;
+  }
+}

@@ -1,0 +1,26 @@
+.error-page {
+  min-height: 65vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1rem;
+}
+
+.error-card {
+  background: #fff;
+  border: 1px solid var(--ziva-border);
+  border-radius: 18px;
+  padding: 3rem;
+  text-align: center;
+  box-shadow: 0 18px 45px rgba(43, 27, 19, 0.08);
+}
+
+.error-card h1 {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 5rem;
+  color: var(--ziva-caramel);
+}
+
+.error-card h2 {
+  text-transform: uppercase;
+}

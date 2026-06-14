@@ -1,0 +1,16 @@
+.test-errors-page {
+  min-height: 65vh;
+  padding: 4rem;
+}
+
+.test-errors-page h1 {
+  font-family: Georgia, 'Times New Roman', serif;
+  text-transform: uppercase;
+}
+
+.button-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 2rem;
+}

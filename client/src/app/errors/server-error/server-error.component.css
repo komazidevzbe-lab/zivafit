@@ -1,0 +1,20 @@
+@import '../not-found/not-found.component.css';
+
+.server-error-card {
+  max-width: 900px;
+  text-align: left;
+}
+
+.server-error-card h1,
+.server-error-card h2 {
+  text-align: center;
+}
+
+pre {
+  max-height: 300px;
+  overflow: auto;
+  background: #f8f1e8;
+  padding: 1rem;
+  border-radius: 8px;
+  font-size: 0.8rem;
+}

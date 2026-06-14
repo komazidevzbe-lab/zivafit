@@ -1,0 +1,294 @@
+.zivafit-header {
+  background: #fffaf4;
+  border-bottom: 1px solid #eadbcd;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.top-strip {
+  min-height: 30px;
+  background: #2b1b13;
+  color: #f7efe6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  letter-spacing: 0.08rem;
+  font-weight: 700;
+}
+
+.main-nav {
+  min-height: 78px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  column-gap: 2rem;
+  padding: 0 4rem;
+  background: #fffaf4;
+}
+
+.brand-logo {
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+  color: #2b1b13;
+}
+
+.brand-main {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 2.35rem;
+  font-weight: 700;
+  letter-spacing: 0.04rem;
+  line-height: 1;
+}
+
+.nav-links {
+  justify-self: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.35rem;
+  flex-wrap: wrap;
+}
+
+.nav-links a {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.06rem;
+  text-transform: uppercase;
+  color: #2b1b13;
+  text-decoration: none;
+  padding-bottom: 0.25rem;
+  border-bottom: 2px solid transparent;
+  transition: 0.2s ease;
+}
+
+.nav-links a:hover,
+.active-link {
+  color: #b47a4f !important;
+  border-bottom-color: #b47a4f;
+}
+
+.nav-actions {
+  justify-self: end;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.95rem;
+}
+
+.icon-btn {
+  border: none;
+  background: transparent;
+  color: #2b1b13;
+  font-size: 1.35rem;
+  line-height: 1;
+  cursor: pointer;
+  position: relative;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.2rem;
+  transition: 0.2s ease;
+}
+
+.icon-btn:hover {
+  color: #b47a4f;
+}
+
+.cart-count {
+  position: absolute;
+  top: -9px;
+  right: -10px;
+  background: #b47a4f;
+  color: #fff;
+  border-radius: 50%;
+  font-size: 0.65rem;
+  min-width: 18px;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+
+.auth-link {
+  text-transform: uppercase;
+  letter-spacing: 0.07rem;
+  font-size: 0.76rem;
+  font-weight: 800;
+  text-decoration: none;
+  border-radius: 999px;
+  transition: 0.2s ease;
+}
+
+.login-link {
+  color: #2b1b13;
+  padding: 0.75rem 0.2rem;
+}
+
+.login-link:hover {
+  color: #b47a4f;
+}
+
+.signup-link {
+  color: #fff;
+  background: #2b1b13;
+  padding: 0.75rem 1.1rem;
+  border: 1px solid #2b1b13;
+}
+
+.signup-link:hover {
+  background: #b47a4f;
+  border-color: #b47a4f;
+}
+
+.profile-menu {
+  position: relative;
+}
+
+.profile-button {
+  border: 1px solid #eadbcd;
+  background: #fff;
+  color: #2b1b13;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.84rem;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0.65rem 0.9rem;
+  border-radius: 999px;
+  transition: 0.2s ease;
+}
+
+.profile-button:hover {
+  border-color: #b47a4f;
+  color: #b47a4f;
+}
+
+.dropdown-icon {
+  font-size: 0.72rem;
+}
+
+.profile-dropdown {
+  display: none;
+  position: absolute;
+  top: 120%;
+  right: 0;
+  width: 205px;
+  background: #fff;
+  border: 1px solid #eadbcd;
+  box-shadow: 0 16px 35px rgba(43, 27, 19, 0.12);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.profile-menu:hover .profile-dropdown {
+  display: block;
+}
+
+.profile-dropdown a,
+.profile-dropdown button {
+  display: block;
+  width: 100%;
+  padding: 0.9rem 1rem;
+  background: #fff;
+  border: none;
+  text-align: left;
+  font-size: 0.85rem;
+  color: #2b1b13;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.profile-dropdown a:hover,
+.profile-dropdown button:hover {
+  background: #f5e9dc;
+}
+
+.search-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.9rem 4rem;
+  background: #fff;
+  border-top: 1px solid #eadbcd;
+}
+
+.search-bar input {
+  flex: 1;
+  border: 1px solid #eadbcd;
+  border-radius: 6px;
+  padding: 0.7rem 0.95rem;
+  color: #2b1b13;
+  outline: none;
+}
+
+.search-bar input:focus {
+  border-color: #b47a4f;
+  box-shadow: 0 0 0 0.18rem rgba(180, 122, 79, 0.16);
+}
+
+.search-note {
+  color: #735f52;
+  font-size: 0.8rem;
+}
+
+@media (max-width: 1150px) {
+  .main-nav {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    padding: 1rem 2rem;
+  }
+
+  .brand-logo,
+  .nav-links,
+  .nav-actions {
+    justify-self: center;
+  }
+
+  .nav-links,
+  .nav-actions {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 720px) {
+  .top-strip {
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 0.55rem 1rem;
+    text-align: center;
+  }
+
+  .main-nav {
+    padding: 1rem;
+  }
+
+  .brand-main {
+    font-size: 2rem;
+  }
+
+  .nav-links {
+    gap: 0.8rem;
+  }
+
+  .nav-actions {
+    flex-wrap: wrap;
+  }
+
+  .search-bar {
+    padding: 0.9rem 1rem;
+    flex-wrap: wrap;
+  }
+
+  .search-note {
+    width: 100%;
+  }
+}

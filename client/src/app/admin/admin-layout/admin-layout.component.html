@@ -1,1 +1,54 @@
-<p>admin-layout works!</p>
+<section class="admin-shell">
+  <aside class="admin-sidebar">
+    <a routerLink="/" class="admin-logo">
+      <span>ZIVA</span>
+      <small>ACTIVE ADMIN</small>
+    </a>
+
+    <nav>
+      <a class="active">Dashboard</a>
+      <a>Home Management</a>
+      <a>Product Management</a>
+      <a>Order Management</a>
+      <a>Customer Management</a>
+      <a>Review Management</a>
+      <a>Newsletter Management</a>
+      <a>Settings</a>
+    </nav>
+
+    <button type="button" (click)="logout()">Logout</button>
+  </aside>
+
+  <main class="admin-main">
+    <div class="admin-header">
+      <div>
+        <p class="eyebrow">Admin Dashboard</p>
+        <h1>Store Management</h1>
+      </div>
+
+      <a routerLink="/" class="ziva-btn-outline">View Store</a>
+    </div>
+
+    <div class="admin-grid">
+      <div class="admin-card">
+        <h3>Home Management</h3>
+        <p>Homepage sections will be managed here later.</p>
+      </div>
+
+      <div class="admin-card">
+        <h3>Product Management</h3>
+        <p>Products, categories, and stock variants will be managed here later.</p>
+      </div>
+
+      <div class="admin-card">
+        <h3>Order Management</h3>
+        <p>Customer orders and statuses will be managed here later.</p>
+      </div>
+
+      <div class="admin-card">
+        <h3>Customer Management</h3>
+        <p>Registered customers will be managed here later.</p>
+      </div>
+    </div>
+  </main>
+</section>

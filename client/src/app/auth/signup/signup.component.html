@@ -1,1 +1,96 @@
-<p>signup works!</p>
+<section class="auth-page">
+  <div class="auth-visual">
+    <p class="eyebrow">Join the community</p>
+    <h1>Activewear for every version of you.</h1>
+    <p>Create your account to save your wishlist, checkout faster, and view your orders.</p>
+  </div>
+
+  <div class="auth-card">
+    <h2>Create Account</h2>
+    <p class="auth-subtitle">Start your ZivaFit journey.</p>
+
+    <form (ngSubmit)="register()" #signupForm="ngForm">
+      <div class="form-grid">
+        <div class="form-group">
+          <label>First name</label>
+          <input
+            name="firstName"
+            class="form-control"
+            [(ngModel)]="model.firstName"
+            required
+          />
+          <div class="ziva-form-error" *ngIf="errors['firstName']">
+            {{ errors['firstName'] }}
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Last name</label>
+          <input
+            name="lastName"
+            class="form-control"
+            [(ngModel)]="model.lastName"
+            required
+          />
+          <div class="ziva-form-error" *ngIf="errors['lastName']">
+            {{ errors['lastName'] }}
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Email</label>
+        <input
+          name="email"
+          type="email"
+          class="form-control"
+          [(ngModel)]="model.email"
+          required
+        />
+        <div class="ziva-form-error" *ngIf="errors['email']">{{ errors['email'] }}</div>
+      </div>
+
+      <div class="form-group">
+        <label>Password</label>
+        <div class="password-row">
+          <input
+            name="password"
+            [type]="showPassword ? 'text' : 'password'"
+            class="form-control"
+            [(ngModel)]="model.password"
+            required
+          />
+          <button type="button" (click)="togglePasswordVisibility()">
+            <i class="bi" [ngClass]="showPassword ? 'bi-eye-slash' : 'bi-eye'"></i>
+          </button>
+        </div>
+        <div class="ziva-form-error" *ngIf="errors['password']">
+          {{ errors['password'] }}
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Confirm password</label>
+        <input
+          name="confirmPassword"
+          type="password"
+          class="form-control"
+          [(ngModel)]="model.confirmPassword"
+          required
+        />
+        <div class="ziva-form-error" *ngIf="errors['confirmPassword']">
+          {{ errors['confirmPassword'] }}
+        </div>
+      </div>
+
+      <div class="ziva-form-error" *ngIf="generalError">{{ generalError }}</div>
+
+      <button class="ziva-btn-dark w-100" type="submit">Create Account</button>
+    </form>
+
+    <div class="auth-links">
+      <span>Already have an account?</span>
+      <a routerLink="/login">Login</a>
+    </div>
+  </div>
+</section>

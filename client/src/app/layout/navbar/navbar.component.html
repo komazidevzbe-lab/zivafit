@@ -1,1 +1,72 @@
-<p>navbar works!</p>
+<header class="zivafit-header">
+  <div class="top-strip">
+    <span>Free delivery in South Africa on orders R1000+</span>
+    <span>Easy returns</span>
+    <span>Shipping nationwide across South Africa</span>
+  </div>
+
+  <nav class="main-nav">
+    <a routerLink="/" class="brand-logo" aria-label="ZivaFit Home">
+      <span class="brand-main">ZivaFit</span>
+    </a>
+
+    <div class="nav-links">
+      <a
+        *ngFor="let link of publicLinks"
+        [routerLink]="link.route"
+        routerLinkActive="active-link"
+      >
+        {{ link.label }}
+      </a>
+    </div>
+
+    <div class="nav-actions">
+      <ng-container *ngIf="accountService.currentUser() as user; else loggedOut">
+        <button class="icon-btn" type="button" (click)="toggleSearch()" aria-label="Search">
+          <i class="bi bi-search"></i>
+        </button>
+
+        <a routerLink="/wishlist" class="icon-btn" aria-label="Wishlist">
+          <i class="bi bi-heart"></i>
+        </a>
+
+        <a routerLink="/cart" class="icon-btn cart-icon" aria-label="Cart">
+          <i class="bi bi-bag"></i>
+          <span class="cart-count">0</span>
+        </a>
+
+        <div class="profile-menu">
+          <button class="profile-button" type="button">
+            <i class="bi bi-person-circle"></i>
+            <span>Welcome, {{ user.firstName }}</span>
+            <i class="bi bi-chevron-down dropdown-icon"></i>
+          </button>
+
+          <div class="profile-dropdown">
+            <a routerLink="/my-account">My Account</a>
+            <a routerLink="/my-orders">My Orders</a>
+            <a *ngIf="accountService.roles().includes('Admin')" routerLink="/admin">
+              Admin Dashboard
+            </a>
+            <button type="button" (click)="logout()">Logout</button>
+          </div>
+        </div>
+      </ng-container>
+
+      <ng-template #loggedOut>
+        <a routerLink="/login" class="auth-link login-link">Login</a>
+        <a routerLink="/signup" class="auth-link signup-link">Sign Up</a>
+      </ng-template>
+    </div>
+  </nav>
+
+  <div class="search-bar" *ngIf="searchOpen && accountService.currentUser()">
+    <i class="bi bi-search"></i>
+    <input
+      type="text"
+      [(ngModel)]="searchTerm"
+      placeholder="Search ZivaFit products..."
+    />
+    <span class="search-note">Product filtering will connect when product pages are built.</span>
+  </div>
+</header>

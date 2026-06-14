@@ -1,0 +1,103 @@
+<section class="home-hero">
+  <div class="hero-copy">
+    <p class="eyebrow">Confident. Strong. Unstoppable.</p>
+
+    <h1>Made for <em>every you.</em></h1>
+
+    <p class="hero-text">
+      Performance meets confidence in activewear that moves with you and celebrates you.
+    </p>
+
+    <div class="hero-actions">
+      <a routerLink="/new-in" class="ziva-btn-dark">Shop New Arrivals</a>
+      <a routerLink="/shop" class="ziva-btn-outline">Shop Collections</a>
+    </div>
+  </div>
+
+  <div class="hero-visual">
+    <div class="model-card card-one"></div>
+    <div class="model-card card-two"></div>
+    <div class="model-card card-three"></div>
+    <div class="model-card card-four"></div>
+  </div>
+</section>
+
+<section class="category-row">
+  <a routerLink="/leggings" class="category-card">
+    <div class="category-image"></div>
+    <h3>Leggings</h3>
+    <span>Shop Now →</span>
+  </a>
+
+  <a routerLink="/sports-bras" class="category-card">
+    <div class="category-image"></div>
+    <h3>Sports Bras</h3>
+    <span>Shop Now →</span>
+  </a>
+
+  <a routerLink="/tops" class="category-card">
+    <div class="category-image"></div>
+    <h3>Tops</h3>
+    <span>Shop Now →</span>
+  </a>
+
+  <a routerLink="/sets" class="category-card">
+    <div class="category-image"></div>
+    <h3>Sets</h3>
+    <span>Shop Now →</span>
+  </a>
+
+  <a routerLink="/shorts" class="category-card">
+    <div class="category-image"></div>
+    <h3>Shorts</h3>
+    <span>Shop Now →</span>
+  </a>
+
+  <a routerLink="/accessories" class="category-card">
+    <div class="category-image"></div>
+    <h3>Accessories</h3>
+    <span>Shop Now →</span>
+  </a>
+</section>
+
+<section class="benefits-strip">
+  <div>
+    <i class="bi bi-leaf"></i>
+    <strong>Sustainably Made</strong>
+    <span>Thoughtful fabrics for a better planet.</span>
+  </div>
+
+  <div>
+    <i class="bi bi-stars"></i>
+    <strong>Squat-Proof Confidence</strong>
+    <span>Feel covered and supported always.</span>
+  </div>
+
+  <div>
+    <i class="bi bi-droplet"></i>
+    <strong>Sweat-Wicking</strong>
+    <span>Stay cool, dry, and comfortable.</span>
+  </div>
+
+  <div>
+    <i class="bi bi-heart"></i>
+    <strong>Designed for Every Body</strong>
+    <span>Inclusive sizing that celebrates you.</span>
+  </div>
+</section>
+
+<section class="best-sellers">
+  <div class="section-header">
+    <h2>Best Sellers</h2>
+    <a routerLink="/shop">Shop all best sellers →</a>
+  </div>
+
+  <div class="product-skeleton-row">
+    <div class="product-card" *ngFor="let item of bestSellers">
+      <div class="product-image"></div>
+      <p class="product-name">{{ item.name }}</p>
+      <p class="product-price">{{ item.price }}</p>
+      <div class="rating">★★★★★</div>
+    </div>
+  </div>
+</section>

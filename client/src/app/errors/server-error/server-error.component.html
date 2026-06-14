@@ -1,1 +1,18 @@
-<p>server-error works!</p>
+<section class="error-page">
+  <div class="error-card server-error-card">
+    <h1>500</h1>
+    <h2>Server Error</h2>
+
+    <ng-container *ngIf="error; else noError">
+      <p class="text-danger">{{ error.message }}</p>
+
+      <pre *ngIf="error.details">{{ error.details }}</pre>
+    </ng-container>
+
+    <ng-template #noError>
+      <p>Something went wrong on the server.</p>
+    </ng-template>
+
+    <a routerLink="/" class="ziva-btn-dark">Return Home</a>
+  </div>
+</section>
