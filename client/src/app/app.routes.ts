@@ -4,12 +4,39 @@ import { PublicLayoutComponent } from './layout/public-layout/public-layout.comp
 import { AdminLayoutComponent } from './admin/admin-layout/admin-layout.component';
 
 import { HomeComponent } from './pages/home/home.component';
-import { PagePlaceholderComponent } from './pages/page-placeholder/page-placeholder.component';
+import { NewInComponent } from './pages/new-in/new-in.component';
+import { ShopComponent } from './pages/shop/shop.component';
+import { LeggingsComponent } from './pages/leggings/leggings.component';
+import { SportsBrasComponent } from './pages/sports-bras/sports-bras.component';
+import { TopsComponent } from './pages/tops/tops.component';
+import { SetsComponent } from './pages/sets/sets.component';
+import { ShortsComponent } from './pages/shorts/shorts.component';
+import { AccessoriesComponent } from './pages/accessories/accessories.component';
+import { ProductDetailsComponent } from './pages/product-details/product-details.component';
+
+import { CartComponent } from './pages/cart/cart.component';
+import { WishlistComponent } from './pages/wishlist/wishlist.component';
+import { CheckoutComponent } from './pages/checkout/checkout.component';
+import { OrderConfirmationComponent } from './pages/order-confirmation/order-confirmation.component';
+import { MyOrdersComponent } from './pages/my-orders/my-orders.component';
+import { OrderDetailsComponent } from './pages/order-details/order-details.component';
+import { MyAccountComponent } from './pages/my-account/my-account.component';
+import { EditProfileComponent } from './pages/edit-profile/edit-profile.component';
+import { SavedAddressesComponent } from './pages/saved-addresses/saved-addresses.component';
 
 import { LoginComponent } from './auth/login/login.component';
 import { SignupComponent } from './auth/signup/signup.component';
 import { ForgotPasswordComponent } from './auth/forgot-password/forgot-password.component';
 import { ResetPasswordComponent } from './auth/reset-password/reset-password.component';
+
+import { AdminDashboardComponent } from './admin/admin-dashboard/admin-dashboard.component';
+import { AdminHomeManagementComponent } from './admin/admin-home-management/admin-home-management.component';
+import { AdminProductManagementComponent } from './admin/admin-product-management/admin-product-management.component';
+import { AdminOrderManagementComponent } from './admin/admin-order-management/admin-order-management.component';
+import { AdminCustomerManagementComponent } from './admin/admin-customer-management/admin-customer-management.component';
+import { AdminReviewManagementComponent } from './admin/admin-review-management/admin-review-management.component';
+import { AdminNewsletterManagementComponent } from './admin/admin-newsletter-management/admin-newsletter-management.component';
+import { AdminSettingsComponent } from './admin/admin-settings/admin-settings.component';
 
 import { NotFoundComponent } from './errors/not-found/not-found.component';
 import { ServerErrorComponent } from './errors/server-error/server-error.component';
@@ -26,160 +53,25 @@ export const routes: Routes = [
     children: [
       { path: '', component: HomeComponent },
 
-      {
-        path: 'new-in',
-        component: PagePlaceholderComponent,
-        data: {
-          title: 'New In',
-          subtitle: 'Fresh ZivaFit activewear drops will live here soon.'
-        }
-      },
-      {
-        path: 'shop',
-        component: PagePlaceholderComponent,
-        data: {
-          title: 'Shop',
-          subtitle: 'The full ZivaFit product browsing page will be connected later.'
-        }
-      },
-      {
-        path: 'leggings',
-        component: PagePlaceholderComponent,
-        data: {
-          title: 'Leggings',
-          subtitle: 'Leggings products will be added in the product catalogue phase.'
-        }
-      },
-      {
-        path: 'sports-bras',
-        component: PagePlaceholderComponent,
-        data: {
-          title: 'Sports Bras',
-          subtitle: 'Sports bra products will be added in the product catalogue phase.'
-        }
-      },
-      {
-        path: 'tops',
-        component: PagePlaceholderComponent,
-        data: {
-          title: 'Tops',
-          subtitle: 'Tops products will be added in the product catalogue phase.'
-        }
-      },
-      {
-        path: 'sets',
-        component: PagePlaceholderComponent,
-        data: {
-          title: 'Sets',
-          subtitle: 'Matching sets will be added in the product catalogue phase.'
-        }
-      },
-      {
-        path: 'shorts',
-        component: PagePlaceholderComponent,
-        data: {
-          title: 'Shorts',
-          subtitle: 'Shorts products will be added in the product catalogue phase.'
-        }
-      },
-      {
-        path: 'accessories',
-        component: PagePlaceholderComponent,
-        data: {
-          title: 'Accessories',
-          subtitle: 'Accessories will be added in the product catalogue phase.'
-        }
-      },
-      {
-        path: 'product-details/:id',
-        component: PagePlaceholderComponent,
-        data: {
-          title: 'Product Details',
-          subtitle: 'Product details will be connected once products exist.'
-        }
-      },
-      {
-        path: 'cart',
-        component: PagePlaceholderComponent,
-        canActivate: [authGuard],
-        data: {
-          title: 'Cart',
-          subtitle: 'Please log in to view your ZivaFit cart.'
-        }
-      },
+      { path: 'new-in', component: NewInComponent },
+      { path: 'shop', component: ShopComponent },
+      { path: 'leggings', component: LeggingsComponent },
+      { path: 'sports-bras', component: SportsBrasComponent },
+      { path: 'tops', component: TopsComponent },
+      { path: 'sets', component: SetsComponent },
+      { path: 'shorts', component: ShortsComponent },
+      { path: 'accessories', component: AccessoriesComponent },
+      { path: 'product-details/:id', component: ProductDetailsComponent },
 
-      {
-        path: 'wishlist',
-        component: PagePlaceholderComponent,
-        canActivate: [authGuard],
-        data: {
-          title: 'Wishlist',
-          subtitle: 'Wishlist requires login and will be connected later.'
-        }
-      },
-      {
-        path: 'checkout',
-        component: PagePlaceholderComponent,
-        canActivate: [authGuard],
-        data: {
-          title: 'Checkout',
-          subtitle: 'Checkout requires login and will be built later.'
-        }
-      },
-      {
-        path: 'order-confirmation',
-        component: PagePlaceholderComponent,
-        canActivate: [authGuard],
-        data: {
-          title: 'Order Confirmation',
-          subtitle: 'Order confirmation will be connected after checkout.'
-        }
-      },
-      {
-        path: 'my-orders',
-        component: PagePlaceholderComponent,
-        canActivate: [authGuard],
-        data: {
-          title: 'My Orders',
-          subtitle: 'Customer order history will be connected later.'
-        }
-      },
-      {
-        path: 'order-details',
-        component: PagePlaceholderComponent,
-        canActivate: [authGuard],
-        data: {
-          title: 'Order Details',
-          subtitle: 'Order details will be connected later.'
-        }
-      },
-      {
-        path: 'my-account',
-        component: PagePlaceholderComponent,
-        canActivate: [authGuard],
-        data: {
-          title: 'My Account',
-          subtitle: 'Customer profile management will be built later.'
-        }
-      },
-      {
-        path: 'edit-profile',
-        component: PagePlaceholderComponent,
-        canActivate: [authGuard],
-        data: {
-          title: 'Edit Profile',
-          subtitle: 'Profile editing will be built later.'
-        }
-      },
-      {
-        path: 'saved-addresses',
-        component: PagePlaceholderComponent,
-        canActivate: [authGuard],
-        data: {
-          title: 'Saved Addresses',
-          subtitle: 'Saved delivery addresses will be built later.'
-        }
-      },
+      { path: 'cart', component: CartComponent, canActivate: [authGuard] },
+      { path: 'wishlist', component: WishlistComponent, canActivate: [authGuard] },
+      { path: 'checkout', component: CheckoutComponent, canActivate: [authGuard] },
+      { path: 'order-confirmation', component: OrderConfirmationComponent, canActivate: [authGuard] },
+      { path: 'my-orders', component: MyOrdersComponent, canActivate: [authGuard] },
+      { path: 'order-details', component: OrderDetailsComponent, canActivate: [authGuard] },
+      { path: 'my-account', component: MyAccountComponent, canActivate: [authGuard] },
+      { path: 'edit-profile', component: EditProfileComponent, canActivate: [authGuard] },
+      { path: 'saved-addresses', component: SavedAddressesComponent, canActivate: [authGuard] },
 
       { path: 'login', component: LoginComponent },
       { path: 'signup', component: SignupComponent },
@@ -195,7 +87,18 @@ export const routes: Routes = [
   {
     path: 'admin',
     component: AdminLayoutComponent,
-    canActivate: [adminGuard]
+    canActivate: [adminGuard],
+    children: [
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+      { path: 'dashboard', component: AdminDashboardComponent },
+      { path: 'home-management', component: AdminHomeManagementComponent },
+      { path: 'product-management', component: AdminProductManagementComponent },
+      { path: 'order-management', component: AdminOrderManagementComponent },
+      { path: 'customer-management', component: AdminCustomerManagementComponent },
+      { path: 'review-management', component: AdminReviewManagementComponent },
+      { path: 'newsletter-management', component: AdminNewsletterManagementComponent },
+      { path: 'settings', component: AdminSettingsComponent }
+    ]
   },
   { path: '**', redirectTo: 'not-found', pathMatch: 'full' }
 ];

@@ -1,0 +1,21 @@
+<section class="admin-dashboard-page">
+  <div class="admin-header">
+    <div>
+      <p class="eyebrow">Admin Dashboard</p>
+      <h1>Store Management</h1>
+    </div>
+
+    <a routerLink="/" class="view-store-btn">View Store</a>
+  </div>
+
+  <div class="admin-grid">
+    <a
+      class="admin-card"
+      *ngFor="let card of adminCards"
+      [routerLink]="card.route"
+    >
+      <h3>{{ card.title }}</h3>
+      <p>{{ card.description }}</p>
+    </a>
+  </div>
+</section>

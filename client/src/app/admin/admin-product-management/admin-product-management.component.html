@@ -1,0 +1,90 @@
+<section class="product-management-page">
+  <div class="page-header">
+    <p class="eyebrow">ZivaFit Admin</p>
+    <h1>Product Management</h1>
+    <p>
+      Manage the ZivaFit catalogue structure from one place. Products, categories,
+      and stock variants belong here as inner tabs.
+    </p>
+  </div>
+
+  <div class="tab-row">
+    <button
+      type="button"
+      [class.active]="activeTab === 'products'"
+      (click)="selectTab('products')"
+    >
+      Products
+    </button>
+
+    <button
+      type="button"
+      [class.active]="activeTab === 'categories'"
+      (click)="selectTab('categories')"
+    >
+      Categories
+    </button>
+
+    <button
+      type="button"
+      [class.active]="activeTab === 'stockVariants'"
+      (click)="selectTab('stockVariants')"
+    >
+      Stock / Variants
+    </button>
+  </div>
+
+  <div class="management-card" *ngIf="activeTab === 'products'">
+    <h2>Products</h2>
+
+    <p>
+      This tab will manage the actual products being sold, such as leggings,
+      sports bras, tops, sets, shorts, and accessories.
+    </p>
+
+    <ul>
+      <li>Product name</li>
+      <li>Product description</li>
+      <li>Product price in South African Rand</li>
+      <li>Product category</li>
+      <li>Product images</li>
+      <li>New In, Best Seller, Featured, Active / Inactive status</li>
+      <li>Created date and updated date</li>
+    </ul>
+  </div>
+
+  <div class="management-card" *ngIf="activeTab === 'categories'">
+    <h2>Categories</h2>
+
+    <p>
+      This tab will manage the product groups shown in the store and navbar.
+    </p>
+
+    <ul>
+      <li>Category name</li>
+      <li>Category description</li>
+      <li>Category image</li>
+      <li>Show or hide in navbar</li>
+      <li>Display order</li>
+      <li>Active / inactive status</li>
+    </ul>
+  </div>
+
+  <div class="management-card" *ngIf="activeTab === 'stockVariants'">
+    <h2>Stock / Variants</h2>
+
+    <p>
+      This tab will manage the different size and colour combinations for each product.
+    </p>
+
+    <ul>
+      <li>Product</li>
+      <li>Colour</li>
+      <li>Size</li>
+      <li>Stock quantity</li>
+      <li>SKU if needed</li>
+      <li>Low stock and out of stock status</li>
+      <li>Active / inactive variant status</li>
+    </ul>
+  </div>
+</section>

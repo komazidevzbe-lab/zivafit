@@ -1,12 +1,16 @@
 import { Component } from '@angular/core';
 
+import { PageNoticeComponent } from '../../shared/page-notice/page-notice.component';
+
 @Component({
   selector: 'app-product-details',
   standalone: true,
-  imports: [],
-  templateUrl: './product-details.component.html',
-  styleUrl: './product-details.component.css'
+  imports: [PageNoticeComponent],
+  template: `
+    <app-page-notice
+      heading="Product Details"
+      subtitle="Product details will be connected once products exist."
+    ></app-page-notice>
+  `
 })
-export class ProductDetailsComponent {
-
-}
+export class ProductDetailsComponent { }
