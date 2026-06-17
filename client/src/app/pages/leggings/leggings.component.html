@@ -1,1 +1,178 @@
-<p>leggings works!</p>
+<section class="leggings-page">
+  <section class="leggings-hero">
+    <div class="leggings-hero-copy">
+      <p class="eyebrow">ZivaFit Leggings</p>
+
+      <h1>Leggings made to move with every body.</h1>
+
+      <p class="hero-text">
+        High-waist, pocket, seamless, and bootleg leggings designed for comfort,
+        confidence, and everyday movement.
+      </p>
+
+      <div class="hero-points">
+        <span>
+          <i class="bi bi-check2-circle" aria-hidden="true"></i>
+          Squat-proof support
+        </span>
+
+        <span>
+          <i class="bi bi-check2-circle" aria-hidden="true"></i>
+          Inclusive sizing
+        </span>
+
+        <span>
+          <i class="bi bi-check2-circle" aria-hidden="true"></i>
+          Delivery in South Africa
+        </span>
+      </div>
+
+      <div class="hero-actions">
+        <a href="#leggings-products" class="ziva-btn-dark">
+          Shop Leggings
+          <i class="bi bi-arrow-down" aria-hidden="true"></i>
+        </a>
+
+        <a routerLink="/shop" class="ziva-btn-outline">
+          View All Products
+          <i class="bi bi-arrow-right" aria-hidden="true"></i>
+        </a>
+      </div>
+    </div>
+
+    <div class="leggings-hero-gallery" aria-label="ZivaFit leggings preview images">
+      <div
+        class="hero-image-card"
+        *ngFor="let image of heroImages; let imageIndex = index; trackBy: trackByHeroImage"
+        [class.hero-image-card-large]="imageIndex === 1"
+      >
+        <img [src]="image.imageUrl" [alt]="image.imageAlt" />
+      </div>
+    </div>
+  </section>
+
+  <section class="leggings-benefits" aria-label="Leggings benefits">
+    <div>
+      <i class="bi bi-shield-check" aria-hidden="true"></i>
+      <strong>Supportive fits</strong>
+      <span>Made to hold, smooth, and move with you.</span>
+    </div>
+
+    <div>
+      <i class="bi bi-droplet-half" aria-hidden="true"></i>
+      <strong>Sweat-wicking comfort</strong>
+      <span>Designed for gym sessions and everyday wear.</span>
+    </div>
+
+    <div>
+      <i class="bi bi-stars" aria-hidden="true"></i>
+      <strong>Premium everyday style</strong>
+      <span>Warm neutrals, bold basics, and flattering cuts.</span>
+    </div>
+  </section>
+
+  <section class="leggings-shop-section" id="leggings-products">
+    <div class="section-header">
+      <div>
+        <p class="eyebrow">Shop the collection</p>
+        <h2>Leggings</h2>
+        <p class="section-subtitle">
+          Showing {{ productCountText }} in {{ activeFilter }}.
+        </p>
+      </div>
+
+      <div class="sort-control">
+        <label for="leggingsSort">Sort by</label>
+        <select
+          id="leggingsSort"
+          [value]="selectedSort"
+          (change)="onSortChange($event)"
+        >
+          <option value="featured">Featured</option>
+          <option value="priceLow">Price: Low to High</option>
+          <option value="priceHigh">Price: High to Low</option>
+          <option value="name">Name</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="filter-row" aria-label="Filter leggings by style">
+      <button
+        type="button"
+        *ngFor="let filter of filterOptions; trackBy: trackByFilterLabel"
+        [class.active]="activeFilter === filter.label"
+        (click)="setActiveFilter(filter.label)"
+      >
+        {{ filter.label }}
+        <span>{{ getFilterCount(filter.label) }}</span>
+      </button>
+    </div>
+
+    <div class="products-grid" *ngIf="filteredProducts.length > 0; else noLeggings">
+      <a
+        class="product-card"
+        *ngFor="let product of filteredProducts; trackBy: trackByProductId"
+        [routerLink]="['/product-details', product.id]"
+      >
+        <div class="product-image">
+          <img [src]="product.imageUrl" [alt]="product.imageAlt" />
+
+          <span class="product-badge">
+            {{ product.badge }}
+          </span>
+        </div>
+
+        <div class="product-info">
+          <div class="product-meta">
+            <span>{{ product.fitType }}</span>
+            <span>{{ product.colour }}</span>
+          </div>
+
+          <h3>{{ product.name }}</h3>
+
+          <div class="product-rating" aria-label="Five star rating">
+            <i
+              class="bi bi-star-fill"
+              *ngFor="let star of ratingStars; trackBy: trackByStar"
+              aria-hidden="true"
+            ></i>
+          </div>
+
+          <p class="product-price">{{ product.priceText }}</p>
+
+          <div class="size-row" aria-label="Available sizes">
+            <span *ngFor="let size of product.sizes; trackBy: trackBySize">
+              {{ size }}
+            </span>
+          </div>
+
+          <div class="product-link">
+            View Product
+            <i class="bi bi-arrow-right" aria-hidden="true"></i>
+          </div>
+        </div>
+      </a>
+    </div>
+
+    <ng-template #noLeggings>
+      <div class="empty-state">
+        <i class="bi bi-bag-heart" aria-hidden="true"></i>
+        <h3>No leggings found</h3>
+        <p>Try another filter to view more ZivaFit leggings.</p>
+      </div>
+    </ng-template>
+  </section>
+
+  <section class="leggings-note">
+    <div>
+      <p class="eyebrow">Fit note</p>
+      <h2>Built for confidence, not comparison.</h2>
+    </div>
+
+    <p>
+      ZivaFit leggings are planned for different body types, movement styles, and comfort
+      preferences. Product data is currently frontend dummy data and will be connected
+      to the real product catalogue during the backend product phase.
+    </p>
+  </section>
+</section>

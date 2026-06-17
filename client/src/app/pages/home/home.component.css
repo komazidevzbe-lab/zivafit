@@ -1,30 +1,57 @@
+:host {
+  display: block;
+  width: 100%;
+  background: #fffaf4;
+  color: #2b1b13;
+}
+
+.home-page {
+  width: 100%;
+  overflow-x: hidden;
+  background: #fffaf4;
+}
+
+/* ===============================
+   Hero section
+   Main landing section shown when the customer opens the store.
+   =============================== */
+
 .home-hero {
-  min-height: 520px;
+  min-height: 560px;
   background:
-    radial-gradient(circle at 20% 20%, rgba(180, 122, 79, 0.15), transparent 25%),
+    radial-gradient(circle at 18% 20%, rgba(180, 122, 79, 0.16), transparent 28%),
+    radial-gradient(circle at 82% 24%, rgba(216, 185, 157, 0.35), transparent 28%),
     linear-gradient(120deg, #f5e9dc, #fffaf4 55%, #e7d3c0);
   display: grid;
   grid-template-columns: 0.9fr 1.1fr;
   align-items: center;
-  padding: 4rem 5rem;
+  padding: 4.2rem 5rem;
   overflow: hidden;
+  position: relative;
+}
+
+.hero-copy {
+  position: relative;
+  z-index: 2;
 }
 
 .eyebrow {
   text-transform: uppercase;
-  letter-spacing: 0.13rem;
-  font-size: 0.75rem;
-  font-weight: 700;
+  letter-spacing: 0.16rem;
+  font-size: 0.72rem;
+  font-weight: 800;
   color: #735f52;
+  margin: 0 0 1rem;
 }
 
 .hero-copy h1 {
   font-family: Georgia, 'Times New Roman', serif;
-  font-size: clamp(3rem, 7vw, 5.7rem);
+  font-size: clamp(3.2rem, 7vw, 5.8rem);
   line-height: 0.95;
   text-transform: uppercase;
   color: #2b1b13;
   margin: 0;
+  max-width: 640px;
 }
 
 .hero-copy em {
@@ -34,8 +61,10 @@
 
 .hero-text {
   margin: 1.5rem 0;
-  max-width: 360px;
+  max-width: 390px;
   color: #735f52;
+  font-size: 1rem;
+  line-height: 1.6;
 }
 
 .hero-actions {
@@ -54,68 +83,120 @@
   text-transform: uppercase;
   letter-spacing: 0.06rem;
   font-size: 0.85rem;
-  font-weight: 700;
+  font-weight: 800;
   text-decoration: none;
   transition: 0.2s ease;
 }
 
 .hero-actions .ziva-btn-dark {
   background: #2b1b13;
-  color: #fff;
+  color: #fffaf4;
   border: 1px solid #2b1b13;
 }
 
 .hero-actions .ziva-btn-dark:hover {
   background: #b47a4f;
   border-color: #b47a4f;
+  color: #fffaf4;
 }
 
 .hero-actions .ziva-btn-outline {
-  background: transparent;
+  background: rgba(255, 250, 244, 0.55);
   color: #2b1b13;
   border: 1px solid #2b1b13;
 }
 
 .hero-actions .ziva-btn-outline:hover {
   background: #2b1b13;
-  color: #fff;
+  color: #fffaf4;
 }
+
+/* ===============================
+   Hero visual cards
+   Uses sets1 to sets4 inside the four hero cards.
+   =============================== */
 
 .hero-visual {
   position: relative;
-  height: 420px;
+  min-height: 460px;
   display: flex;
   justify-content: center;
   align-items: flex-end;
   gap: 1rem;
+  perspective: 1200px;
+}
+
+.hero-visual::before {
+  content: "";
+  position: absolute;
+  width: 78%;
+  height: 72%;
+  right: 4%;
+  bottom: 6%;
+  border-radius: 999px;
+  background: rgba(255, 250, 244, 0.7);
+  filter: blur(32px);
+  z-index: 0;
 }
 
 .model-card {
-  width: 150px;
+  position: relative;
+  z-index: 1;
+  width: min(22%, 165px);
   border-radius: 120px 120px 18px 18px;
-  background: linear-gradient(160deg, #3a2419, #b47a4f);
-  box-shadow: 0 20px 45px rgba(43, 27, 19, 0.18);
+  overflow: hidden;
+  background: #eadbcd;
+  box-shadow: 0 22px 48px rgba(43, 27, 19, 0.2);
+  border: 1px solid rgba(255, 250, 244, 0.75);
+  animation: zivaHeroFloat 8s ease-in-out infinite;
+}
+
+.model-card img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  object-position: center top;
 }
 
 .card-one {
-  height: 330px;
-  background: linear-gradient(160deg, #3a2419, #7b4a33);
+  height: 335px;
+  animation-delay: 0s;
 }
 
 .card-two {
-  height: 390px;
-  background: linear-gradient(160deg, #f5e7d6, #b47a4f);
+  height: 405px;
+  animation-delay: 0.7s;
 }
 
 .card-three {
-  height: 350px;
-  background: linear-gradient(160deg, #5a3828, #d1a177);
+  height: 365px;
+  animation-delay: 1.1s;
 }
 
 .card-four {
-  height: 370px;
-  background: linear-gradient(160deg, #fff3e7, #8f5b3d);
+  height: 385px;
+  animation-delay: 0.4s;
 }
+
+@keyframes zivaHeroFloat {
+  0% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+
+  100% {
+    transform: translateY(0);
+  }
+}
+
+/* ===============================
+   Category cards
+   Each category uses a slow image slideshow.
+   =============================== */
 
 .category-row {
   display: grid;
@@ -133,38 +214,107 @@
   text-decoration: none;
   color: #2b1b13;
   transition: 0.2s ease;
+  overflow: hidden;
 }
 
 .category-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 16px 35px rgba(43, 27, 19, 0.08);
+  box-shadow: 0 16px 35px rgba(43, 27, 19, 0.1);
 }
 
 .category-image {
-  height: 150px;
+  height: 155px;
   border-radius: 10px;
-  background: linear-gradient(145deg, #e5d3c2, #8b5b3f);
+  background: #eadbcd;
   margin-bottom: 0.8rem;
+  position: relative;
+  overflow: hidden;
+  perspective: 900px;
+}
+
+.category-image img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  object-position: center top;
+  opacity: 0;
+  transform-origin: left center;
+  animation: zivaCategoryMagazine 28s ease-in-out infinite;
+}
+
+.category-content {
+  display: grid;
+  gap: 0.2rem;
 }
 
 .category-card h3 {
-  font-size: 0.85rem;
+  font-size: 0.86rem;
   text-transform: uppercase;
   margin: 0;
+  font-weight: 800;
+  color: #2b1b13;
 }
 
 .category-card span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
   font-size: 0.8rem;
   color: #735f52;
 }
 
+.category-card span i {
+  font-size: 0.85rem;
+  transition: 0.2s ease;
+}
+
+.category-card:hover span i {
+  transform: translateX(3px);
+}
+
+@keyframes zivaCategoryMagazine {
+  0% {
+    opacity: 0;
+    transform: translateX(34px) rotateY(18deg) scale(1.04);
+  }
+
+  7% {
+    opacity: 1;
+    transform: translateX(0) rotateY(0deg) scale(1);
+  }
+
+  24% {
+    opacity: 1;
+    transform: translateX(0) rotateY(0deg) scale(1);
+  }
+
+  31% {
+    opacity: 0;
+    transform: translateX(-28px) rotateY(-12deg) scale(1.02);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateX(-28px) rotateY(-12deg) scale(1.02);
+  }
+}
+
+/* ===============================
+   Benefits strip
+   Quick value messages for the store.
+   =============================== */
+
 .benefits-strip {
-  margin: 0 5rem 2rem;
+  margin: 0 5rem 2.2rem;
   background: #2b1b13;
-  color: #fff;
+  color: #fffaf4;
   border-radius: 12px;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
+  overflow: hidden;
 }
 
 .benefits-strip div {
@@ -186,12 +336,18 @@
 .benefits-strip strong {
   text-transform: uppercase;
   font-size: 0.8rem;
+  color: #fffaf4;
 }
 
 .benefits-strip span {
   color: #dbcbbd;
   font-size: 0.8rem;
 }
+
+/* ===============================
+   Best sellers
+   Temporary frontend dummy product cards before backend catalogue connection.
+   =============================== */
 
 .best-sellers {
   padding: 0 5rem 3rem;
@@ -200,24 +356,42 @@
 .section-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-end;
+  gap: 1rem;
+  margin-bottom: 1rem;
 }
 
 .section-header h2 {
   font-family: Georgia, 'Times New Roman', serif;
   text-transform: uppercase;
   color: #2b1b13;
+  margin: 0;
+  font-size: clamp(1.8rem, 3vw, 2.4rem);
 }
 
 .section-header a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
   font-size: 0.8rem;
   text-transform: uppercase;
   color: #2b1b13;
   text-decoration: none;
+  font-weight: 800;
+  letter-spacing: 0.04rem;
+}
+
+.section-header a i {
+  font-size: 0.85rem;
+  transition: 0.2s ease;
 }
 
 .section-header a:hover {
   color: #b47a4f;
+}
+
+.section-header a:hover i {
+  transform: translateX(3px);
 }
 
 .product-skeleton-row {
@@ -231,41 +405,117 @@
   border-radius: 12px;
   padding: 0.75rem;
   border: 1px solid #eadbcd;
+  text-decoration: none;
+  color: #2b1b13;
+  transition: 0.2s ease;
+  overflow: hidden;
+}
+
+.product-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 35px rgba(43, 27, 19, 0.1);
 }
 
 .product-image {
-  height: 190px;
+  height: 210px;
   border-radius: 10px;
-  background: linear-gradient(145deg, #f0dfce, #9a6949);
+  background: #eadbcd;
+  position: relative;
+  overflow: hidden;
+}
+
+.product-image img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  object-position: center top;
+  transition: 0.35s ease;
+}
+
+.product-card:hover .product-image img {
+  transform: scale(1.04);
+}
+
+.product-image span {
+  position: absolute;
+  left: 0.65rem;
+  top: 0.65rem;
+  background: rgba(255, 250, 244, 0.92);
+  color: #2b1b13;
+  border: 1px solid rgba(234, 219, 205, 0.9);
+  border-radius: 999px;
+  padding: 0.28rem 0.58rem;
+  text-transform: uppercase;
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.04rem;
+}
+
+.product-category {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08rem;
+  color: #b47a4f;
+  font-weight: 800;
+  margin: 0.75rem 0 0.25rem;
 }
 
 .product-name {
-  font-size: 0.78rem;
+  font-size: 0.84rem;
   text-transform: uppercase;
-  margin: 0.7rem 0 0.2rem;
+  margin: 0 0 0.25rem;
   color: #2b1b13;
+  line-height: 1.35;
 }
 
 .product-price {
-  font-size: 0.8rem;
+  font-size: 0.86rem;
   color: #735f52;
   margin: 0;
+  font-weight: 700;
 }
 
 .rating {
   color: #b47a4f;
-  font-size: 0.75rem;
+  font-size: 0.72rem;
+  display: flex;
+  gap: 0.08rem;
+  margin-top: 0.35rem;
+}
+
+/* ===============================
+   Responsive layout
+   Keeps the landing page clean on tablets and mobile.
+   =============================== */
+
+@media (max-width: 1300px) {
+  .category-row,
+  .product-skeleton-row {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .model-card {
+    width: min(22%, 145px);
+  }
 }
 
 @media (max-width: 1100px) {
-  .home-hero,
-  .category-row,
-  .benefits-strip,
-  .product-skeleton-row {
-    grid-template-columns: 1fr 1fr;
+  .home-hero {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+    padding-left: 2rem;
+    padding-right: 2rem;
   }
 
-  .home-hero,
+  .hero-copy {
+    max-width: 760px;
+  }
+
+  .hero-visual {
+    min-height: 390px;
+  }
+
   .category-row,
   .best-sellers {
     padding-left: 2rem;
@@ -275,29 +525,114 @@
   .benefits-strip {
     margin-left: 2rem;
     margin-right: 2rem;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .benefits-strip div:nth-child(2) {
+    border-right: none;
   }
 }
 
-@media (max-width: 700px) {
-  .home-hero,
-  .category-row,
-  .benefits-strip,
-  .product-skeleton-row {
-    grid-template-columns: 1fr;
-  }
-
+@media (max-width: 760px) {
   .home-hero {
     padding-top: 3rem;
     padding-bottom: 3rem;
   }
 
+  .hero-copy h1 {
+    font-size: clamp(2.8rem, 14vw, 4rem);
+  }
+
+  .hero-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .hero-actions a {
+    width: 100%;
+  }
+
   .hero-visual {
-    display: none;
+    min-height: 320px;
+    gap: 0.55rem;
+  }
+
+  .model-card {
+    width: 24%;
+  }
+
+  .card-one {
+    height: 245px;
+  }
+
+  .card-two {
+    height: 300px;
+  }
+
+  .card-three {
+    height: 265px;
+  }
+
+  .card-four {
+    height: 280px;
+  }
+
+  .category-row,
+  .product-skeleton-row,
+  .benefits-strip {
+    grid-template-columns: 1fr;
+  }
+
+  .benefits-strip div {
+    border-right: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.22);
+  }
+
+  .benefits-strip div:last-child {
+    border-bottom: none;
   }
 
   .section-header {
     align-items: flex-start;
     flex-direction: column;
     gap: 0.6rem;
+  }
+}
+
+@media (max-width: 520px) {
+  .home-hero,
+  .category-row,
+  .best-sellers {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .benefits-strip {
+    margin-left: 1rem;
+    margin-right: 1rem;
+  }
+
+  .hero-visual {
+    min-height: 285px;
+  }
+
+  .model-card {
+    border-radius: 90px 90px 14px 14px;
+  }
+
+  .card-one {
+    height: 220px;
+  }
+
+  .card-two {
+    height: 265px;
+  }
+
+  .card-three {
+    height: 235px;
+  }
+
+  .card-four {
+    height: 250px;
   }
 }

@@ -1,103 +1,124 @@
-<section class="home-hero">
-  <div class="hero-copy">
-    <p class="eyebrow">Confident. Strong. Unstoppable.</p>
+<section class="home-page">
+  <section class="home-hero">
+    <div class="hero-copy">
+      <p class="eyebrow">Confident. Strong. Unstoppable.</p>
 
-    <h1>Made for <em>every you.</em></h1>
+      <h1>Made for <em>every you.</em></h1>
 
-    <p class="hero-text">
-      Performance meets confidence in activewear that moves with you and celebrates you.
-    </p>
+      <p class="hero-text">
+        Performance meets confidence in activewear that moves with you and celebrates you.
+      </p>
 
-    <div class="hero-actions">
-      <a routerLink="/new-in" class="ziva-btn-dark">Shop New Arrivals</a>
-      <a routerLink="/shop" class="ziva-btn-outline">Shop Collections</a>
+      <div class="hero-actions">
+        <a routerLink="/new-in" class="ziva-btn-dark">
+          Shop New Arrivals
+        </a>
+
+        <a routerLink="/shop" class="ziva-btn-outline">
+          Shop Collections
+        </a>
+      </div>
     </div>
-  </div>
 
-  <div class="hero-visual">
-    <div class="model-card card-one"></div>
-    <div class="model-card card-two"></div>
-    <div class="model-card card-three"></div>
-    <div class="model-card card-four"></div>
-  </div>
-</section>
-
-<section class="category-row">
-  <a routerLink="/leggings" class="category-card">
-    <div class="category-image"></div>
-    <h3>Leggings</h3>
-    <span>Shop Now →</span>
-  </a>
-
-  <a routerLink="/sports-bras" class="category-card">
-    <div class="category-image"></div>
-    <h3>Sports Bras</h3>
-    <span>Shop Now →</span>
-  </a>
-
-  <a routerLink="/tops" class="category-card">
-    <div class="category-image"></div>
-    <h3>Tops</h3>
-    <span>Shop Now →</span>
-  </a>
-
-  <a routerLink="/sets" class="category-card">
-    <div class="category-image"></div>
-    <h3>Sets</h3>
-    <span>Shop Now →</span>
-  </a>
-
-  <a routerLink="/shorts" class="category-card">
-    <div class="category-image"></div>
-    <h3>Shorts</h3>
-    <span>Shop Now →</span>
-  </a>
-
-  <a routerLink="/accessories" class="category-card">
-    <div class="category-image"></div>
-    <h3>Accessories</h3>
-    <span>Shop Now →</span>
-  </a>
-</section>
-
-<section class="benefits-strip">
-  <div>
-    <i class="bi bi-leaf"></i>
-    <strong>Sustainably Made</strong>
-    <span>Thoughtful fabrics for a better planet.</span>
-  </div>
-
-  <div>
-    <i class="bi bi-stars"></i>
-    <strong>Squat-Proof Confidence</strong>
-    <span>Feel covered and supported always.</span>
-  </div>
-
-  <div>
-    <i class="bi bi-droplet"></i>
-    <strong>Sweat-Wicking</strong>
-    <span>Stay cool, dry, and comfortable.</span>
-  </div>
-
-  <div>
-    <i class="bi bi-heart"></i>
-    <strong>Designed for Every Body</strong>
-    <span>Inclusive sizing that celebrates you.</span>
-  </div>
-</section>
-
-<section class="best-sellers">
-  <div class="section-header">
-    <h2>Best Sellers</h2>
-    <a routerLink="/shop">Shop all best sellers →</a>
-  </div>
-
-  <div class="product-skeleton-row">
-    <div class="product-card" *ngFor="let item of bestSellers">
-      <div class="product-image"></div>
-      <p class="product-name">{{ item.name }}</p>
-      <p class="product-price">{{ item.price }}</p>
-      <div class="rating">★★★★★</div>
+    <div class="hero-visual" aria-label="ZivaFit activewear set previews">
+      <div
+        class="model-card"
+        *ngFor="let card of heroCards; trackBy: trackByHeroTitle"
+        [ngClass]="card.cardClass"
+      >
+        <img [src]="card.imageUrl" [alt]="card.alt" />
+      </div>
     </div>
-  </div>
+  </section>
+
+  <section class="category-row" aria-label="Shop ZivaFit categories">
+    <a
+      *ngFor="let category of categories; trackBy: trackByCategoryTitle"
+      [routerLink]="category.route"
+      class="category-card"
+    >
+      <div class="category-image">
+        <img
+          *ngFor="let image of category.images; let imageIndex = index; trackBy: trackByImageUrl"
+          [src]="image.url"
+          [alt]="image.alt"
+          [style.animation-delay]="getSlideDelay(imageIndex)"
+        />
+      </div>
+
+      <div class="category-content">
+        <h3>{{ category.title }}</h3>
+
+        <span>
+          Shop Now
+          <i class="bi bi-arrow-right" aria-hidden="true"></i>
+        </span>
+      </div>
+    </a>
+  </section>
+
+  <section class="benefits-strip">
+    <div>
+      <i class="bi bi-leaf" aria-hidden="true"></i>
+      <strong>Sustainably Made</strong>
+      <span>Thoughtful fabrics for a better planet.</span>
+    </div>
+
+    <div>
+      <i class="bi bi-stars" aria-hidden="true"></i>
+      <strong>Squat-Proof Confidence</strong>
+      <span>Feel covered and supported always.</span>
+    </div>
+
+    <div>
+      <i class="bi bi-droplet" aria-hidden="true"></i>
+      <strong>Sweat-Wicking</strong>
+      <span>Stay cool, dry, and comfortable.</span>
+    </div>
+
+    <div>
+      <i class="bi bi-heart" aria-hidden="true"></i>
+      <strong>Designed for Every Body</strong>
+      <span>Inclusive sizing that celebrates you.</span>
+    </div>
+  </section>
+
+  <section class="best-sellers">
+    <div class="section-header">
+      <div>
+        <p class="eyebrow">Customer favourites</p>
+        <h2>Best Sellers</h2>
+      </div>
+
+      <a routerLink="/shop">
+        Shop all best sellers
+        <i class="bi bi-arrow-right" aria-hidden="true"></i>
+      </a>
+    </div>
+
+    <div class="product-skeleton-row">
+      <a
+        class="product-card"
+        *ngFor="let item of bestSellers; trackBy: trackByProductId"
+        [routerLink]="['/product-details', item.id]"
+      >
+        <div class="product-image">
+          <img [src]="item.imageUrl" [alt]="item.imageAlt" />
+          <span>{{ item.badge }}</span>
+        </div>
+
+        <p class="product-category">{{ item.category }}</p>
+        <h3 class="product-name">{{ item.name }}</h3>
+        <p class="product-price">{{ item.price }}</p>
+
+        <div class="rating" aria-label="Five star rating">
+          <i
+            class="bi bi-star-fill"
+            *ngFor="let star of ratingStars; trackBy: trackByStar"
+            aria-hidden="true"
+          ></i>
+        </div>
+      </a>
+    </div>
+  </section>
 </section>
