@@ -1,0 +1,155 @@
+<section class="shop-collection-page">
+  <section class="collection-hero">
+    <div class="collection-hero-copy">
+      <p class="eyebrow">{{ config.heroEyebrow }}</p>
+
+      <h1>{{ config.heroTitle }}</h1>
+
+      <p class="hero-text">
+        {{ config.heroText }}
+      </p>
+
+      <div class="hero-points">
+        <span *ngFor="let point of config.heroPoints; trackBy: trackByHeroPoint">
+          <i [class]="point.iconClass" aria-hidden="true"></i>
+          {{ point.label }}
+        </span>
+      </div>
+
+      <div class="hero-actions">
+        <button type="button" class="ziva-btn-dark" (click)="scrollToProducts()">
+          {{ config.heroButtonLabel }}
+          <i class="bi bi-arrow-down" aria-hidden="true"></i>
+        </button>
+
+        <a [routerLink]="config.secondaryButtonRoute" class="ziva-btn-outline">
+          {{ config.secondaryButtonLabel }}
+          <i class="bi bi-arrow-right" aria-hidden="true"></i>
+        </a>
+      </div>
+    </div>
+
+    <div class="collection-hero-gallery" aria-label="ZivaFit collection preview images">
+      <div
+        class="hero-image-card"
+        *ngFor="let image of config.heroImages; let imageIndex = index; trackBy: trackByHeroImage"
+        [class.hero-image-card-large]="imageIndex === 1"
+      >
+        <img [src]="image.imageUrl" [alt]="image.imageAlt" />
+      </div>
+    </div>
+  </section>
+
+  <section class="collection-benefits" aria-label="Collection benefits">
+    <div *ngFor="let benefit of config.benefits; trackBy: trackByBenefitTitle">
+      <i [class]="benefit.iconClass" aria-hidden="true"></i>
+      <strong>{{ benefit.title }}</strong>
+      <span>{{ benefit.text }}</span>
+    </div>
+  </section>
+
+  <section class="collection-shop-section" [id]="sectionId">
+    <div class="section-header">
+      <div>
+        <p class="eyebrow">{{ config.collectionEyebrow }}</p>
+        <h2>{{ config.collectionTitle }}</h2>
+
+        <p class="section-subtitle">
+          Showing {{ productCountText }} in {{ activeFilter }}.
+        </p>
+      </div>
+
+      <div class="sort-control">
+        <label [for]="config.pageKey + 'Sort'">Sort by</label>
+
+        <select
+          [id]="config.pageKey + 'Sort'"
+          [value]="selectedSort"
+          (change)="onSortChange($event)"
+        >
+          <option value="featured">Featured</option>
+          <option value="priceLow">Price: Low to High</option>
+          <option value="priceHigh">Price: High to Low</option>
+          <option value="name">Name</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="filter-row" aria-label="Filter products">
+      <button
+        type="button"
+        *ngFor="let filter of filterOptions; trackBy: trackByFilterLabel"
+        [class.active]="activeFilter === filter.label"
+        (click)="setActiveFilter(filter.label)"
+      >
+        {{ filter.label }}
+        <span>{{ getFilterCount(filter.label) }}</span>
+      </button>
+    </div>
+
+    <div class="products-grid" *ngIf="filteredProducts.length > 0; else noProducts">
+      <a
+        class="product-card"
+        *ngFor="let product of filteredProducts; trackBy: trackByProductId"
+        [routerLink]="['/product-details', product.id]"
+      >
+        <div class="product-image">
+          <img [src]="product.imageUrl" [alt]="product.imageAlt" />
+
+          <span class="product-badge">
+            {{ product.badge }}
+          </span>
+        </div>
+
+        <div class="product-info">
+          <div class="product-meta">
+            <span>{{ product.fitType }}</span>
+            <span>{{ product.colour }}</span>
+          </div>
+
+          <h3>{{ product.name }}</h3>
+
+          <div class="product-rating" aria-label="Five star rating">
+            <i
+              class="bi bi-star-fill"
+              *ngFor="let star of ratingStars; trackBy: trackByStar"
+              aria-hidden="true"
+            ></i>
+          </div>
+
+          <p class="product-price">{{ product.priceText }}</p>
+
+          <div class="size-row" aria-label="Available sizes">
+            <span *ngFor="let size of product.sizes; trackBy: trackBySize">
+              {{ size }}
+            </span>
+          </div>
+
+          <div class="product-link">
+            View Product
+            <i class="bi bi-arrow-right" aria-hidden="true"></i>
+          </div>
+        </div>
+      </a>
+    </div>
+
+    <ng-template #noProducts>
+      <div class="empty-state">
+        <i class="bi bi-bag-heart" aria-hidden="true"></i>
+        <h3>{{ config.emptyTitle }}</h3>
+        <p>{{ config.emptyText }}</p>
+      </div>
+    </ng-template>
+  </section>
+
+  <section class="collection-note">
+    <div>
+      <p class="eyebrow">{{ config.noteEyebrow }}</p>
+      <h2>{{ config.noteTitle }}</h2>
+    </div>
+
+    <p>
+      {{ config.noteText }}
+    </p>
+  </section>
+</section>
