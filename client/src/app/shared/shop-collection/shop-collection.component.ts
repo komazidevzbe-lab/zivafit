@@ -9,6 +9,7 @@ import {
   ShopCollectionConfig
 } from '../../_models/product-catalog';
 import { ProductCatalogService } from '../../_services/product-catalog.service';
+import { ShopStateService } from '../../_services/shop-state.service';
 
 interface FilterOption {
   label: string;
@@ -23,6 +24,8 @@ interface FilterOption {
 })
 export class ShopCollectionComponent {
   private productCatalogService = inject(ProductCatalogService);
+
+  shopStateService = inject(ShopStateService);
 
   @Input({ required: true }) config!: ShopCollectionConfig;
 
@@ -61,18 +64,13 @@ export class ShopCollectionComponent {
     const filtered = this.activeFilter === 'All'
       ? [...this.baseProducts]
       : this.baseProducts.filter(product => {
-          if (this.config.filterType === 'category')
-            return product.category === (this.activeFilter as ProductCategory);
+        if (this.config.filterType === 'category')
+          return product.category === (this.activeFilter as ProductCategory);
 
-          return product.fitType === this.activeFilter;
-        });
+        return product.fitType === this.activeFilter;
+      });
 
     return this.sortProducts(filtered);
-  }
-
-  get productCountText(): string {
-    const count = this.filteredProducts.length;
-    return count === 1 ? '1 style' : `${count} styles`;
   }
 
   scrollToProducts(): void {
@@ -95,16 +93,11 @@ export class ShopCollectionComponent {
     this.selectedSort = (event.target as HTMLSelectElement).value as ProductSort;
   }
 
-  getFilterCount(filter: string): number {
-    if (filter === 'All')
-      return this.baseProducts.length;
+  toggleWishlist(productId: number, event: Event): void {
+    event.preventDefault();
+    event.stopPropagation();
 
-    return this.baseProducts.filter(product => {
-      if (this.config.filterType === 'category')
-        return product.category === filter;
-
-      return product.fitType === filter;
-    }).length;
+    this.shopStateService.toggleWishlist(productId);
   }
 
   trackByProductId(index: number, product: ProductCatalogItem): number {

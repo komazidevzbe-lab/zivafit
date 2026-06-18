@@ -1,6 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
+
+import { ProductCatalogItem } from '../../_models/product-catalog';
+import { ProductCatalogService } from '../../_services/product-catalog.service';
+import { ShopStateService } from '../../_services/shop-state.service';
 
 interface HomeImage {
   url: string;
@@ -20,16 +24,6 @@ interface HomeCategory {
   images: HomeImage[];
 }
 
-interface HomeProduct {
-  id: number;
-  name: string;
-  category: string;
-  price: string;
-  imageUrl: string;
-  imageAlt: string;
-  badge: string;
-}
-
 @Component({
   selector: 'app-home',
   standalone: true,
@@ -38,6 +32,10 @@ interface HomeProduct {
   styleUrl: './home.component.css'
 })
 export class HomeComponent {
+  private productCatalogService = inject(ProductCatalogService);
+
+  shopStateService = inject(ShopStateService);
+
   private readonly categorySlideDelaySeconds = 7;
 
   ratingStars = [1, 2, 3, 4, 5];
@@ -132,67 +130,27 @@ export class HomeComponent {
     }
   ];
 
-  bestSellers: HomeProduct[] = [
-    {
-      id: 1,
-      name: 'Sculpt High-Waist Legging',
-      category: 'Leggings',
-      price: 'R899',
-      imageUrl: 'assets/leggings3.png',
-      imageAlt: 'Sculpt high-waist ZivaFit leggings',
-      badge: 'Best Seller'
-    },
-    {
-      id: 2,
-      name: 'Power Support Sports Bra',
-      category: 'Sports Bras',
-      price: 'R699',
-      imageUrl: 'assets/bra5.png',
-      imageAlt: 'Power support ZivaFit sports bra',
-      badge: 'Supportive Fit'
-    },
-    {
-      id: 3,
-      name: 'Everyday Long Sleeve Top',
-      category: 'Tops',
-      price: 'R749',
-      imageUrl: 'assets/longsleeveshirt3.png',
-      imageAlt: 'Everyday ZivaFit long sleeve activewear top',
-      badge: 'New Colour'
-    },
-    {
-      id: 4,
-      name: 'Studio Matching Set',
-      category: 'Sets',
-      price: 'R1 200',
-      imageUrl: 'assets/sets5.png',
-      imageAlt: 'Studio matching ZivaFit activewear set',
-      badge: 'Full Look'
-    },
-    {
-      id: 5,
-      name: 'Move Pocket Short',
-      category: 'Shorts',
-      price: 'R499',
-      imageUrl: 'assets/short3.png',
-      imageAlt: 'Move pocket ZivaFit activewear shorts',
-      badge: 'Easy Movement'
-    },
-    {
-      id: 6,
-      name: 'ZivaFit Everyday Gym Bag',
-      category: 'Accessories',
-      price: 'R849',
-      imageUrl: 'assets/gymbag5.png',
-      imageAlt: 'ZivaFit everyday gym bag',
-      badge: 'Carry All'
-    }
-  ];
+  get bestSellers(): ProductCatalogItem[] {
+    const activeBestSellers = this.productCatalogService
+      .getProducts()
+      .filter(product => product.isActive && product.isBestSeller);
 
-  // ===============================
-  // Slideshow delay
-  // Staggers category images so each card slowly changes like a soft magazine turn.
-  // ===============================
+    if (activeBestSellers.length > 0)
+      return activeBestSellers.slice(0, 8);
+
+    return this.productCatalogService
+      .getProducts()
+      .filter(product => product.isActive)
+      .slice(0, 8);
+  }
+
+  toggleWishlist(productId: number, event: Event): void {
+    event.preventDefault();
+    event.stopPropagation();
+
+    this.shopStateService.toggleWishlist(productId);
+  }
+
   getSlideDelay(index: number): string {
     return `${index * this.categorySlideDelaySeconds}s`;
   }
@@ -209,7 +167,7 @@ export class HomeComponent {
     return item.url;
   }
 
-  trackByProductId(index: number, item: HomeProduct): number {
+  trackByProductId(index: number, item: ProductCatalogItem): number {
     return item.id;
   }
 

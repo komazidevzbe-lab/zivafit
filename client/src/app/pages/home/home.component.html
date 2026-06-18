@@ -97,28 +97,60 @@
     </div>
 
     <div class="product-skeleton-row">
-      <a
+      <article
         class="product-card"
         *ngFor="let item of bestSellers; trackBy: trackByProductId"
-        [routerLink]="['/product-details', item.id]"
       >
-        <div class="product-image">
-          <img [src]="item.imageUrl" [alt]="item.imageAlt" />
-          <span>{{ item.badge }}</span>
-        </div>
+        <a
+          class="product-card-link"
+          [routerLink]="['/product-details', item.id]"
+        >
+          <div class="product-image">
+            <img [src]="item.imageUrl" [alt]="item.imageAlt" />
 
-        <p class="product-category">{{ item.category }}</p>
-        <h3 class="product-name">{{ item.name }}</h3>
-        <p class="product-price">{{ item.price }}</p>
+            <span class="product-badge">
+              {{ item.badge }}
+            </span>
+          </div>
 
-        <div class="rating" aria-label="Five star rating">
+          <div class="product-info">
+            <p class="product-category">{{ item.category }}</p>
+
+            <h3 class="product-name">{{ item.name }}</h3>
+
+            <p class="product-price">{{ item.priceText }}</p>
+
+            <div class="product-footer">
+              <div class="product-link">
+                View Product
+                <i class="bi bi-arrow-right" aria-hidden="true"></i>
+              </div>
+
+              <div class="rating" aria-label="Five star rating">
+                <i
+                  class="bi bi-star-fill"
+                  *ngFor="let star of ratingStars; trackBy: trackByStar"
+                  aria-hidden="true"
+                ></i>
+              </div>
+            </div>
+          </div>
+        </a>
+
+        <button
+          type="button"
+          class="product-wishlist"
+          [class.active]="shopStateService.isInWishlist(item.id)"
+          (click)="toggleWishlist(item.id, $event)"
+          [attr.aria-label]="shopStateService.isInWishlist(item.id) ? 'Remove from wishlist' : 'Add to wishlist'"
+        >
           <i
-            class="bi bi-star-fill"
-            *ngFor="let star of ratingStars; trackBy: trackByStar"
+            class="bi"
+            [ngClass]="shopStateService.isInWishlist(item.id) ? 'bi-heart-fill' : 'bi-heart'"
             aria-hidden="true"
           ></i>
-        </div>
-      </a>
+        </button>
+      </article>
     </div>
   </section>
 </section>

@@ -1,20 +1,29 @@
-import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Component, inject } from '@angular/core';
+import { RouterLink } from '@angular/router';
 
-import { PageNoticeComponent } from '../../shared/page-notice/page-notice.component';
+import { ProductCatalogItem } from '../../_models/product-catalog';
+import { ShopStateService } from '../../_services/shop-state.service';
 
 @Component({
   selector: 'app-wishlist',
   standalone: true,
-  imports: [PageNoticeComponent],
-  template: `
-    <app-page-notice
-      heading="Wishlist"
-      subtitle="Wishlist requires login and will be connected later."
-      primaryLabel="Continue Shopping"
-      primaryRoute="/shop"
-      secondaryLabel="My Account"
-      secondaryRoute="/my-account"
-    ></app-page-notice>
-  `
+  imports: [CommonModule, RouterLink],
+  templateUrl: './wishlist.component.html',
+  styleUrl: './wishlist.component.css'
 })
-export class WishlistComponent { }
+export class WishlistComponent {
+  shopStateService = inject(ShopStateService);
+
+  addToCart(product: ProductCatalogItem): void {
+    this.shopStateService.addToCart(product.id, product.sizes[0] || 'One Size', 1);
+  }
+
+  removeFromWishlist(productId: number): void {
+    this.shopStateService.removeFromWishlist(productId);
+  }
+
+  trackByProductId(index: number, product: ProductCatalogItem): number {
+    return product.id;
+  }
+}

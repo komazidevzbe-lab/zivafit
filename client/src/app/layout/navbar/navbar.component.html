@@ -1,8 +1,8 @@
 <header class="zivafit-header">
   <div class="top-strip">
-    <span>Free delivery in South Africa on orders R1000+</span>
+    <span>Free delivery on orders R1000+</span>
     <span>Easy returns</span>
-    <span>Shipping nationwide across South Africa</span>
+    <span>Secure checkout</span>
   </div>
 
   <nav class="main-nav">
@@ -26,28 +26,44 @@
           <i class="bi bi-search"></i>
         </button>
 
-        <a routerLink="/wishlist" class="icon-btn" aria-label="Wishlist">
+        <a routerLink="/wishlist" class="icon-btn cart-icon" aria-label="Wishlist">
           <i class="bi bi-heart"></i>
+          <span class="cart-count" *ngIf="shopStateService.wishlistCount() > 0">
+            {{ shopStateService.wishlistCount() }}
+          </span>
         </a>
 
         <a routerLink="/cart" class="icon-btn cart-icon" aria-label="Cart">
           <i class="bi bi-bag"></i>
-          <span class="cart-count">0</span>
+          <span class="cart-count" *ngIf="shopStateService.cartCount() > 0">
+            {{ shopStateService.cartCount() }}
+          </span>
         </a>
 
-        <div class="profile-menu">
-          <button class="profile-button" type="button">
+        <div class="profile-menu" [class.open]="profileMenuOpen">
+          <button
+            class="profile-button"
+            type="button"
+            (click)="toggleProfileMenu()"
+            [attr.aria-expanded]="profileMenuOpen"
+          >
             <i class="bi bi-person-circle"></i>
             <span>Welcome, {{ user.firstName }}</span>
             <i class="bi bi-chevron-down dropdown-icon"></i>
           </button>
 
-          <div class="profile-dropdown">
-            <a routerLink="/my-account">My Account</a>
-            <a routerLink="/my-orders">My Orders</a>
-            <a *ngIf="accountService.roles().includes('Admin')" routerLink="/admin">
+          <div class="profile-dropdown" *ngIf="profileMenuOpen">
+            <a routerLink="/my-account" (click)="closeProfileMenu()">My Account</a>
+            <a routerLink="/my-orders" (click)="closeProfileMenu()">My Orders</a>
+
+            <a
+              *ngIf="accountService.roles().includes('Admin')"
+              routerLink="/admin"
+              (click)="closeProfileMenu()"
+            >
               Admin Dashboard
             </a>
+
             <button type="button" (click)="logout()">Logout</button>
           </div>
         </div>

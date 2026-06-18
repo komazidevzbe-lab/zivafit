@@ -50,13 +50,19 @@
 
   <section class="collection-shop-section" [id]="sectionId">
     <div class="section-header">
-      <div>
-        <p class="eyebrow">{{ config.collectionEyebrow }}</p>
-        <h2>{{ config.collectionTitle }}</h2>
+      <h2>{{ config.collectionTitle }}</h2>
+    </div>
 
-        <p class="section-subtitle">
-          Showing {{ productCountText }} in {{ activeFilter }}.
-        </p>
+    <div class="filter-sort-row">
+      <div class="filter-row" aria-label="Filter products">
+        <button
+          type="button"
+          *ngFor="let filter of filterOptions; trackBy: trackByFilterLabel"
+          [class.active]="activeFilter === filter.label"
+          (click)="setActiveFilter(filter.label)"
+        >
+          {{ filter.label }}
+        </button>
       </div>
 
       <div class="sort-control">
@@ -75,62 +81,70 @@
       </div>
     </div>
 
-    <div class="filter-row" aria-label="Filter products">
-      <button
-        type="button"
-        *ngFor="let filter of filterOptions; trackBy: trackByFilterLabel"
-        [class.active]="activeFilter === filter.label"
-        (click)="setActiveFilter(filter.label)"
-      >
-        {{ filter.label }}
-        <span>{{ getFilterCount(filter.label) }}</span>
-      </button>
-    </div>
-
     <div class="products-grid" *ngIf="filteredProducts.length > 0; else noProducts">
-      <a
+      <article
         class="product-card"
         *ngFor="let product of filteredProducts; trackBy: trackByProductId"
-        [routerLink]="['/product-details', product.id]"
       >
-        <div class="product-image">
-          <img [src]="product.imageUrl" [alt]="product.imageAlt" />
+        <a
+          class="product-card-link"
+          [routerLink]="['/product-details', product.id]"
+        >
+          <div class="product-image">
+            <img [src]="product.imageUrl" [alt]="product.imageAlt" />
 
-          <span class="product-badge">
-            {{ product.badge }}
-          </span>
-        </div>
-
-        <div class="product-info">
-          <div class="product-meta">
-            <span>{{ product.fitType }}</span>
-            <span>{{ product.colour }}</span>
-          </div>
-
-          <h3>{{ product.name }}</h3>
-
-          <div class="product-rating" aria-label="Five star rating">
-            <i
-              class="bi bi-star-fill"
-              *ngFor="let star of ratingStars; trackBy: trackByStar"
-              aria-hidden="true"
-            ></i>
-          </div>
-
-          <p class="product-price">{{ product.priceText }}</p>
-
-          <div class="size-row" aria-label="Available sizes">
-            <span *ngFor="let size of product.sizes; trackBy: trackBySize">
-              {{ size }}
+            <span class="product-badge">
+              {{ product.badge }}
             </span>
           </div>
 
-          <div class="product-link">
-            View Product
-            <i class="bi bi-arrow-right" aria-hidden="true"></i>
+          <div class="product-info">
+            <div class="product-meta">
+              <span>{{ product.fitType }}</span>
+              <span>{{ product.colour }}</span>
+            </div>
+
+            <h3>{{ product.name }}</h3>
+
+            <p class="product-price">{{ product.priceText }}</p>
+
+            <div class="size-row" aria-label="Available sizes">
+              <span *ngFor="let size of product.sizes; trackBy: trackBySize">
+                {{ size }}
+              </span>
+            </div>
+
+            <div class="product-footer">
+              <div class="product-link">
+                View Product
+                <i class="bi bi-arrow-right" aria-hidden="true"></i>
+              </div>
+
+              <div class="product-rating" aria-label="Five star rating">
+                <i
+                  class="bi bi-star-fill"
+                  *ngFor="let star of ratingStars; trackBy: trackByStar"
+                  aria-hidden="true"
+                ></i>
+              </div>
+            </div>
           </div>
-        </div>
-      </a>
+        </a>
+
+        <button
+          type="button"
+          class="product-wishlist"
+          [class.active]="shopStateService.isInWishlist(product.id)"
+          (click)="toggleWishlist(product.id, $event)"
+          [attr.aria-label]="shopStateService.isInWishlist(product.id) ? 'Remove from wishlist' : 'Add to wishlist'"
+        >
+          <i
+            class="bi"
+            [ngClass]="shopStateService.isInWishlist(product.id) ? 'bi-heart-fill' : 'bi-heart'"
+            aria-hidden="true"
+          ></i>
+        </button>
+      </article>
     </div>
 
     <ng-template #noProducts>

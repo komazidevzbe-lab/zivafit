@@ -1,1 +1,72 @@
-<p>wishlist works!</p>
+<section class="wishlist-page">
+  <div class="page-header">
+    <div>
+      <p class="eyebrow">ZivaFit Wishlist</p>
+      <h1>Your Wishlist</h1>
+      <p>Keep your favourite ZivaFit pieces in one place.</p>
+    </div>
+
+    <a routerLink="/shop" class="outline-btn">
+      Continue Shopping
+      <i class="bi bi-arrow-right" aria-hidden="true"></i>
+    </a>
+  </div>
+
+  <ng-container *ngIf="shopStateService.wishlistProducts().length > 0; else emptyWishlist">
+    <div class="wishlist-grid">
+      <article
+        class="wishlist-card"
+        *ngFor="let product of shopStateService.wishlistProducts(); trackBy: trackByProductId"
+      >
+        <a
+          class="wishlist-image"
+          [routerLink]="['/product-details', product.id]"
+        >
+          <img [src]="product.imageUrl" [alt]="product.imageAlt" />
+
+          <span>{{ product.badge }}</span>
+        </a>
+
+        <div class="wishlist-info">
+          <div class="product-meta">
+            <span>{{ product.fitType }}</span>
+            <span>{{ product.colour }}</span>
+          </div>
+
+          <h2>{{ product.name }}</h2>
+
+          <p>{{ product.priceText }}</p>
+
+          <div class="wishlist-actions">
+            <button type="button" class="add-btn" (click)="addToCart(product)">
+              Add To Cart
+              <i class="bi bi-bag" aria-hidden="true"></i>
+            </button>
+
+            <button
+              type="button"
+              class="remove-btn"
+              (click)="removeFromWishlist(product.id)"
+              aria-label="Remove from wishlist"
+            >
+              <i class="bi bi-trash" aria-hidden="true"></i>
+            </button>
+          </div>
+        </div>
+      </article>
+    </div>
+  </ng-container>
+
+  <ng-template #emptyWishlist>
+    <div class="empty-state">
+      <i class="bi bi-heart" aria-hidden="true"></i>
+      <h2>Your wishlist is empty.</h2>
+      <p>Browse the store and save your favourite ZivaFit products for later.</p>
+
+      <a routerLink="/shop">
+        Shop Products
+        <i class="bi bi-arrow-right" aria-hidden="true"></i>
+      </a>
+    </div>
+  </ng-template>
+</section>

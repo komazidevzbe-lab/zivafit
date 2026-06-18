@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 
 import { AccountService } from '../../_services/account.service';
+import { ShopStateService } from '../../_services/shop-state.service';
 
 @Component({
   selector: 'app-navbar',
@@ -14,10 +15,13 @@ import { AccountService } from '../../_services/account.service';
 })
 export class NavbarComponent {
   accountService = inject(AccountService);
+  shopStateService = inject(ShopStateService);
+
   private router = inject(Router);
 
   searchOpen = false;
   searchTerm = '';
+  profileMenuOpen = false;
 
   publicLinks = [
     { label: 'New In', route: '/new-in' },
@@ -30,19 +34,16 @@ export class NavbarComponent {
     { label: 'Accessories', route: '/accessories' }
   ];
 
-  // ===============================
-  // Toggle search
-  // Only logged-in customers can open search.
-  // Product filtering will be connected later.
-  // ===============================
   toggleSearch() {
     if (!this.accountService.isLoggedIn()) {
       this.searchOpen = false;
       this.searchTerm = '';
+      this.profileMenuOpen = false;
       this.router.navigateByUrl('/login');
       return;
     }
 
+    this.profileMenuOpen = false;
     this.searchOpen = !this.searchOpen;
 
     if (!this.searchOpen) {
@@ -50,13 +51,23 @@ export class NavbarComponent {
     }
   }
 
-  // ===============================
-  // Logout
-  // Clears the token through AccountService and returns to home.
-  // ===============================
+  toggleProfileMenu() {
+    this.profileMenuOpen = !this.profileMenuOpen;
+
+    if (this.profileMenuOpen) {
+      this.searchOpen = false;
+      this.searchTerm = '';
+    }
+  }
+
+  closeProfileMenu() {
+    this.profileMenuOpen = false;
+  }
+
   logout() {
     this.searchOpen = false;
     this.searchTerm = '';
+    this.profileMenuOpen = false;
 
     this.accountService.logout();
     this.router.navigateByUrl('/');

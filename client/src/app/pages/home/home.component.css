@@ -12,9 +12,9 @@
 }
 
 /* ===============================
-   Hero section
-   Main landing section shown when the customer opens the store.
-   =============================== */
+Hero section
+Main landing section shown when the customer opens the store.
+=============================== */
 
 .home-hero {
   min-height: 560px;
@@ -46,7 +46,7 @@
 
 .hero-copy h1 {
   font-family: Georgia, 'Times New Roman', serif;
-  font-size: clamp(3.2rem, 7vw, 5.8rem);
+  font-size: clamp(3rem, 7vw, 5rem);
   line-height: 0.95;
   text-transform: uppercase;
   color: #2b1b13;
@@ -77,12 +77,12 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 48px;
-  padding: 0 1.5rem;
+  min-height: 40px;
+  padding: 0 1.1rem;
   border-radius: 4px;
   text-transform: uppercase;
-  letter-spacing: 0.06rem;
-  font-size: 0.85rem;
+  letter-spacing: 0.05rem;
+  font-size: 0.74rem;
   font-weight: 800;
   text-decoration: none;
   transition: 0.2s ease;
@@ -112,9 +112,9 @@
 }
 
 /* ===============================
-   Hero visual cards
-   Uses sets1 to sets4 inside the four hero cards.
-   =============================== */
+Hero visual cards
+Uses sets1 to sets4 inside the four hero cards.
+=============================== */
 
 .hero-visual {
   position: relative;
@@ -194,9 +194,9 @@
 }
 
 /* ===============================
-   Category cards
-   Each category uses a slow image slideshow.
-   =============================== */
+Category cards
+Each category uses a slow image slideshow.
+=============================== */
 
 .category-row {
   display: grid;
@@ -303,9 +303,9 @@
 }
 
 /* ===============================
-   Benefits strip
-   Quick value messages for the store.
-   =============================== */
+Benefits strip
+Quick value messages for the store.
+=============================== */
 
 .benefits-strip {
   margin: 0 5rem 2.2rem;
@@ -318,12 +318,14 @@
 }
 
 .benefits-strip div {
-  padding: 1.4rem;
+  padding: 0.35rem 1.2rem;
   display: grid;
-  gap: 0.25rem;
+  gap: 0.18rem;
+  align-items: center;
+  justify-items: center;
+  text-align: center;
   border-right: 1px solid rgba(255, 255, 255, 0.22);
 }
-
 .benefits-strip div:last-child {
   border-right: none;
 }
@@ -345,9 +347,9 @@
 }
 
 /* ===============================
-   Best sellers
-   Temporary frontend dummy product cards before backend catalogue connection.
-   =============================== */
+Best sellers
+Real frontend catalogue product cards before backend catalogue connection.
+=============================== */
 
 .best-sellers {
   padding: 0 5rem 3rem;
@@ -366,7 +368,7 @@
   text-transform: uppercase;
   color: #2b1b13;
   margin: 0;
-  font-size: clamp(1.8rem, 3vw, 2.4rem);
+  font-size: clamp(1.5rem, 2.4vw, 2rem);
 }
 
 .section-header a {
@@ -396,28 +398,34 @@
 
 .product-skeleton-row {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 1rem;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.9rem;
 }
 
 .product-card {
   background: #fff;
-  border-radius: 12px;
-  padding: 0.75rem;
+  border-radius: 13px;
+  padding: 0.62rem;
   border: 1px solid #eadbcd;
-  text-decoration: none;
   color: #2b1b13;
   transition: 0.2s ease;
   overflow: hidden;
+  position: relative;
 }
 
 .product-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 16px 35px rgba(43, 27, 19, 0.1);
+  transform: translateY(-3px);
+  box-shadow: 0 14px 34px rgba(43, 27, 19, 0.11);
+}
+
+.product-card-link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
 }
 
 .product-image {
-  height: 210px;
+  height: 220px;
   border-radius: 10px;
   background: #eadbcd;
   position: relative;
@@ -434,65 +442,132 @@
 }
 
 .product-card:hover .product-image img {
-  transform: scale(1.04);
+  transform: scale(1.035);
 }
 
-.product-image span {
+.product-badge {
   position: absolute;
-  left: 0.65rem;
-  top: 0.65rem;
-  background: rgba(255, 250, 244, 0.92);
+  left: 0.55rem;
+  top: 0.55rem;
+  background: rgba(255, 250, 244, 0.94);
   color: #2b1b13;
   border: 1px solid rgba(234, 219, 205, 0.9);
   border-radius: 999px;
-  padding: 0.28rem 0.58rem;
+  padding: 0.22rem 0.48rem;
   text-transform: uppercase;
-  font-size: 0.62rem;
+  font-size: 0.56rem;
   font-weight: 800;
   letter-spacing: 0.04rem;
 }
 
+.product-wishlist {
+  position: absolute;
+  top: 0.86rem;
+  right: 0.86rem;
+  width: 28px;
+  height: 28px;
+  border: 1px solid rgba(234, 219, 205, 0.9);
+  background: rgba(255, 250, 244, 0.94);
+  color: #2b1b13;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 3;
+  font-size: 0.68rem;
+  transition: 0.2s ease;
+}
+
+.product-wishlist:hover,
+.product-wishlist.active {
+  background: #2b1b13;
+  border-color: #2b1b13;
+  color: #fffaf4;
+}
+
+.product-info {
+  padding: 0.68rem 0.12rem 0.08rem;
+}
+
 .product-category {
-  font-size: 0.7rem;
+  font-size: 0.58rem;
   text-transform: uppercase;
-  letter-spacing: 0.08rem;
+  letter-spacing: 0.06rem;
   color: #b47a4f;
   font-weight: 800;
-  margin: 0.75rem 0 0.25rem;
+  margin: 0 0 0.28rem;
 }
 
 .product-name {
-  font-size: 0.84rem;
+  min-height: 36px;
+  font-size: 0.82rem;
   text-transform: uppercase;
-  margin: 0 0 0.25rem;
+  margin: 0;
   color: #2b1b13;
-  line-height: 1.35;
+  line-height: 1.3;
 }
 
 .product-price {
-  font-size: 0.86rem;
+  font-size: 0.84rem;
   color: #735f52;
-  margin: 0;
-  font-weight: 700;
+  margin: 0.25rem 0 0;
+  font-weight: 800;
+}
+
+.product-footer {
+  margin-top: 0.68rem;
+  padding-top: 0.62rem;
+  border-top: 1px solid #f0e4d8;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.product-link {
+  color: #2b1b13;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  text-transform: uppercase;
+  letter-spacing: 0.045rem;
+  font-size: 0.63rem;
+  font-weight: 900;
+}
+
+.product-link i {
+  transition: 0.2s ease;
+}
+
+.product-card:hover .product-link i {
+  transform: translateX(3px);
 }
 
 .rating {
   color: #b47a4f;
-  font-size: 0.72rem;
+  font-size: 0.58rem;
   display: flex;
-  gap: 0.08rem;
-  margin-top: 0.35rem;
+  gap: 0.05rem;
+  flex: 0 0 auto;
 }
 
 /* ===============================
-   Responsive layout
-   Keeps the landing page clean on tablets and mobile.
-   =============================== */
+Responsive layout
+Keeps the landing page clean on tablets and mobile.
+=============================== */
 
 @media (max-width: 1300px) {
-  .category-row,
-  .product-skeleton-row {
+  .category-row {
     grid-template-columns: repeat(3, 1fr);
+  }
+
+  .product-skeleton-row {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .product-image {
+    height: 205px;
   }
 
   .model-card {
@@ -530,6 +605,10 @@
 
   .benefits-strip div:nth-child(2) {
     border-right: none;
+  }
+
+  .product-skeleton-row {
+    grid-template-columns: repeat(3, 1fr);
   }
 }
 
@@ -583,6 +662,10 @@
     grid-template-columns: 1fr;
   }
 
+  .product-image {
+    height: 330px;
+  }
+
   .benefits-strip div {
     border-right: none;
     border-bottom: 1px solid rgba(255, 255, 255, 0.22);
@@ -634,5 +717,9 @@
 
   .card-four {
     height: 250px;
+  }
+
+  .product-image {
+    height: 280px;
   }
 }

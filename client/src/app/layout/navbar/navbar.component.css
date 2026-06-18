@@ -167,7 +167,8 @@
   transition: 0.2s ease;
 }
 
-.profile-button:hover {
+.profile-button:hover,
+.profile-menu.open .profile-button {
   border-color: #b47a4f;
   color: #b47a4f;
 }
@@ -177,9 +178,8 @@
 }
 
 .profile-dropdown {
-  display: none;
   position: absolute;
-  top: 120%;
+  top: calc(100% + 0.35rem);
   right: 0;
   width: 205px;
   background: #fff;
@@ -187,10 +187,7 @@
   box-shadow: 0 16px 35px rgba(43, 27, 19, 0.12);
   border-radius: 10px;
   overflow: hidden;
-}
-
-.profile-menu:hover .profile-dropdown {
-  display: block;
+  z-index: 1100;
 }
 
 .profile-dropdown a,
@@ -256,6 +253,11 @@
   .nav-links,
   .nav-actions {
     justify-content: center;
+  }
+
+  .profile-dropdown {
+    right: 50%;
+    transform: translateX(50%);
   }
 }
 

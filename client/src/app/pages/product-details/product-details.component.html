@@ -1,1 +1,201 @@
-<p>product-details works!</p>
+<section class="product-details-page" *ngIf="product; else productNotFound">
+  <div class="breadcrumb-row">
+    <a routerLink="/">Home</a>
+    <i class="bi bi-chevron-right" aria-hidden="true"></i>
+    <a routerLink="/shop">Shop</a>
+    <i class="bi bi-chevron-right" aria-hidden="true"></i>
+    <span>{{ product.name }}</span>
+  </div>
+
+  <section class="product-details-layout">
+    <div class="product-gallery">
+      <div class="main-product-image">
+        <img [src]="selectedImageUrl" [alt]="product.imageAlt" />
+
+        <span class="product-badge">
+          {{ product.badge }}
+        </span>
+      </div>
+
+      <div class="gallery-thumbs">
+        <button
+          type="button"
+          class="gallery-thumb active"
+          [attr.aria-label]="'Preview ' + product.name"
+        >
+          <img [src]="product.imageUrl" [alt]="product.imageAlt" />
+        </button>
+
+        <button
+          type="button"
+          class="gallery-thumb muted-thumb"
+          [attr.aria-label]="'Preview ' + product.category"
+        >
+          <i class="bi bi-image" aria-hidden="true"></i>
+        </button>
+
+        <button
+          type="button"
+          class="gallery-thumb muted-thumb"
+          [attr.aria-label]="'Preview ' + product.fitType"
+        >
+          <i class="bi bi-stars" aria-hidden="true"></i>
+        </button>
+      </div>
+    </div>
+
+    <div class="product-summary">
+      <div class="product-heading-row">
+        <p class="eyebrow">{{ product.category }}</p>
+
+        <button
+          type="button"
+          class="wishlist-toggle"
+          [class.active]="isWishlisted"
+          (click)="toggleWishlist()"
+          [attr.aria-label]="isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'"
+        >
+          <i class="bi" [ngClass]="isWishlisted ? 'bi-heart-fill' : 'bi-heart'"></i>
+        </button>
+      </div>
+
+      <h1 class="product-title">{{ product.name }}</h1>
+
+      <p class="product-price">{{ product.priceText }}</p>
+
+      <p class="product-description">
+        A clean activewear piece in a {{ product.fitType }} fit with a {{ product.colour }}
+        finish, made for comfort, support, and everyday movement.
+      </p>
+
+      <div class="product-meta-grid">
+        <div>
+          <span>Category</span>
+          <strong>{{ product.category }}</strong>
+        </div>
+
+        <div>
+          <span>Fit</span>
+          <strong>{{ product.fitType }}</strong>
+        </div>
+
+        <div>
+          <span>Colour</span>
+          <strong>{{ product.colour }}</strong>
+        </div>
+      </div>
+
+      <div class="option-group">
+        <div class="option-header">
+          <span>Select Size</span>
+          <small>{{ selectedSize }}</small>
+        </div>
+
+        <div class="size-options">
+          <button
+            type="button"
+            *ngFor="let size of product.sizes; trackBy: trackBySize"
+            [class.active]="selectedSize === size"
+            (click)="selectSize(size)"
+          >
+            {{ size }}
+          </button>
+        </div>
+      </div>
+
+      <div class="quantity-cart-row">
+        <div class="quantity-control" aria-label="Quantity selector">
+          <button type="button" (click)="decreaseQuantity()" aria-label="Decrease quantity">
+            <i class="bi bi-dash" aria-hidden="true"></i>
+          </button>
+
+          <span>{{ selectedQuantity }}</span>
+
+          <button type="button" (click)="increaseQuantity()" aria-label="Increase quantity">
+            <i class="bi bi-plus" aria-hidden="true"></i>
+          </button>
+        </div>
+
+        <button type="button" class="add-cart-btn" (click)="addToCart()">
+          Add To Cart
+          <i class="bi bi-bag" aria-hidden="true"></i>
+        </button>
+      </div>
+
+      <div class="success-message" *ngIf="successMessage">
+        <i class="bi bi-check-circle" aria-hidden="true"></i>
+        <span>{{ successMessage }}</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="related-section" *ngIf="relatedProducts.length > 0">
+    <div class="section-header">
+      <div>
+        <p class="eyebrow">You may also like</p>
+        <h2>More from {{ product.category }}</h2>
+      </div>
+
+      <a routerLink="/shop">
+        View All Products
+        <i class="bi bi-arrow-right" aria-hidden="true"></i>
+      </a>
+    </div>
+
+    <div class="related-grid">
+      <article
+        class="related-card"
+        *ngFor="let relatedProduct of relatedProducts; trackBy: trackByProductId"
+      >
+        <a
+          class="related-card-link"
+          [routerLink]="['/product-details', relatedProduct.id]"
+        >
+          <div class="related-image">
+            <img [src]="relatedProduct.imageUrl" [alt]="relatedProduct.imageAlt" />
+          </div>
+
+          <div class="related-info">
+            <div>
+              <span>{{ relatedProduct.fitType }}</span>
+              <span>{{ relatedProduct.colour }}</span>
+            </div>
+
+            <h3>{{ relatedProduct.name }}</h3>
+            <p>{{ relatedProduct.priceText }}</p>
+          </div>
+        </a>
+
+        <button
+          type="button"
+          class="related-wishlist"
+          [class.active]="shopStateService.isInWishlist(relatedProduct.id)"
+          (click)="toggleRelatedWishlist(relatedProduct.id, $event)"
+          aria-label="Toggle wishlist"
+        >
+          <i
+            class="bi"
+            [ngClass]="shopStateService.isInWishlist(relatedProduct.id) ? 'bi-heart-fill' : 'bi-heart'"
+            aria-hidden="true"
+          ></i>
+        </button>
+      </article>
+    </div>
+  </section>
+</section>
+
+<ng-template #productNotFound>
+  <section class="product-not-found">
+    <div>
+      <i class="bi bi-bag-x" aria-hidden="true"></i>
+      <p class="eyebrow">Product not found</p>
+      <h1>We could not find this product.</h1>
+      <p>The product may not exist in the temporary frontend catalogue.</p>
+
+      <a routerLink="/shop">
+        Back To Shop
+        <i class="bi bi-arrow-right" aria-hidden="true"></i>
+      </a>
+    </div>
+  </section>
+</ng-template>

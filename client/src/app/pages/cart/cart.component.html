@@ -1,1 +1,127 @@
-<p>cart works!</p>
+<section class="cart-page">
+  <div class="page-header">
+    <div>
+      <p class="eyebrow">ZivaFit Cart</p>
+      <h1>Your Cart</h1>
+      <p>Review your selected ZivaFit products before checkout.</p>
+    </div>
+
+    <a routerLink="/shop" class="outline-btn">
+      Continue Shopping
+      <i class="bi bi-arrow-right" aria-hidden="true"></i>
+    </a>
+  </div>
+
+  <ng-container *ngIf="shopStateService.cartLines().length > 0; else emptyCart">
+    <div class="cart-layout">
+      <div class="cart-items">
+        <div
+          class="cart-item"
+          *ngFor="let line of shopStateService.cartLines(); trackBy: trackByCartLine"
+        >
+          <a
+            class="cart-item-image"
+            [routerLink]="['/product-details', line.product.id]"
+          >
+            <img [src]="line.product.imageUrl" [alt]="line.product.imageAlt" />
+          </a>
+
+          <div class="cart-item-info">
+            <div class="cart-item-top">
+              <div>
+                <p class="item-category">{{ line.product.category }}</p>
+                <h2>{{ line.product.name }}</h2>
+              </div>
+
+              <button
+                type="button"
+                class="remove-btn"
+                (click)="removeItem(line)"
+                aria-label="Remove item"
+              >
+                <i class="bi bi-trash" aria-hidden="true"></i>
+              </button>
+            </div>
+
+            <div class="item-meta">
+              <span>{{ line.product.fitType }}</span>
+              <span>{{ line.product.colour }}</span>
+              <span>Size {{ line.size }}</span>
+            </div>
+
+            <div class="cart-item-bottom">
+              <div class="quantity-control" aria-label="Quantity selector">
+                <button
+                  type="button"
+                  (click)="decreaseQuantity(line)"
+                  aria-label="Decrease quantity"
+                >
+                  <i class="bi bi-dash" aria-hidden="true"></i>
+                </button>
+
+                <span>{{ line.quantity }}</span>
+
+                <button
+                  type="button"
+                  (click)="increaseQuantity(line)"
+                  aria-label="Increase quantity"
+                >
+                  <i class="bi bi-plus" aria-hidden="true"></i>
+                </button>
+              </div>
+
+              <strong>{{ line.lineTotalText }}</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="cart-summary">
+        <p class="eyebrow">Order Summary</p>
+        <h2>Cart Total</h2>
+
+        <div class="summary-row">
+          <span>Subtotal</span>
+          <strong>{{ shopStateService.cartSubtotalText() }}</strong>
+        </div>
+
+        <div class="summary-row">
+          <span>Delivery</span>
+          <strong>{{ shopStateService.deliveryFeeText() }}</strong>
+        </div>
+
+        <div class="summary-note">
+          <i class="bi bi-truck" aria-hidden="true"></i>
+          <span>Free delivery on orders R1000+.</span>
+        </div>
+
+        <div class="summary-total">
+          <span>Total</span>
+          <strong>{{ shopStateService.cartTotalText() }}</strong>
+        </div>
+
+        <a routerLink="/checkout" class="checkout-btn">
+          Proceed To Checkout
+          <i class="bi bi-lock" aria-hidden="true"></i>
+        </a>
+
+        <button type="button" class="clear-btn" (click)="clearCart()">
+          Clear Cart
+        </button>
+      </aside>
+    </div>
+  </ng-container>
+
+  <ng-template #emptyCart>
+    <div class="empty-state">
+      <i class="bi bi-bag" aria-hidden="true"></i>
+      <h2>Your cart is empty.</h2>
+      <p>Start shopping and add your favourite ZivaFit pieces to your cart.</p>
+
+      <a routerLink="/shop">
+        Shop Products
+        <i class="bi bi-arrow-right" aria-hidden="true"></i>
+      </a>
+    </div>
+  </ng-template>
+</section>
