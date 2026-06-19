@@ -43,11 +43,13 @@
 
 .product-gallery {
   display: grid;
-  gap: 0.9rem;
+  grid-template-columns: minmax(0, 1fr) 82px;
+  gap: 0.85rem;
+  align-items: stretch;
 }
 
 .main-product-image {
-  height: 380px;
+  height: 470px;
   border-radius: 20px;
   overflow: hidden;
   background: #eadbcd;
@@ -60,7 +62,7 @@
   width: 100%;
   height: 100%;
   display: block;
-  object-fit: cover;
+  object-fit: auto;
   object-position: center top;
 }
 
@@ -81,7 +83,9 @@
 
 .gallery-thumbs {
   display: grid;
-  grid-template-columns: repeat(3, 82px);
+  grid-template-columns: 1fr;
+  grid-auto-rows: 82px;
+  align-content: start;
   gap: 0.7rem;
 }
 
@@ -152,18 +156,21 @@
 
 .wishlist-toggle,
 .related-wishlist {
-  width: 32px;
-  height: 32px;
-  border: 1px solid #eadbcd;
-  background: #fffaf4;
-  color: #2b1b13;
-  border-radius: 999px;
+  width: auto;
+  height: auto;
+  border: none;
+  background: transparent;
+  color: #fffaf4;
+  border-radius: 0;
+  padding: 0;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   flex: 0 0 auto;
-  font-size: 0.82rem;
+  font-size: 1rem;
+  line-height: 1;
+  text-shadow: 0 1px 5px rgba(43, 27, 19, 0.45);
   transition: 0.2s ease;
 }
 
@@ -171,9 +178,9 @@
 .wishlist-toggle.active,
 .related-wishlist:hover,
 .related-wishlist.active {
-  background: #2b1b13;
-  border-color: #2b1b13;
-  color: #fffaf4;
+  background: transparent;
+  border-color: transparent;
+  color: #2b1b13;
 }
 
 .product-price {
@@ -431,7 +438,7 @@
 .related-image img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: auto;
   object-position: center top;
   display: block;
 }
@@ -440,9 +447,6 @@
   position: absolute;
   top: 1rem;
   right: 1rem;
-  width: 32px;
-  height: 32px;
-  background: rgba(255, 250, 244, 0.94);
 }
 
 .related-info {
@@ -544,6 +548,10 @@
     padding: 1rem;
   }
 
+  .product-gallery {
+    grid-template-columns: 1fr;
+  }
+
   .product-summary {
     padding: 1.1rem;
   }
@@ -569,6 +577,7 @@
 
   .gallery-thumbs {
     grid-template-columns: repeat(3, 1fr);
+    grid-auto-rows: 82px;
   }
 
   .main-product-image {

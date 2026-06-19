@@ -1,22 +1,60 @@
 <section class="admin-shell">
   <aside class="admin-sidebar">
-    <a routerLink="/" class="admin-logo">
+    <a routerLink="/" class="brand-block" aria-label="Go to ZivaFit store">
       <span>ZivaFit</span>
-      <small>STORE ADMIN</small>
     </a>
 
-    <nav>
-      <a routerLink="/admin/dashboard" routerLinkActive="active">Dashboard</a>
-      <a routerLink="/admin/home-management" routerLinkActive="active">Home Management</a>
-      <a routerLink="/admin/product-management" routerLinkActive="active">Product Management</a>
-      <a routerLink="/admin/order-management" routerLinkActive="active">Order Management</a>
-      <a routerLink="/admin/customer-management" routerLinkActive="active">Customer Management</a>
-      <a routerLink="/admin/review-management" routerLinkActive="active">Review Management</a>
-      <a routerLink="/admin/newsletter-management" routerLinkActive="active">Newsletter Management</a>
-      <a routerLink="/admin/settings" routerLinkActive="active">Settings</a>
+    <div class="admin-profile">
+      <div class="admin-avatar">{{ adminInitial }}</div>
+
+      <div>
+        <strong>{{ adminName }}</strong>
+        <span>Administrator</span>
+      </div>
+
+      <i class="bi bi-chevron-down" aria-hidden="true"></i>
+    </div>
+
+    <nav class="admin-nav" aria-label="Admin navigation">
+      <div class="nav-group">
+        <p>Store Front</p>
+
+        <a
+          *ngFor="let link of storeFrontLinks"
+          [routerLink]="link.route"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: link.route === '/admin/dashboard' }"
+        >
+          <i [class]="link.iconClass" aria-hidden="true"></i>
+          <span>{{ link.label }}</span>
+        </a>
+      </div>
+
+      <div class="nav-group">
+        <p>Management</p>
+
+        <a
+          *ngFor="let link of managementLinks"
+          [routerLink]="link.route"
+          routerLinkActive="active"
+        >
+          <i [class]="link.iconClass" aria-hidden="true"></i>
+          <span>{{ link.label }}</span>
+        </a>
+      </div>
     </nav>
 
-    <button type="button" (click)="logout()">Logout</button>
+    <div class="sidebar-footer">
+      <a routerLink="/admin/settings" routerLinkActive="active">
+        <i class="bi bi-gear" aria-hidden="true"></i>
+        <span>Settings</span>
+      </a>
+
+      <button type="button" (click)="logout()">
+        <i class="bi bi-box-arrow-right" aria-hidden="true"></i>
+        <span>Sign out</span>
+      </button>
+    </div>
   </aside>
 
   <main class="admin-main">

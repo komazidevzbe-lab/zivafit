@@ -30,8 +30,8 @@ import { ForgotPasswordComponent } from './auth/forgot-password/forgot-password.
 import { ResetPasswordComponent } from './auth/reset-password/reset-password.component';
 
 import { AdminDashboardComponent } from './admin/admin-dashboard/admin-dashboard.component';
-import { AdminHomeManagementComponent } from './admin/admin-home-management/admin-home-management.component';
-import { AdminProductManagementComponent } from './admin/admin-product-management/admin-product-management.component';
+import { AdminStorefrontContentComponent } from './admin/admin-storefront-content/admin-storefront-content.component';
+import { AdminProductCatalogComponent } from './admin/admin-product-catalog/admin-product-catalog.component';
 import { AdminOrderManagementComponent } from './admin/admin-order-management/admin-order-management.component';
 import { AdminCustomerManagementComponent } from './admin/admin-customer-management/admin-customer-management.component';
 import { AdminReviewManagementComponent } from './admin/admin-review-management/admin-review-management.component';
@@ -91,13 +91,18 @@ export const routes: Routes = [
     children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: 'dashboard', component: AdminDashboardComponent },
-      { path: 'home-management', component: AdminHomeManagementComponent },
-      { path: 'product-management', component: AdminProductManagementComponent },
+
+      { path: 'storefront-content', component: AdminStorefrontContentComponent },
+      { path: 'product-catalog', component: AdminProductCatalogComponent },
+
       { path: 'order-management', component: AdminOrderManagementComponent },
       { path: 'customer-management', component: AdminCustomerManagementComponent },
       { path: 'review-management', component: AdminReviewManagementComponent },
       { path: 'newsletter-management', component: AdminNewsletterManagementComponent },
-      { path: 'settings', component: AdminSettingsComponent }
+      { path: 'settings', component: AdminSettingsComponent },
+
+      { path: 'home-management', redirectTo: 'storefront-content', pathMatch: 'full' },
+      { path: 'product-management', redirectTo: 'product-catalog', pathMatch: 'full' }
     ]
   },
   { path: '**', redirectTo: 'not-found', pathMatch: 'full' }

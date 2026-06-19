@@ -1,21 +1,59 @@
-<section class="admin-dashboard-page">
-  <div class="admin-header">
+<section class="admin-page">
+  <div class="admin-page-top">
     <div>
-      <p class="eyebrow">Admin Dashboard</p>
+      <a routerLink="/admin/dashboard" class="back-label">
+        <i class="bi bi-chevron-left" aria-hidden="true"></i>
+        Dashboard
+      </a>
+
       <h1>Store Management</h1>
+      <p>
+        Manage the ZivaFit storefront, products, orders, customers, reviews,
+        newsletter records, and store settings.
+      </p>
     </div>
 
-    <a routerLink="/" class="view-store-btn">View Store</a>
+    <a routerLink="/" class="outline-action">
+      View Store
+      <i class="bi bi-box-arrow-up-right" aria-hidden="true"></i>
+    </a>
   </div>
 
-  <div class="admin-grid">
-    <a
-      class="admin-card"
-      *ngFor="let card of adminCards"
-      [routerLink]="card.route"
-    >
-      <h3>{{ card.title }}</h3>
-      <p>{{ card.description }}</p>
-    </a>
+  <div class="summary-grid">
+    <article class="summary-card" *ngFor="let card of summaryCards">
+      <div class="summary-icon">
+        <i [class]="card.iconClass" aria-hidden="true"></i>
+      </div>
+
+      <div>
+        <span>{{ card.label }}</span>
+        <strong>{{ card.value }}</strong>
+        <p>{{ card.text }}</p>
+      </div>
+    </article>
+  </div>
+
+  <div class="content-card">
+    <div class="content-card-header">
+      <div>
+        <h2>Admin Areas</h2>
+        <p>Select what you want to manage.</p>
+      </div>
+    </div>
+
+    <div class="admin-link-grid">
+      <a
+        class="admin-link-card"
+        *ngFor="let card of adminCards"
+        [routerLink]="card.route"
+      >
+        <i [class]="card.iconClass" aria-hidden="true"></i>
+
+        <div>
+          <h3>{{ card.title }}</h3>
+          <p>{{ card.description }}</p>
+        </div>
+      </a>
+    </div>
   </div>
 </section>

@@ -1,21 +1,40 @@
-import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Component, inject } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 
-import { PageNoticeComponent } from '../../shared/page-notice/page-notice.component';
+import { AdminOrder, AdminOrderStatus } from '../../_models/admin-management';
+import { AdminManagementService } from '../../_services/admin-management.service';
 
 @Component({
   selector: 'app-admin-order-management',
   standalone: true,
-  imports: [PageNoticeComponent],
-  template: `
-    <app-page-notice
-      eyebrow="ZivaFit Admin"
-      heading="Order Management"
-      subtitle="Customer orders, payment status, delivery progress, and fulfilment updates will be managed here later."
-      primaryLabel="Back To Dashboard"
-      primaryRoute="/admin/dashboard"
-      secondaryLabel="View Store"
-      secondaryRoute="/"
-    ></app-page-notice>
-  `
+  imports: [CommonModule, FormsModule, RouterLink],
+  templateUrl: './admin-order-management.component.html',
+  styleUrl: './admin-order-management.component.css'
 })
-export class AdminOrderManagementComponent { }
+export class AdminOrderManagementComponent {
+  private adminManagementService = inject(AdminManagementService);
+
+  orderStatuses: AdminOrderStatus[] = ['Pending', 'Paid', 'Packed', 'Shipped', 'Delivered', 'Cancelled'];
+
+  get orders(): AdminOrder[] {
+    return this.adminManagementService.orders();
+  }
+
+  get paidOrders(): number {
+    return this.orders.filter(order => order.paymentStatus === 'Paid').length;
+  }
+
+  get pendingOrders(): number {
+    return this.orders.filter(order => order.orderStatus === 'Pending').length;
+  }
+
+  updateStatus(orderId: number, status: AdminOrderStatus): void {
+    this.adminManagementService.updateOrderStatus(orderId, status);
+  }
+
+  trackByOrderId(index: number, order: AdminOrder): number {
+    return order.id;
+  }
+}

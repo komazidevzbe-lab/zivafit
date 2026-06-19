@@ -1,83 +1,160 @@
 .admin-shell {
   min-height: 100vh;
   display: grid;
-  grid-template-columns: 280px 1fr;
-  background: #f8f1e8;
+  grid-template-columns: 220px minmax(0, 1fr);
+  background: #f7f1ea;
+  color: #2b1b13;
 }
 
 .admin-sidebar {
+  min-height: 100vh;
+  background: #fffaf4;
+  border-right: 1px solid #eadbcd;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 10px 0 32px rgba(43, 27, 19, 0.05);
+}
+
+.brand-block {
+  min-height: 82px;
+  padding: 0 1.35rem;
   background: #2b1b13;
-  color: #fff;
-  padding: 2rem 1.3rem;
+  color: #fffaf4;
   display: flex;
-  flex-direction: column;
-}
-
-.admin-logo {
-  color: #fff;
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 2.5rem;
+  align-items: center;
   text-decoration: none;
 }
 
-.admin-logo span {
+.brand-block span {
   font-family: Georgia, 'Times New Roman', serif;
-  font-size: 2rem;
-  letter-spacing: 0.04rem;
-  line-height: 1;
+  font-size: 1.4rem;
+  font-weight: 800;
+  letter-spacing: 0.22rem;
+  text-transform: uppercase;
 }
 
-.admin-logo small {
-  letter-spacing: 0.15rem;
-  color: #d8b99d;
-  font-weight: 700;
-  margin-top: 0.6rem;
+.admin-profile {
+  padding: 1.1rem 1rem;
+  display: grid;
+  grid-template-columns: 38px 1fr auto;
+  align-items: center;
+  gap: 0.7rem;
+  border-bottom: 1px solid #eadbcd;
 }
 
-.admin-sidebar nav {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+.admin-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 999px;
+  background: #2b1b13;
+  color: #fffaf4;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  font-size: 0.86rem;
 }
 
-.admin-sidebar nav a {
-  padding: 0.85rem 1rem;
+.admin-profile strong {
+  display: block;
+  color: #2b1b13;
+  font-size: 0.82rem;
+  line-height: 1.2;
+}
+
+.admin-profile span {
+  display: block;
+  color: #735f52;
+  font-size: 0.72rem;
+  margin-top: 0.1rem;
+}
+
+.admin-profile i {
+  color: #735f52;
+  font-size: 0.78rem;
+}
+
+.admin-nav {
+  padding: 1.15rem 0.7rem;
+  display: grid;
+  gap: 1.35rem;
+}
+
+.nav-group {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.nav-group p {
+  color: #735f52;
+  font-size: 0.62rem;
+  font-weight: 900;
+  letter-spacing: 0.12rem;
+  text-transform: uppercase;
+  margin: 0 0 0.35rem 0.55rem;
+}
+
+.admin-nav a,
+.sidebar-footer a,
+.sidebar-footer button {
+  min-height: 42px;
+  border: none;
   border-radius: 8px;
-  color: #fff;
-  text-decoration: none;
-  font-size: 0.92rem;
-  transition: 0.2s ease;
-}
-
-.admin-sidebar nav a.active,
-.admin-sidebar nav a:hover {
-  background: rgba(255, 255, 255, 0.12);
-  color: #fff;
-}
-
-.admin-sidebar button {
-  margin-top: auto;
-  border: 1px solid #d8b99d;
   background: transparent;
-  color: #fff;
-  padding: 0.85rem;
-  border-radius: 8px;
+  color: #5d493d;
+  display: flex;
+  align-items: center;
+  gap: 0.72rem;
+  padding: 0 0.75rem;
+  text-decoration: none;
+  font-size: 0.83rem;
   font-weight: 700;
   cursor: pointer;
   transition: 0.2s ease;
 }
 
-.admin-sidebar button:hover {
-  background: #d8b99d;
+.admin-nav a i,
+.sidebar-footer a i,
+.sidebar-footer button i {
+  width: 18px;
+  color: #b47a4f;
+  font-size: 1rem;
+  text-align: center;
+}
+
+.admin-nav a:hover,
+.admin-nav a.active,
+.sidebar-footer a:hover,
+.sidebar-footer a.active,
+.sidebar-footer button:hover {
+  background: #f3e8dc;
   color: #2b1b13;
 }
 
-.admin-main {
-  padding: 2.5rem;
+.admin-nav a.active {
+  font-weight: 900;
 }
 
-@media (max-width: 900px) {
+.sidebar-footer {
+  margin-top: auto;
+  padding: 1rem 0.7rem 1.2rem;
+  display: grid;
+  gap: 0.35rem;
+  border-top: 1px solid #eadbcd;
+}
+
+.sidebar-footer button {
+  width: 100%;
+  font-family: inherit;
+}
+
+.admin-main {
+  min-width: 0;
+  padding: 1.9rem 2.2rem 3rem;
+  overflow-x: hidden;
+}
+
+@media (max-width: 950px) {
   .admin-shell {
     grid-template-columns: 1fr;
   }
@@ -86,11 +163,11 @@
     min-height: auto;
   }
 
-  .admin-sidebar button {
-    margin-top: 1.5rem;
+  .admin-nav {
+    grid-template-columns: 1fr;
   }
 
   .admin-main {
-    padding: 1.5rem;
+    padding: 1.4rem;
   }
 }

@@ -1,0 +1,249 @@
+<section class="admin-page">
+  <div class="admin-page-top">
+    <div>
+      <a routerLink="/admin/dashboard" class="back-label">
+        <i class="bi bi-chevron-left" aria-hidden="true"></i>
+        Catalog
+      </a>
+
+      <h1>Edit Product Catalog</h1>
+      <p>
+        Manage products, categories, stock, variants, images, product flags,
+        and product visibility from one clean workspace.
+      </p>
+    </div>
+
+    <div class="page-actions">
+      <button type="button" class="outline-action" (click)="createProduct()">
+        Add Product
+        <i class="bi bi-plus-lg" aria-hidden="true"></i>
+      </button>
+
+      <button type="button" class="dark-action" *ngIf="activeTab === 'products'" (click)="saveProduct()">
+        Save Changes
+      </button>
+    </div>
+  </div>
+
+  <div class="success-message" *ngIf="successMessage">
+    <i class="bi bi-check2-circle" aria-hidden="true"></i>
+    {{ successMessage }}
+  </div>
+
+  <div class="section-card-grid">
+    <button
+      type="button"
+      class="section-card"
+      *ngFor="let tab of tabCards; trackBy: trackByTabKey"
+      [class.active]="activeTab === tab.key"
+      (click)="selectTab(tab.key)"
+    >
+      <i [class]="tab.iconClass" aria-hidden="true"></i>
+
+      <span>
+        <strong>{{ tab.title }}</strong>
+        <small>{{ tab.text }}</small>
+      </span>
+
+      <em *ngIf="activeTab === tab.key">
+        <i class="bi bi-check" aria-hidden="true"></i>
+      </em>
+    </button>
+  </div>
+
+  <section class="editor-panel" *ngIf="activeTab === 'products'">
+    <div class="panel-heading">
+      <div>
+        <h2>Product Details</h2>
+        <p>Edit the core product information that appears across the public store.</p>
+      </div>
+    </div>
+
+    <form class="panel-body" *ngIf="selectedProduct as product" (ngSubmit)="saveProduct()">
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Select Product</label>
+          <select
+            class="form-control"
+            name="selectedProduct"
+            [ngModel]="product.id"
+            (ngModelChange)="selectProduct($event)"
+          >
+            <option *ngFor="let item of products; trackBy: trackByProductId" [value]="item.id">
+              {{ item.name }}
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Product Name</label>
+          <input class="form-control" name="name" [(ngModel)]="product.name" />
+        </div>
+
+        <div class="form-group">
+          <label>Category</label>
+          <select class="form-control" name="category" [(ngModel)]="product.category">
+            <option *ngFor="let category of categoryOptions" [value]="category">
+              {{ category }}
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Fit Type</label>
+          <input class="form-control" name="fitType" [(ngModel)]="product.fitType" />
+        </div>
+
+        <div class="form-group">
+          <label>Colour</label>
+          <input class="form-control" name="colour" [(ngModel)]="product.colour" />
+        </div>
+
+        <div class="form-group">
+          <label>Price</label>
+          <input class="form-control" name="price" type="number" [(ngModel)]="product.price" />
+        </div>
+
+        <div class="form-group">
+          <label>Badge</label>
+          <input class="form-control" name="badge" [(ngModel)]="product.badge" />
+        </div>
+
+        <div class="form-group">
+          <label>Display Order</label>
+          <input class="form-control" name="displayOrder" type="number" [(ngModel)]="product.displayOrder" />
+        </div>
+
+        <div class="form-group full-width">
+          <label>Description</label>
+          <textarea class="form-control" name="description" [(ngModel)]="product.description"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Main Image URL</label>
+          <input class="form-control" name="imageUrl" [(ngModel)]="product.imageUrl" />
+        </div>
+
+        <div class="form-group">
+          <label>Main Image Alt Text</label>
+          <input class="form-control" name="imageAlt" [(ngModel)]="product.imageAlt" />
+        </div>
+      </div>
+
+      <div class="toggle-row">
+        <label>
+          <input type="checkbox" name="isNew" [(ngModel)]="product.isNew" />
+          New In
+        </label>
+
+        <label>
+          <input type="checkbox" name="isBestSeller" [(ngModel)]="product.isBestSeller" />
+          Best Seller
+        </label>
+
+        <label>
+          <input type="checkbox" name="isFeatured" [(ngModel)]="product.isFeatured" />
+          Featured
+        </label>
+
+        <label>
+          <input type="checkbox" name="isActive" [(ngModel)]="product.isActive" />
+          Active
+        </label>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="dark-action">
+          Save Product
+        </button>
+
+        <button
+          type="button"
+          class="danger-action"
+          *ngIf="!isCreatingProduct"
+          (click)="deleteProduct(product.id)"
+        >
+          Delete Product
+        </button>
+      </div>
+    </form>
+  </section>
+
+  <section class="editor-panel" *ngIf="activeTab === 'categories'">
+    <div class="panel-heading">
+      <div>
+        <h2>Categories</h2>
+        <p>Review the store categories used by the navbar, footer, filters, and collection pages.</p>
+      </div>
+    </div>
+
+    <div class="panel-body">
+      <div class="admin-table">
+        <div class="table-row table-heading">
+          <span>Name</span>
+          <span>Description</span>
+          <span>Navbar</span>
+          <span>Status</span>
+        </div>
+
+        <div class="table-row" *ngFor="let category of categories; trackBy: trackByCategoryId">
+          <span>{{ category.name }}</span>
+          <span>{{ category.description }}</span>
+          <span>{{ category.showInNavbar ? 'Shown' : 'Hidden' }}</span>
+          <span>{{ category.isActive ? 'Active' : 'Inactive' }}</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="editor-panel" *ngIf="activeTab === 'variants'">
+    <div class="panel-heading">
+      <div>
+        <h2>Variants & Stock</h2>
+        <p>Review current product size, colour, stock quantity, and SKU records.</p>
+      </div>
+    </div>
+
+    <div class="panel-body">
+      <div class="admin-table variant-table">
+        <div class="table-row table-heading">
+          <span>Product</span>
+          <span>Colour</span>
+          <span>Size</span>
+          <span>Stock</span>
+          <span>SKU</span>
+        </div>
+
+        <div class="table-row" *ngFor="let variant of variants; trackBy: trackByVariantId">
+          <span>{{ getProductName(variant.productId) }}</span>
+          <span>{{ variant.colour }}</span>
+          <span>{{ variant.size }}</span>
+          <span [class.low-stock]="variant.stockQuantity <= 5">{{ variant.stockQuantity }}</span>
+          <span>{{ variant.sku }}</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="editor-panel" *ngIf="activeTab === 'images'">
+    <div class="panel-heading">
+      <div>
+        <h2>Product Images</h2>
+        <p>Review product card images and image alt text.</p>
+      </div>
+    </div>
+
+    <div class="panel-body">
+      <div class="image-grid">
+        <article class="image-card" *ngFor="let product of products; trackBy: trackByProductId">
+          <div>
+            <img [src]="product.imageUrl" [alt]="product.imageAlt" />
+          </div>
+
+          <h3>{{ product.name }}</h3>
+          <p>{{ product.imageAlt }}</p>
+        </article>
+      </div>
+    </div>
+  </section>
+</section>

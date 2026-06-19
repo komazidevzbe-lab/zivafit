@@ -18,6 +18,16 @@
   margin-bottom: 2rem;
 }
 
+.page-header .page-eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.14rem;
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: #735f52;
+  margin: 0 0 0.85rem;
+  line-height: 1;
+}
+
 .eyebrow {
   text-transform: uppercase;
   letter-spacing: 0.15rem;
@@ -31,7 +41,7 @@
   font-family: Georgia, 'Times New Roman', serif;
   text-transform: uppercase;
   color: #2b1b13;
-  font-size: clamp(2.5rem, 5vw, 4.4rem);
+  font-size: clamp(2rem, 3.6vw, 3.1rem);
   margin: 0;
   line-height: 0.98;
 }

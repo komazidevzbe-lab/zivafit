@@ -1,1 +1,78 @@
-<p>admin-customer-management works!</p>
+<section class="admin-page">
+  <div class="admin-page-top">
+    <div>
+      <a routerLink="/admin/dashboard" class="back-label">
+        <i class="bi bi-chevron-left" aria-hidden="true"></i>
+        Management
+      </a>
+
+      <h1>Customers</h1>
+      <p>View registered customers, order counts, spend totals, and account status.</p>
+    </div>
+  </div>
+
+  <div class="summary-grid">
+    <article>
+      <span>Total Customers</span>
+      <strong>{{ customers.length }}</strong>
+      <small>Mock customer records</small>
+    </article>
+
+    <article>
+      <span>Active Customers</span>
+      <strong>{{ activeCustomers }}</strong>
+      <small>Accounts enabled</small>
+    </article>
+
+    <article>
+      <span>Total Spend</span>
+      <strong>R{{ totalSpend }}</strong>
+      <small>Across mock customers</small>
+    </article>
+  </div>
+
+  <section class="editor-panel">
+    <div class="panel-heading">
+      <div>
+        <h2>Customer List</h2>
+        <p>Customer details will later come from the backend database.</p>
+      </div>
+    </div>
+
+    <div class="panel-body">
+      <div class="customer-grid">
+        <article class="customer-card" *ngFor="let customer of customers; trackBy: trackByCustomerId">
+          <div class="customer-top">
+            <div class="customer-avatar">
+              {{ customer.fullName.charAt(0) }}
+            </div>
+
+            <div>
+              <h3>{{ customer.fullName }}</h3>
+              <p>{{ customer.email }}</p>
+            </div>
+
+            <span>{{ customer.isActive ? 'Active' : 'Inactive' }}</span>
+          </div>
+
+          <div class="customer-meta">
+            <div>
+              <strong>{{ customer.joinDate }}</strong>
+              <small>Joined</small>
+            </div>
+
+            <div>
+              <strong>{{ customer.orderCount }}</strong>
+              <small>Orders</small>
+            </div>
+
+            <div>
+              <strong>R{{ customer.totalSpend }}</strong>
+              <small>Total Spend</small>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+</section>

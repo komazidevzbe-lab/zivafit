@@ -1,1 +1,81 @@
-<p>admin-settings works!</p>
+<section class="admin-page">
+  <div class="admin-page-top">
+    <div>
+      <a routerLink="/admin/dashboard" class="back-label">
+        <i class="bi bi-chevron-left" aria-hidden="true"></i>
+        Settings
+      </a>
+
+      <h1>Store Settings</h1>
+      <p>Manage store-wide rules such as support details, delivery fee, and free delivery threshold.</p>
+    </div>
+
+    <button type="button" class="dark-action" (click)="saveSettings()">
+      Save Changes
+    </button>
+  </div>
+
+  <div class="success-message" *ngIf="successMessage">
+    <i class="bi bi-check2-circle" aria-hidden="true"></i>
+    {{ successMessage }}
+  </div>
+
+  <form class="editor-panel" *ngIf="settings" (ngSubmit)="saveSettings()">
+    <div class="panel-heading">
+      <div>
+        <h2>General Store Rules</h2>
+        <p>These values will later control public store messaging and checkout rules.</p>
+      </div>
+    </div>
+
+    <div class="panel-body">
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Store Name</label>
+          <input class="form-control" name="storeName" [(ngModel)]="settings.storeName" />
+        </div>
+
+        <div class="form-group">
+          <label>Support Email</label>
+          <input class="form-control" name="supportEmail" [(ngModel)]="settings.supportEmail" />
+        </div>
+
+        <div class="form-group">
+          <label>Business Hours</label>
+          <input class="form-control" name="businessHours" [(ngModel)]="settings.businessHours" />
+        </div>
+
+        <div class="form-group">
+          <label>Shipping Message</label>
+          <input class="form-control" name="shippingMessage" [(ngModel)]="settings.shippingMessage" />
+        </div>
+
+        <div class="form-group">
+          <label>Delivery Fee</label>
+          <input class="form-control" name="deliveryFee" type="number" [(ngModel)]="settings.deliveryFee" />
+        </div>
+
+        <div class="form-group">
+          <label>Free Delivery Threshold</label>
+          <input class="form-control" name="freeDeliveryThreshold" type="number" [(ngModel)]="settings.freeDeliveryThreshold" />
+        </div>
+
+        <div class="form-group">
+          <label>Currency Code</label>
+          <input class="form-control" name="currencyCode" [(ngModel)]="settings.currencyCode" />
+        </div>
+
+        <div class="form-group">
+          <label>Country</label>
+          <input class="form-control" name="country" [(ngModel)]="settings.country" />
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="dark-action">
+          Save Settings
+        </button>
+      </div>
+    </div>
+  </form>
+</section>

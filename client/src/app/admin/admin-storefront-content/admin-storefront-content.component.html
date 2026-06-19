@@ -1,0 +1,412 @@
+<section class="admin-page">
+  <div class="admin-page-top">
+    <div>
+      <a routerLink="/admin/dashboard" class="back-label">
+        <i class="bi bi-chevron-left" aria-hidden="true"></i>
+        Store Front
+      </a>
+
+      <h1>Edit Storefront Content</h1>
+      <p>
+        Manage homepage and collection page content, including hero sections,
+        images, text, footer details, and layout.
+      </p>
+    </div>
+
+    <div class="page-actions">
+      <a routerLink="/" class="outline-action">
+        Preview Store
+        <i class="bi bi-box-arrow-up-right" aria-hidden="true"></i>
+      </a>
+
+      <button
+        type="button"
+        class="dark-action"
+        *ngIf="activeTab === 'home'"
+        (click)="saveHomeContent()"
+      >
+        Save Changes
+      </button>
+
+      <button
+        type="button"
+        class="dark-action"
+        *ngIf="activeTab === 'collections'"
+        (click)="saveCollectionPage()"
+      >
+        Save Changes
+      </button>
+
+      <button
+        type="button"
+        class="dark-action"
+        *ngIf="activeTab === 'footer'"
+        (click)="saveFooterContent()"
+      >
+        Save Changes
+      </button>
+    </div>
+  </div>
+
+  <div class="success-message" *ngIf="successMessage">
+    <i class="bi bi-check2-circle" aria-hidden="true"></i>
+    {{ successMessage }}
+  </div>
+
+  <div class="section-card-grid">
+    <button
+      type="button"
+      class="section-card"
+      *ngFor="let tab of tabCards; trackBy: trackByTabKey"
+      [class.active]="activeTab === tab.key"
+      (click)="selectTab(tab.key)"
+    >
+      <i [class]="tab.iconClass" aria-hidden="true"></i>
+
+      <span>
+        <strong>{{ tab.title }}</strong>
+        <small>{{ tab.text }}</small>
+      </span>
+
+      <em *ngIf="activeTab === tab.key">
+        <i class="bi bi-check" aria-hidden="true"></i>
+      </em>
+    </button>
+  </div>
+
+  <form *ngIf="activeTab === 'home'" (ngSubmit)="saveHomeContent()">
+    <section class="editor-panel">
+      <button type="button" class="panel-toggle" (click)="togglePanel('content')">
+        <span>
+          <strong>Hero Content</strong>
+          <small>Define the main homepage banner text and call-to-action buttons.</small>
+        </span>
+
+        <span>{{ isPanelOpen('content') ? 'Collapse' : 'Expand' }}
+          <i class="bi" [ngClass]="isPanelOpen('content') ? 'bi-chevron-up' : 'bi-chevron-down'" aria-hidden="true"></i>
+        </span>
+      </button>
+
+      <div class="panel-body" *ngIf="isPanelOpen('content')">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Hero Section Label</label>
+            <input class="form-control" name="heroEyebrow" [(ngModel)]="homeContent.heroEyebrow" />
+          </div>
+
+          <div class="form-group">
+            <label>Hero Title</label>
+            <input class="form-control" name="heroTitle" [(ngModel)]="homeContent.heroTitle" />
+          </div>
+
+          <div class="form-group">
+            <label>Hero Highlight Text</label>
+            <input class="form-control" name="heroHighlight" [(ngModel)]="homeContent.heroHighlight" />
+          </div>
+
+          <div class="form-group">
+            <label>Primary Button Label</label>
+            <input class="form-control" name="primaryButtonLabel" [(ngModel)]="homeContent.primaryButtonLabel" />
+          </div>
+
+          <div class="form-group full-width">
+            <label>Hero Paragraph</label>
+            <textarea class="form-control" name="heroText" [(ngModel)]="homeContent.heroText"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label>Primary Button Route</label>
+            <input class="form-control" name="primaryButtonRoute" [(ngModel)]="homeContent.primaryButtonRoute" />
+          </div>
+
+          <div class="form-group">
+            <label>Secondary Button Label</label>
+            <input class="form-control" name="secondaryButtonLabel" [(ngModel)]="homeContent.secondaryButtonLabel" />
+          </div>
+
+          <div class="form-group">
+            <label>Secondary Button Route</label>
+            <input class="form-control" name="secondaryButtonRoute" [(ngModel)]="homeContent.secondaryButtonRoute" />
+          </div>
+
+          <div class="form-group">
+            <label>Best Sellers Section Label</label>
+            <input class="form-control" name="bestSellersEyebrow" [(ngModel)]="homeContent.bestSellersEyebrow" />
+          </div>
+
+          <div class="form-group">
+            <label>Best Sellers Title</label>
+            <input class="form-control" name="bestSellersTitle" [(ngModel)]="homeContent.bestSellersTitle" />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="editor-panel">
+      <button type="button" class="panel-toggle" (click)="togglePanel('media')">
+        <span>
+          <strong>Hero Media</strong>
+          <small>Manage the four homepage hero images.</small>
+        </span>
+
+        <span>{{ isPanelOpen('media') ? 'Collapse' : 'Expand' }}
+          <i class="bi" [ngClass]="isPanelOpen('media') ? 'bi-chevron-up' : 'bi-chevron-down'" aria-hidden="true"></i>
+        </span>
+      </button>
+
+      <div class="panel-body" *ngIf="isPanelOpen('media')">
+        <div class="media-grid">
+          <div class="media-card" *ngFor="let card of homeContent.heroCards; let i = index">
+            <div class="media-preview">
+              <img [src]="card.imageUrl" [alt]="card.imageAlt" />
+            </div>
+
+            <div class="form-group">
+              <label>Image URL</label>
+              <input class="form-control" [name]="'heroImageUrl' + i" [(ngModel)]="card.imageUrl" />
+            </div>
+
+            <div class="form-group">
+              <label>Image Alt Text</label>
+              <input class="form-control" [name]="'heroImageAlt' + i" [(ngModel)]="card.imageAlt" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="editor-panel">
+      <button type="button" class="panel-toggle" (click)="togglePanel('layout')">
+        <span>
+          <strong>Category & Benefit Display</strong>
+          <small>Review category cards and homepage value messages.</small>
+        </span>
+
+        <span>{{ isPanelOpen('layout') ? 'Collapse' : 'Expand' }}
+          <i class="bi" [ngClass]="isPanelOpen('layout') ? 'bi-chevron-up' : 'bi-chevron-down'" aria-hidden="true"></i>
+        </span>
+      </button>
+
+      <div class="panel-body" *ngIf="isPanelOpen('layout')">
+        <div class="simple-list">
+          <div *ngFor="let category of homeContent.categoryCards">
+            <strong>{{ category.title }}</strong>
+            <span>{{ category.route }}</span>
+          </div>
+        </div>
+
+        <div class="simple-list">
+          <div *ngFor="let benefit of homeContent.benefits">
+            <strong>{{ benefit.title }}</strong>
+            <span>{{ benefit.text }}</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </form>
+
+  <form *ngIf="activeTab === 'collections'" (ngSubmit)="saveCollectionPage()">
+    <section class="editor-panel">
+      <button type="button" class="panel-toggle" (click)="togglePanel('content')">
+        <span>
+          <strong>Collection Content</strong>
+          <small>Edit hero copy, buttons, empty states, and notes for collection pages.</small>
+        </span>
+
+        <span>{{ isPanelOpen('content') ? 'Collapse' : 'Expand' }}
+          <i class="bi" [ngClass]="isPanelOpen('content') ? 'bi-chevron-up' : 'bi-chevron-down'" aria-hidden="true"></i>
+        </span>
+      </button>
+
+      <div class="panel-body" *ngIf="isPanelOpen('content')">
+        <div class="form-group">
+          <label>Select Page</label>
+          <select
+            class="form-control"
+            name="selectedCollectionPage"
+            [ngModel]="selectedCollectionPage.pageKey"
+            (ngModelChange)="selectCollectionPage($event)"
+          >
+            <option *ngFor="let page of collectionPages; trackBy: trackByPageKey" [value]="page.pageKey">
+              {{ page.pageName }}
+            </option>
+          </select>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Hero Section Label</label>
+            <input class="form-control" name="collectionHeroEyebrow" [(ngModel)]="selectedCollectionPage.heroEyebrow" />
+          </div>
+
+          <div class="form-group">
+            <label>Hero Title</label>
+            <input class="form-control" name="collectionHeroTitle" [(ngModel)]="selectedCollectionPage.heroTitle" />
+          </div>
+
+          <div class="form-group full-width">
+            <label>Hero Paragraph</label>
+            <textarea class="form-control" name="collectionHeroText" [(ngModel)]="selectedCollectionPage.heroText"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label>Primary Button Label</label>
+            <input class="form-control" name="collectionHeroButtonLabel" [(ngModel)]="selectedCollectionPage.heroButtonLabel" />
+          </div>
+
+          <div class="form-group">
+            <label>Secondary Button Label</label>
+            <input class="form-control" name="collectionSecondaryButtonLabel" [(ngModel)]="selectedCollectionPage.secondaryButtonLabel" />
+          </div>
+
+          <div class="form-group">
+            <label>Secondary Button Route</label>
+            <input class="form-control" name="collectionSecondaryButtonRoute" [(ngModel)]="selectedCollectionPage.secondaryButtonRoute" />
+          </div>
+
+          <div class="form-group">
+            <label>Collection Section Label</label>
+            <input class="form-control" name="collectionEyebrow" [(ngModel)]="selectedCollectionPage.collectionEyebrow" />
+          </div>
+
+          <div class="form-group">
+            <label>Collection Title</label>
+            <input class="form-control" name="collectionTitle" [(ngModel)]="selectedCollectionPage.collectionTitle" />
+          </div>
+
+          <div class="form-group">
+            <label>Empty State Title</label>
+            <input class="form-control" name="emptyTitle" [(ngModel)]="selectedCollectionPage.emptyTitle" />
+          </div>
+
+          <div class="form-group">
+            <label>Empty State Text</label>
+            <input class="form-control" name="emptyText" [(ngModel)]="selectedCollectionPage.emptyText" />
+          </div>
+
+          <div class="form-group">
+            <label>Note Section Label</label>
+            <input class="form-control" name="noteEyebrow" [(ngModel)]="selectedCollectionPage.noteEyebrow" />
+          </div>
+
+          <div class="form-group">
+            <label>Note Title</label>
+            <input class="form-control" name="noteTitle" [(ngModel)]="selectedCollectionPage.noteTitle" />
+          </div>
+
+          <div class="form-group full-width">
+            <label>Note Text</label>
+            <textarea class="form-control" name="noteText" [(ngModel)]="selectedCollectionPage.noteText"></textarea>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="editor-panel">
+      <button type="button" class="panel-toggle" (click)="togglePanel('media')">
+        <span>
+          <strong>Collection Hero Images</strong>
+          <small>Manage the three hero images for the selected collection page.</small>
+        </span>
+
+        <span>{{ isPanelOpen('media') ? 'Collapse' : 'Expand' }}
+          <i class="bi" [ngClass]="isPanelOpen('media') ? 'bi-chevron-up' : 'bi-chevron-down'" aria-hidden="true"></i>
+        </span>
+      </button>
+
+      <div class="panel-body" *ngIf="isPanelOpen('media')">
+        <div class="media-grid">
+          <div class="media-card" *ngFor="let image of selectedCollectionPage.heroImages; let i = index">
+            <div class="media-preview">
+              <img [src]="image.imageUrl" [alt]="image.imageAlt" />
+            </div>
+
+            <div class="form-group">
+              <label>Image URL</label>
+              <input class="form-control" [name]="'collectionImageUrl' + i" [(ngModel)]="image.imageUrl" />
+            </div>
+
+            <div class="form-group">
+              <label>Image Alt Text</label>
+              <input class="form-control" [name]="'collectionImageAlt' + i" [(ngModel)]="image.imageAlt" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </form>
+
+  <form *ngIf="activeTab === 'footer'" (ngSubmit)="saveFooterContent()">
+    <section class="editor-panel">
+      <button type="button" class="panel-toggle" (click)="togglePanel('content')">
+        <span>
+          <strong>Footer Content</strong>
+          <small>Edit newsletter text, brand text, support details, and social links.</small>
+        </span>
+
+        <span>{{ isPanelOpen('content') ? 'Collapse' : 'Expand' }}
+          <i class="bi" [ngClass]="isPanelOpen('content') ? 'bi-chevron-up' : 'bi-chevron-down'" aria-hidden="true"></i>
+        </span>
+      </button>
+
+      <div class="panel-body" *ngIf="isPanelOpen('content')">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Newsletter Heading</label>
+            <input class="form-control" name="newsletterHeading" [(ngModel)]="footerContent.newsletterHeading" />
+          </div>
+
+          <div class="form-group">
+            <label>Support Email</label>
+            <input class="form-control" name="supportEmail" [(ngModel)]="footerContent.supportEmail" />
+          </div>
+
+          <div class="form-group full-width">
+            <label>Newsletter Text</label>
+            <textarea class="form-control" name="newsletterText" [(ngModel)]="footerContent.newsletterText"></textarea>
+          </div>
+
+          <div class="form-group full-width">
+            <label>Footer Brand Text</label>
+            <textarea class="form-control" name="footerBrandText" [(ngModel)]="footerContent.footerBrandText"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label>Support Hours</label>
+            <input class="form-control" name="supportHours" [(ngModel)]="footerContent.supportHours" />
+          </div>
+
+          <div class="form-group">
+            <label>Shipping Text</label>
+            <input class="form-control" name="shippingText" [(ngModel)]="footerContent.shippingText" />
+          </div>
+
+          <div class="form-group">
+            <label>Instagram URL</label>
+            <input class="form-control" name="instagramUrl" [(ngModel)]="footerContent.instagramUrl" />
+          </div>
+
+          <div class="form-group">
+            <label>TikTok URL</label>
+            <input class="form-control" name="tiktokUrl" [(ngModel)]="footerContent.tiktokUrl" />
+          </div>
+
+          <div class="form-group">
+            <label>Pinterest URL</label>
+            <input class="form-control" name="pinterestUrl" [(ngModel)]="footerContent.pinterestUrl" />
+          </div>
+
+          <div class="form-group">
+            <label>Facebook URL</label>
+            <input class="form-control" name="facebookUrl" [(ngModel)]="footerContent.facebookUrl" />
+          </div>
+
+          <div class="form-group">
+            <label>YouTube URL</label>
+            <input class="form-control" name="youtubeUrl" [(ngModel)]="footerContent.youtubeUrl" />
+          </div>
+        </div>
+      </div>
+    </section>
+  </form>
+</section>

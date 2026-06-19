@@ -1,1 +1,69 @@
-<p>admin-review-management works!</p>
+<section class="admin-page">
+  <div class="admin-page-top">
+    <div>
+      <a routerLink="/admin/dashboard" class="back-label">
+        <i class="bi bi-chevron-left" aria-hidden="true"></i>
+        Management
+      </a>
+
+      <h1>Reviews</h1>
+      <p>Moderate product reviews, approve useful reviews, or hide reviews from the public store.</p>
+    </div>
+  </div>
+
+  <div class="summary-grid">
+    <article>
+      <span>Total Reviews</span>
+      <strong>{{ reviews.length }}</strong>
+      <small>Mock review records</small>
+    </article>
+
+    <article>
+      <span>Pending Reviews</span>
+      <strong>{{ pendingReviews }}</strong>
+      <small>Awaiting moderation</small>
+    </article>
+
+    <article>
+      <span>Approved Reviews</span>
+      <strong>{{ approvedReviews }}</strong>
+      <small>Visible later</small>
+    </article>
+  </div>
+
+  <section class="editor-panel">
+    <div class="panel-heading">
+      <div>
+        <h2>Review Moderation</h2>
+        <p>Choose whether each product review should be approved, hidden, or left pending.</p>
+      </div>
+    </div>
+
+    <div class="panel-body">
+      <div class="review-grid">
+        <article class="review-card" *ngFor="let review of reviews; trackBy: trackByReviewId">
+          <div class="review-top">
+            <div>
+              <h3>{{ review.productName }}</h3>
+              <p>{{ review.customerName }} | {{ review.reviewDate }}</p>
+            </div>
+
+            <span>{{ review.status }}</span>
+          </div>
+
+          <div class="stars">
+            <i class="bi bi-star-fill" *ngFor="let star of getStars(review.rating)" aria-hidden="true"></i>
+          </div>
+
+          <p class="comment">{{ review.comment }}</p>
+
+          <div class="action-row">
+            <button type="button" (click)="updateStatus(review.id, 'Approved')">Approve</button>
+            <button type="button" (click)="updateStatus(review.id, 'Hidden')">Hide</button>
+            <button type="button" (click)="updateStatus(review.id, 'Pending')">Pending</button>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+</section>

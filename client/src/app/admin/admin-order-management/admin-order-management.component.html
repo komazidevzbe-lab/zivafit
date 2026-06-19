@@ -1,1 +1,76 @@
-<p>admin-order-management works!</p>
+<section class="admin-page">
+  <div class="admin-page-top">
+    <div>
+      <a routerLink="/admin/dashboard" class="back-label">
+        <i class="bi bi-chevron-left" aria-hidden="true"></i>
+        Management
+      </a>
+
+      <h1>Orders</h1>
+      <p>View customer orders and update fulfilment status from one clean order table.</p>
+    </div>
+  </div>
+
+  <div class="summary-grid">
+    <article>
+      <span>Total Orders</span>
+      <strong>{{ orders.length }}</strong>
+      <small>Mock orders</small>
+    </article>
+
+    <article>
+      <span>Paid Orders</span>
+      <strong>{{ paidOrders }}</strong>
+      <small>Payment received</small>
+    </article>
+
+    <article>
+      <span>Pending Orders</span>
+      <strong>{{ pendingOrders }}</strong>
+      <small>Needs attention</small>
+    </article>
+  </div>
+
+  <section class="editor-panel">
+    <div class="panel-heading">
+      <div>
+        <h2>Order List</h2>
+        <p>Update order status as fulfilment progresses.</p>
+      </div>
+    </div>
+
+    <div class="panel-body">
+      <div class="admin-table">
+        <div class="table-row table-heading">
+          <span>Order</span>
+          <span>Customer</span>
+          <span>Date</span>
+          <span>Total</span>
+          <span>Payment</span>
+          <span>Status</span>
+        </div>
+
+        <div class="table-row" *ngFor="let order of orders; trackBy: trackByOrderId">
+          <span>{{ order.orderNumber }}</span>
+          <span>
+            <strong>{{ order.customerName }}</strong>
+            <small>{{ order.customerEmail }}</small>
+          </span>
+          <span>{{ order.orderDate }}</span>
+          <span>R{{ order.total }}</span>
+          <span>{{ order.paymentStatus }}</span>
+
+          <select
+            class="form-control"
+            [ngModel]="order.orderStatus"
+            (ngModelChange)="updateStatus(order.id, $event)"
+          >
+            <option *ngFor="let status of orderStatuses" [value]="status">
+              {{ status }}
+            </option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </section>
+</section>

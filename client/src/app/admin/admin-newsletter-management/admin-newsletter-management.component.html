@@ -1,1 +1,51 @@
-<p>admin-newsletter-management works!</p>
+<section class="admin-page">
+  <div class="admin-page-top">
+    <div>
+      <a routerLink="/admin/dashboard" class="back-label">
+        <i class="bi bi-chevron-left" aria-hidden="true"></i>
+        Management
+      </a>
+
+      <h1>Newsletter</h1>
+      <p>View newsletter sign-ups and manage active subscriber status.</p>
+    </div>
+  </div>
+
+  <div class="summary-grid">
+    <article>
+      <span>Total Subscribers</span>
+      <strong>{{ subscribers.length }}</strong>
+      <small>Mock newsletter records</small>
+    </article>
+
+    <article>
+      <span>Active Subscribers</span>
+      <strong>{{ activeSubscribers }}</strong>
+      <small>Can receive updates</small>
+    </article>
+  </div>
+
+  <section class="editor-panel">
+    <div class="panel-heading">
+      <div>
+        <h2>Subscriber List</h2>
+        <p>Newsletter records will later be saved from the public footer form.</p>
+      </div>
+    </div>
+
+    <div class="panel-body">
+      <div class="subscriber-list">
+        <article class="subscriber-card" *ngFor="let subscriber of subscribers; trackBy: trackBySubscriberId">
+          <div>
+            <h3>{{ subscriber.email }}</h3>
+            <p>Subscribed: {{ subscriber.subscribedDate }}</p>
+          </div>
+
+          <button type="button" (click)="toggleSubscriber(subscriber.id)">
+            {{ subscriber.isActive ? 'Active' : 'Inactive' }}
+          </button>
+        </article>
+      </div>
+    </div>
+  </section>
+</section>
