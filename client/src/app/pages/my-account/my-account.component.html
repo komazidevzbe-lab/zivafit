@@ -1,1 +1,130 @@
-<p>my-account works!</p>
+<section class="account-page">
+  <header class="account-header">
+    <div>
+      <p class="page-eyebrow">ZivaFit Account</p>
+      <h1>My Account</h1>
+      <p>Manage your profile, orders, saved addresses, wishlist, and checkout details.</p>
+    </div>
+
+    <a routerLink="/edit-profile" class="outline-btn">
+      Edit Profile
+      <i class="bi bi-arrow-right" aria-hidden="true"></i>
+    </a>
+  </header>
+
+  <section class="account-hero-card">
+    <div class="profile-mark">
+      {{ initials }}
+    </div>
+
+    <div>
+      <p class="page-eyebrow">Customer Profile</p>
+      <h2>{{ fullName }}</h2>
+      <p>{{ accountService.currentUser()?.email }}</p>
+    </div>
+
+    <div class="profile-actions">
+      <a routerLink="/edit-profile">
+        <i class="bi bi-person-gear" aria-hidden="true"></i>
+        Edit Profile
+      </a>
+
+      <a routerLink="/saved-addresses">
+        <i class="bi bi-geo-alt" aria-hidden="true"></i>
+        Saved Addresses
+      </a>
+    </div>
+  </section>
+
+  <section class="account-stats" aria-label="Account summary">
+    <div>
+      <span>{{ customerOrderService.orders().length }}</span>
+      <strong>Orders</strong>
+      <p>Completed through checkout.</p>
+    </div>
+
+    <div>
+      <span>{{ shopStateService.wishlistCount() }}</span>
+      <strong>Wishlist Items</strong>
+      <p>Products saved for later.</p>
+    </div>
+
+    <div>
+      <span>{{ shopStateService.cartCount() }}</span>
+      <strong>Cart Items</strong>
+      <p>Products currently in your cart.</p>
+    </div>
+
+    <div>
+      <span>{{ customerAddressService.addresses().length }}</span>
+      <strong>Addresses</strong>
+      <p>Delivery addresses saved.</p>
+    </div>
+  </section>
+
+  <section class="account-grid">
+    <article class="account-card">
+      <div class="card-icon">
+        <i class="bi bi-bag-check" aria-hidden="true"></i>
+      </div>
+
+      <div>
+        <h3>My Orders</h3>
+        <p>View your ZivaFit order history, totals, delivery details, and order status.</p>
+      </div>
+
+      <a routerLink="/my-orders">
+        View Orders
+        <i class="bi bi-arrow-right" aria-hidden="true"></i>
+      </a>
+    </article>
+
+    <article class="account-card">
+      <div class="card-icon">
+        <i class="bi bi-heart" aria-hidden="true"></i>
+      </div>
+
+      <div>
+        <h3>Wishlist</h3>
+        <p>Return to products you saved and add your favourite pieces to cart.</p>
+      </div>
+
+      <a routerLink="/wishlist">
+        View Wishlist
+        <i class="bi bi-arrow-right" aria-hidden="true"></i>
+      </a>
+    </article>
+
+    <article class="account-card">
+      <div class="card-icon">
+        <i class="bi bi-geo-alt" aria-hidden="true"></i>
+      </div>
+
+      <div>
+        <h3>Default Address</h3>
+        <p>{{ defaultAddressText }}</p>
+      </div>
+
+      <a routerLink="/saved-addresses">
+        Manage Addresses
+        <i class="bi bi-arrow-right" aria-hidden="true"></i>
+      </a>
+    </article>
+
+    <article class="account-card">
+      <div class="card-icon">
+        <i class="bi bi-cart3" aria-hidden="true"></i>
+      </div>
+
+      <div>
+        <h3>Cart</h3>
+        <p>Review selected items and continue to checkout when ready.</p>
+      </div>
+
+      <a routerLink="/cart">
+        View Cart
+        <i class="bi bi-arrow-right" aria-hidden="true"></i>
+      </a>
+    </article>
+  </section>
+</section>

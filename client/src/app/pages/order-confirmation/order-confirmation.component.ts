@@ -1,20 +1,21 @@
-import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Component, inject } from '@angular/core';
+import { RouterLink } from '@angular/router';
 
-import { PageNoticeComponent } from '../../shared/page-notice/page-notice.component';
+import { CustomerOrderLine } from '../../_models/customer-account';
+import { CustomerOrderService } from '../../_services/customer-order.service';
 
 @Component({
   selector: 'app-order-confirmation',
   standalone: true,
-  imports: [PageNoticeComponent],
-  template: `
-    <app-page-notice
-      heading="Order Confirmation"
-      subtitle="Order confirmation will be connected after checkout."
-      primaryLabel="My Orders"
-      primaryRoute="/my-orders"
-      secondaryLabel="Continue Shopping"
-      secondaryRoute="/shop"
-    ></app-page-notice>
-  `
+  imports: [CommonModule, RouterLink],
+  templateUrl: './order-confirmation.component.html',
+  styleUrl: './order-confirmation.component.css'
 })
-export class OrderConfirmationComponent { }
+export class OrderConfirmationComponent {
+  customerOrderService = inject(CustomerOrderService);
+
+  trackByOrderLine(index: number, line: CustomerOrderLine): string {
+    return `${line.productId}-${line.size}`;
+  }
+}

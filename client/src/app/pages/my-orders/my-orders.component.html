@@ -1,1 +1,104 @@
-<p>my-orders works!</p>
+<section class="orders-page">
+  <header class="orders-header">
+    <div>
+      <p class="page-eyebrow">ZivaFit Orders</p>
+      <h1>My Orders</h1>
+      <p>Track your order history, delivery details, payment status, and purchased products.</p>
+    </div>
+
+    <a routerLink="/my-account" class="outline-btn">
+      My Account
+      <i class="bi bi-arrow-right" aria-hidden="true"></i>
+    </a>
+  </header>
+
+  <section class="orders-summary">
+    <div>
+      <span>{{ orders.length }}</span>
+      <strong>Total Orders</strong>
+    </div>
+
+    <div>
+      <span>{{ latestOrderNumber }}</span>
+      <strong>Latest Order</strong>
+    </div>
+
+    <div>
+      <span>{{ latestOrderStatus }}</span>
+      <strong>Current Status</strong>
+    </div>
+  </section>
+
+  <ng-container *ngIf="orders.length > 0; else noOrders">
+    <section class="orders-list">
+      <article
+        class="order-card"
+        *ngFor="let order of orders; trackBy: trackByOrderId"
+      >
+        <div class="order-main">
+          <div>
+            <p class="page-eyebrow">{{ order.orderNumber }}</p>
+            <h2>Order Placed</h2>
+            <p>{{ order.orderDate | date: 'mediumDate' }}</p>
+          </div>
+
+          <span class="status-pill">{{ order.status }}</span>
+        </div>
+
+        <div class="order-info-grid">
+          <div>
+            <span>Total</span>
+            <strong>{{ order.totalText }}</strong>
+          </div>
+
+          <div>
+            <span>Payment</span>
+            <strong>{{ order.paymentStatus }}</strong>
+          </div>
+
+          <div>
+            <span>Items</span>
+            <strong>{{ order.lines.length }}</strong>
+          </div>
+
+          <div>
+            <span>Delivery City</span>
+            <strong>{{ order.deliveryAddress.city }}</strong>
+          </div>
+        </div>
+
+        <div class="order-products">
+          <img
+            *ngFor="let line of order.lines.slice(0, 4)"
+            [src]="line.imageUrl"
+            [alt]="line.imageAlt"
+          />
+        </div>
+
+        <div class="order-actions">
+          <a [routerLink]="['/order-details', order.orderNumber]" class="dark-btn">
+            View Details
+            <i class="bi bi-arrow-right" aria-hidden="true"></i>
+          </a>
+
+          <a routerLink="/shop" class="light-btn">
+            Shop Again
+          </a>
+        </div>
+      </article>
+    </section>
+  </ng-container>
+
+  <ng-template #noOrders>
+    <section class="empty-state">
+      <i class="bi bi-bag" aria-hidden="true"></i>
+      <h2>No orders yet.</h2>
+      <p>Your completed ZivaFit checkout orders will appear here.</p>
+
+      <a routerLink="/shop">
+        Start Shopping
+        <i class="bi bi-arrow-right" aria-hidden="true"></i>
+      </a>
+    </section>
+  </ng-template>
+</section>

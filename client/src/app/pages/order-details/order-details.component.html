@@ -1,1 +1,121 @@
-<p>order-details works!</p>
+<section class="order-details-page">
+  <ng-container *ngIf="order; else orderNotFound">
+    <header class="details-header">
+      <div>
+        <p class="page-eyebrow">Order Details</p>
+        <h1>{{ order.orderNumber }}</h1>
+        <p>Placed on {{ order.orderDate | date: 'mediumDate' }}.</p>
+      </div>
+
+      <a routerLink="/my-orders" class="outline-btn">
+        Back To Orders
+        <i class="bi bi-arrow-right" aria-hidden="true"></i>
+      </a>
+    </header>
+
+    <section class="status-card">
+      <div>
+        <p class="page-eyebrow">Current Status</p>
+        <h2>{{ order.status }}</h2>
+        <p>Your ZivaFit order is being prepared for delivery.</p>
+      </div>
+
+      <span>{{ order.paymentStatus }}</span>
+    </section>
+
+    <section class="details-layout">
+      <div class="details-main">
+        <section class="details-card">
+          <div class="card-heading">
+            <p class="page-eyebrow">Products</p>
+            <h2>Order Items</h2>
+          </div>
+
+          <article
+            class="order-line"
+            *ngFor="let line of order.lines; trackBy: trackByOrderLine"
+          >
+            <img [src]="line.imageUrl" [alt]="line.imageAlt" />
+
+            <div>
+              <h3>{{ line.name }}</h3>
+              <p>{{ line.category }} · {{ line.fitType }} · {{ line.colour }}</p>
+              <span>Size {{ line.size }} · Qty {{ line.quantity }}</span>
+            </div>
+
+            <strong>{{ line.lineTotalText }}</strong>
+          </article>
+        </section>
+
+        <section class="details-card">
+          <div class="card-heading">
+            <p class="page-eyebrow">Delivery</p>
+            <h2>Shipping Address</h2>
+          </div>
+
+          <div class="address-block">
+            <strong>{{ order.deliveryAddress.fullName }}</strong>
+            <span>{{ order.contactPhone }}</span>
+            <span>{{ order.deliveryAddress.addressLine1 }}</span>
+            <span *ngIf="order.deliveryAddress.addressLine2">{{ order.deliveryAddress.addressLine2 }}</span>
+            <span>
+              <ng-container *ngIf="order.deliveryAddress.suburb">
+                {{ order.deliveryAddress.suburb }},
+              </ng-container>
+              {{ order.deliveryAddress.city }}
+            </span>
+            <span>{{ order.deliveryAddress.province }}, {{ order.deliveryAddress.postalCode }}</span>
+          </div>
+        </section>
+      </div>
+
+      <aside class="details-summary">
+        <p class="page-eyebrow">Payment Summary</p>
+        <h2>Order Total</h2>
+
+        <div class="summary-row">
+          <span>Subtotal</span>
+          <strong>{{ order.subtotalText }}</strong>
+        </div>
+
+        <div class="summary-row">
+          <span>Delivery</span>
+          <strong>{{ order.deliveryFeeText }}</strong>
+        </div>
+
+        <div class="summary-row">
+          <span>Payment</span>
+          <strong>{{ order.paymentMethod }}</strong>
+        </div>
+
+        <div class="summary-total">
+          <span>Total</span>
+          <strong>{{ order.totalText }}</strong>
+        </div>
+
+        <div class="summary-note">
+          <i class="bi bi-envelope" aria-hidden="true"></i>
+          <span>{{ order.contactEmail }}</span>
+        </div>
+
+        <a routerLink="/shop" class="dark-btn">
+          Shop Again
+          <i class="bi bi-arrow-right" aria-hidden="true"></i>
+        </a>
+      </aside>
+    </section>
+  </ng-container>
+
+  <ng-template #orderNotFound>
+    <section class="empty-state">
+      <i class="bi bi-receipt" aria-hidden="true"></i>
+      <h1>Order Not Found</h1>
+      <p>The selected order could not be found in your frontend order history.</p>
+
+      <a routerLink="/my-orders">
+        Back To Orders
+        <i class="bi bi-arrow-right" aria-hidden="true"></i>
+      </a>
+    </section>
+  </ng-template>
+</section>

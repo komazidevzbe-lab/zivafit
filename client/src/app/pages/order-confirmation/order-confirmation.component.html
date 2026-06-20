@@ -1,1 +1,79 @@
-<p>order-confirmation works!</p>
+<section class="confirmation-page">
+  <ng-container *ngIf="customerOrderService.lastOrder() as order; else noOrder">
+    <section class="confirmation-card">
+      <div class="success-icon">
+        <i class="bi bi-check2" aria-hidden="true"></i>
+      </div>
+
+      <p class="page-eyebrow">Order Confirmed</p>
+      <h1>Thank You For Your Order</h1>
+      <p class="confirmation-text">
+        Your ZivaFit order has been received. A confirmation email will be sent
+        once backend order notifications are connected.
+      </p>
+
+      <div class="order-reference">
+        <div>
+          <span>Order Number</span>
+          <strong>{{ order.orderNumber }}</strong>
+        </div>
+
+        <div>
+          <span>Total</span>
+          <strong>{{ order.totalText }}</strong>
+        </div>
+
+        <div>
+          <span>Status</span>
+          <strong>{{ order.status }}</strong>
+        </div>
+      </div>
+
+      <div class="confirmation-actions">
+        <a [routerLink]="['/order-details', order.orderNumber]" class="dark-btn">
+          View Order Details
+          <i class="bi bi-arrow-right" aria-hidden="true"></i>
+        </a>
+
+        <a routerLink="/shop" class="light-btn">
+          Continue Shopping
+          <i class="bi bi-arrow-right" aria-hidden="true"></i>
+        </a>
+      </div>
+    </section>
+
+    <section class="order-preview-card">
+      <div class="card-heading">
+        <p class="page-eyebrow">Order Summary</p>
+        <h2>Purchased Items</h2>
+      </div>
+
+      <article
+        class="order-line"
+        *ngFor="let line of order.lines; trackBy: trackByOrderLine"
+      >
+        <img [src]="line.imageUrl" [alt]="line.imageAlt" />
+
+        <div>
+          <h3>{{ line.name }}</h3>
+          <p>{{ line.category }} · Size {{ line.size }} · Qty {{ line.quantity }}</p>
+        </div>
+
+        <strong>{{ line.lineTotalText }}</strong>
+      </article>
+    </section>
+  </ng-container>
+
+  <ng-template #noOrder>
+    <section class="empty-state">
+      <i class="bi bi-bag-check" aria-hidden="true"></i>
+      <h1>No Recent Order Found</h1>
+      <p>Once checkout is completed, the order confirmation will appear here.</p>
+
+      <a routerLink="/shop">
+        Continue Shopping
+        <i class="bi bi-arrow-right" aria-hidden="true"></i>
+      </a>
+    </section>
+  </ng-template>
+</section>

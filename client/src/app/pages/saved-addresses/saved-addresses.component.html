@@ -1,1 +1,148 @@
-<p>saved-addresses works!</p>
+<section class="addresses-page">
+  <header class="addresses-header">
+    <div>
+      <p class="page-eyebrow">ZivaFit Delivery</p>
+      <h1>Saved Addresses</h1>
+      <p>Save delivery details for faster checkout across South Africa.</p>
+    </div>
+
+    <a routerLink="/my-account" class="outline-btn">
+      My Account
+      <i class="bi bi-arrow-right" aria-hidden="true"></i>
+    </a>
+  </header>
+
+  <section class="addresses-layout">
+    <form class="address-form-card" #addressForm="ngForm" (ngSubmit)="saveAddress()">
+      <div class="form-heading">
+        <p class="page-eyebrow">{{ editingAddressId ? 'Update Address' : 'New Address' }}</p>
+        <h2>{{ editingAddressId ? 'Edit Delivery Address' : 'Add Delivery Address' }}</h2>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="label">Address Label</label>
+          <input id="label" name="label" type="text" [(ngModel)]="model.label" />
+        </div>
+
+        <div class="form-group">
+          <label for="fullName">Recipient Name</label>
+          <input id="fullName" name="fullName" type="text" [(ngModel)]="model.fullName" required />
+        </div>
+
+        <div class="form-group">
+          <label for="phone">Phone Number</label>
+          <input id="phone" name="phone" type="tel" [(ngModel)]="model.phone" required />
+        </div>
+
+        <div class="form-group">
+          <label for="addressLine1">Street Address</label>
+          <input id="addressLine1" name="addressLine1" type="text" [(ngModel)]="model.addressLine1" required />
+        </div>
+
+        <div class="form-group">
+          <label for="addressLine2">Apartment / Complex</label>
+          <input id="addressLine2" name="addressLine2" type="text" [(ngModel)]="model.addressLine2" />
+        </div>
+
+        <div class="form-group">
+          <label for="suburb">Suburb</label>
+          <input id="suburb" name="suburb" type="text" [(ngModel)]="model.suburb" />
+        </div>
+
+        <div class="form-group">
+          <label for="city">City</label>
+          <input id="city" name="city" type="text" [(ngModel)]="model.city" required />
+        </div>
+
+        <div class="form-group">
+          <label for="province">Province</label>
+          <select id="province" name="province" [(ngModel)]="model.province" required>
+            <option *ngFor="let province of provinces" [value]="province">{{ province }}</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="postalCode">Postal Code</label>
+          <input id="postalCode" name="postalCode" type="text" [(ngModel)]="model.postalCode" required />
+        </div>
+
+        <label class="check-row">
+          <input name="isDefault" type="checkbox" [(ngModel)]="model.isDefault" />
+          <span>Set as default delivery address</span>
+        </label>
+      </div>
+
+      <div class="form-alert error" *ngIf="errorMessage">
+        <i class="bi bi-exclamation-circle" aria-hidden="true"></i>
+        <span>{{ errorMessage }}</span>
+      </div>
+
+      <div class="form-alert success" *ngIf="successMessage">
+        <i class="bi bi-check-circle" aria-hidden="true"></i>
+        <span>{{ successMessage }}</span>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="dark-btn">
+          {{ editingAddressId ? 'Update Address' : 'Save Address' }}
+          <i class="bi bi-check2" aria-hidden="true"></i>
+        </button>
+
+        <button type="button" class="light-btn" (click)="resetForm()" *ngIf="editingAddressId">
+          Cancel Edit
+        </button>
+      </div>
+    </form>
+
+    <section class="address-list-card">
+      <div class="form-heading">
+        <p class="page-eyebrow">Saved Details</p>
+        <h2>Your Addresses</h2>
+      </div>
+
+      <div class="empty-state" *ngIf="customerAddressService.addresses().length === 0">
+        <i class="bi bi-geo-alt" aria-hidden="true"></i>
+        <h3>No saved addresses yet.</h3>
+        <p>Add your first delivery address using the form.</p>
+      </div>
+
+      <div class="address-list" *ngIf="customerAddressService.addresses().length > 0">
+        <article
+          class="address-card"
+          *ngFor="let address of customerAddressService.addresses(); trackBy: trackByAddressId"
+        >
+          <div class="address-top">
+            <div>
+              <h3>{{ address.label || 'Delivery Address' }}</h3>
+              <span *ngIf="address.isDefault">Default</span>
+            </div>
+
+            <button type="button" (click)="setDefaultAddress(address.id)" *ngIf="!address.isDefault">
+              Make Default
+            </button>
+          </div>
+
+          <p>
+            <strong>{{ address.fullName }}</strong><br />
+            {{ address.phone }}<br />
+            {{ address.addressLine1 }}<br />
+            <ng-container *ngIf="address.addressLine2">{{ address.addressLine2 }}<br /></ng-container>
+            <ng-container *ngIf="address.suburb">{{ address.suburb }}, </ng-container>{{ address.city }}<br />
+            {{ address.province }}, {{ address.postalCode }}
+          </p>
+
+          <div class="address-actions">
+            <button type="button" (click)="editAddress(address)">
+              Edit
+            </button>
+
+            <button type="button" (click)="deleteAddress(address.id)">
+              Remove
+            </button>
+          </div>
+        </article>
+      </div>
+    </section>
+  </section>
+</section>

@@ -1,1 +1,94 @@
-<p>edit-profile works!</p>
+<section class="profile-page">
+  <header class="profile-header">
+    <div>
+      <p class="page-eyebrow">ZivaFit Profile</p>
+      <h1>Edit Profile</h1>
+      <p>Update your customer details used for account display and checkout contact information.</p>
+    </div>
+
+    <a routerLink="/my-account" class="outline-btn">
+      My Account
+      <i class="bi bi-arrow-right" aria-hidden="true"></i>
+    </a>
+  </header>
+
+  <section class="profile-layout">
+    <form class="profile-card" #profileForm="ngForm" (ngSubmit)="saveProfile()">
+      <div class="form-heading">
+        <p class="page-eyebrow">Customer Details</p>
+        <h2>Personal Information</h2>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="firstName">First Name</label>
+          <input
+            id="firstName"
+            name="firstName"
+            type="text"
+            [(ngModel)]="model.firstName"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="lastName">Last Name</label>
+          <input
+            id="lastName"
+            name="lastName"
+            type="text"
+            [(ngModel)]="model.lastName"
+            required
+          />
+        </div>
+
+        <div class="form-group full-width">
+          <label for="email">Email Address</label>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            [(ngModel)]="model.email"
+            required
+          />
+        </div>
+      </div>
+
+      <div class="form-alert error" *ngIf="generalError">
+        <i class="bi bi-exclamation-circle" aria-hidden="true"></i>
+        <span>{{ generalError }}</span>
+      </div>
+
+      <div class="form-alert success" *ngIf="successMessage">
+        <i class="bi bi-check-circle" aria-hidden="true"></i>
+        <span>{{ successMessage }}</span>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="dark-btn">
+          Save Profile
+          <i class="bi bi-check2" aria-hidden="true"></i>
+        </button>
+
+        <a routerLink="/saved-addresses" class="light-btn">
+          Saved Addresses
+          <i class="bi bi-arrow-right" aria-hidden="true"></i>
+        </a>
+      </div>
+    </form>
+
+    <aside class="profile-side-card">
+      <i class="bi bi-shield-check" aria-hidden="true"></i>
+      <h3>Account Note</h3>
+      <p>
+        These profile details update the current frontend session. Backend profile
+        persistence can be connected when the customer account API is expanded.
+      </p>
+
+      <div>
+        <span>Secure Account</span>
+        <strong>Logged-in customers only</strong>
+      </div>
+    </aside>
+  </section>
+</section>

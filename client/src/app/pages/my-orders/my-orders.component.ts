@@ -1,20 +1,39 @@
-import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Component, inject } from '@angular/core';
+import { RouterLink } from '@angular/router';
 
-import { PageNoticeComponent } from '../../shared/page-notice/page-notice.component';
+import { CustomerOrder } from '../../_models/customer-account';
+import { CustomerOrderService } from '../../_services/customer-order.service';
 
 @Component({
   selector: 'app-my-orders',
   standalone: true,
-  imports: [PageNoticeComponent],
-  template: `
-    <app-page-notice
-      heading="My Orders"
-      subtitle="Customer order history will be connected later."
-      primaryLabel="Continue Shopping"
-      primaryRoute="/shop"
-      secondaryLabel="My Account"
-      secondaryRoute="/my-account"
-    ></app-page-notice>
-  `
+  imports: [CommonModule, RouterLink],
+  templateUrl: './my-orders.component.html',
+  styleUrl: './my-orders.component.css'
 })
-export class MyOrdersComponent { }
+export class MyOrdersComponent {
+  customerOrderService = inject(CustomerOrderService);
+
+  get orders(): CustomerOrder[] {
+    return this.customerOrderService.orders();
+  }
+
+  get latestOrderNumber(): string {
+    if (this.orders.length === 0)
+      return 'None';
+
+    return this.orders[0].orderNumber;
+  }
+
+  get latestOrderStatus(): string {
+    if (this.orders.length === 0)
+      return 'No Status';
+
+    return this.orders[0].status;
+  }
+
+  trackByOrderId(index: number, order: CustomerOrder): number {
+    return order.id;
+  }
+}
