@@ -86,6 +86,8 @@ export interface AdminFooterContent {
 }
 
 export interface AdminProductImage {
+  id?: number;
+  productId?: number;
   imageUrl: string;
   imageAlt: string;
   displayOrder: number;
@@ -109,6 +111,7 @@ export interface AdminProduct {
   fitType: string;
   description: string;
   price: number;
+  priceText?: string;
   colour: string;
   badge: string;
   sizes: string[];
@@ -119,7 +122,9 @@ export interface AdminProduct {
   isFeatured: boolean;
   isActive: boolean;
   displayOrder: number;
+  totalStock?: number;
   images: AdminProductImage[];
+  variants?: AdminProductVariant[];
 }
 
 export interface AdminProductCategory {
@@ -133,8 +138,19 @@ export interface AdminProductCategory {
   isActive: boolean;
 }
 
-export type AdminOrderStatus = 'Pending' | 'Paid' | 'Packed' | 'Shipped' | 'Delivered' | 'Cancelled';
-export type AdminPaymentStatus = 'Pending' | 'Paid' | 'Failed' | 'Refunded';
+export type AdminOrderStatus =
+  | 'Pending'
+  | 'Paid'
+  | 'Packed'
+  | 'Shipped'
+  | 'Delivered'
+  | 'Cancelled';
+
+export type AdminPaymentStatus =
+  | 'Pending'
+  | 'Paid'
+  | 'Failed'
+  | 'Refunded';
 
 export interface AdminOrder {
   id: number;

@@ -6,16 +6,13 @@ namespace API.Data;
 
 public class Seed
 {
-    // ===============================
-    // Seed foundation
-    // Runs the foundation seed files in the correct order.
-    // For now, this seeds users and roles only.
-    // ===============================
     public static async Task SeedFoundationAsync(
         DataContext context,
         UserManager<AppUser> userManager,
         RoleManager<AppRole> roleManager)
     {
         await SeedUsers.SeedAsync(userManager, roleManager, context);
+        await SeedProductCatalog.SeedAsync(context);
+        await SeedStorefrontContent.SeedAsync(context);
     }
 }

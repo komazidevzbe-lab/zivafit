@@ -4,7 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Subscription } from 'rxjs';
 
-import { ProductCatalogItem } from '../../_models/product-catalog';
+import { ProductCatalogImage, ProductCatalogItem } from '../../_models/product-catalog';
+import { ProductCatalogService } from '../../_services/product-catalog.service';
 import { ShopStateService } from '../../_services/shop-state.service';
 
 @Component({
@@ -17,7 +18,11 @@ import { ShopStateService } from '../../_services/shop-state.service';
 export class ProductDetailsComponent implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);
   private viewportScroller = inject(ViewportScroller);
+  private productCatalogService = inject(ProductCatalogService);
+
   private routeSubscription?: Subscription;
+  private productSubscription?: Subscription;
+  private relatedSubscription?: Subscription;
 
   shopStateService = inject(ShopStateService);
 
@@ -29,6 +34,7 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
   selectedImageUrl = '';
 
   successMessage = '';
+  isLoading = false;
 
   ngOnInit(): void {
     this.routeSubscription = this.route.paramMap.subscribe(params => {
@@ -39,6 +45,8 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.routeSubscription?.unsubscribe();
+    this.productSubscription?.unsubscribe();
+    this.relatedSubscription?.unsubscribe();
   }
 
   get isWishlisted(): boolean {
@@ -48,9 +56,67 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
     return this.shopStateService.isInWishlist(this.product.id);
   }
 
+  // ===============================
+  // Load product
+  // Loads Product Details from the API by product ID.
+  // The route uses /product-details/:id and does not use slugs.
+  // ===============================
+  private loadProduct(productId: number): void {
+    if (!productId) {
+      this.product = undefined;
+      return;
+    }
+
+    this.isLoading = true;
+    this.product = undefined;
+    this.relatedProducts = [];
+    this.successMessage = '';
+    this.selectedQuantity = 1;
+
+    this.productSubscription?.unsubscribe();
+
+    this.productSubscription = this.productCatalogService.getProductByIdFromApi(productId).subscribe({
+      next: product => {
+        this.product = product;
+        this.selectedSize = product.sizes[0] || 'One Size';
+        this.selectedImageUrl = product.imageUrl;
+        this.isLoading = false;
+        this.viewportScroller.scrollToPosition([0, 0]);
+        this.loadRelatedProducts(product);
+      },
+      error: () => {
+        this.product = undefined;
+        this.isLoading = false;
+      }
+    });
+  }
+
+  // ===============================
+  // Load related products
+  // Uses the same category as the current product.
+  // ===============================
+  private loadRelatedProducts(product: ProductCatalogItem): void {
+    this.relatedSubscription?.unsubscribe();
+
+    this.relatedSubscription = this.productCatalogService.getProductsByCategory(product.category).subscribe({
+      next: products => {
+        this.relatedProducts = products
+          .filter(item => item.id !== product.id)
+          .slice(0, 4);
+      },
+      error: () => {
+        this.relatedProducts = [];
+      }
+    });
+  }
+
   selectSize(size: string): void {
     this.selectedSize = size;
     this.successMessage = '';
+  }
+
+  selectImage(imageUrl: string): void {
+    this.selectedImageUrl = imageUrl;
   }
 
   increaseQuantity(): void {
@@ -84,10 +150,6 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
       return;
 
     this.shopStateService.toggleWishlist(this.product.id);
-
-    this.successMessage = this.isWishlisted
-      ? `${this.product.name} has been added to your wishlist.`
-      : `${this.product.name} has been removed from your wishlist.`;
   }
 
   toggleRelatedWishlist(productId: number, event: Event): void {
@@ -101,33 +163,11 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
     return product.id;
   }
 
-  trackBySize(index: number, size: string): string {
-    return size;
+  trackByImageId(index: number, image: ProductCatalogImage): number {
+    return image.id;
   }
 
-  private loadProduct(productId: number): void {
-    this.successMessage = '';
-    this.selectedQuantity = 1;
-    this.selectedSize = '';
-    this.selectedImageUrl = '';
-    this.relatedProducts = [];
-    this.product = undefined;
-
-    if (!productId)
-      return;
-
-    const selectedProduct = this.shopStateService.getProductById(productId);
-
-    if (!selectedProduct)
-      return;
-
-    this.product = selectedProduct;
-    this.selectedSize = selectedProduct.sizes[0] || 'One Size';
-    this.selectedImageUrl = selectedProduct.imageUrl;
-    this.relatedProducts = this.shopStateService.getRelatedProducts(selectedProduct, 4);
-
-    setTimeout(() => {
-      this.viewportScroller.scrollToPosition([0, 0]);
-    });
+  trackBySize(index: number, size: string): string {
+    return size;
   }
 }

@@ -16,6 +16,15 @@ export class ShopStateService {
   cartItems = signal<CartItem[]>(this.loadCartItems());
   wishlistProductIds = signal<number[]>(this.loadWishlistIds());
 
+  constructor() {
+    // ===============================
+    // Load products for cart/wishlist state
+    // Cart and wishlist still use localStorage in this phase.
+    // The product details now come from the backend product catalogue.
+    // ===============================
+    this.productCatalogService.loadProducts().subscribe();
+  }
+
   cartLines = computed<CartLine[]>(() => {
     return this.cartItems()
       .map(item => {
@@ -58,16 +67,13 @@ export class ShopStateService {
   });
 
   deliveryFee = computed(() => {
-    if (this.cartLines().length === 0)
+    if (this.cartSubtotal() === 0)
       return 0;
 
     return this.cartSubtotal() >= 1000 ? 0 : 99;
   });
 
   deliveryFeeText = computed(() => {
-    if (this.cartLines().length === 0)
-      return this.formatPrice(0);
-
     return this.deliveryFee() === 0 ? 'Free' : this.formatPrice(this.deliveryFee());
   });
 
@@ -79,48 +85,28 @@ export class ShopStateService {
     return this.formatPrice(this.cartTotal());
   });
 
-  getProductById(productId: number): ProductCatalogItem | undefined {
-    return this.productCatalogService
-      .getProducts()
-      .find(product => product.id === productId);
-  }
-
-  getRelatedProducts(product: ProductCatalogItem, limit = 4): ProductCatalogItem[] {
-    return this.productCatalogService
-      .getProductsByCategory(product.category)
-      .filter(relatedProduct => relatedProduct.id !== product.id)
-      .slice(0, limit);
-  }
-
   addToCart(productId: number, size: string, quantity = 1): void {
-    const product = this.getProductById(productId);
+    const selectedSize = size || 'One Size';
 
-    if (!product)
-      return;
-
-    const cleanSize = size || product.sizes[0] || 'One Size';
-    const cleanQuantity = Math.max(1, quantity);
-
-    const existingItems = this.cartItems();
-    const existingItem = existingItems.find(
-      item => item.productId === productId && item.size === cleanSize
+    const existingItem = this.cartItems().find(
+      item => item.productId === productId && item.size === selectedSize
     );
 
     if (existingItem) {
       this.cartItems.set(
-        existingItems.map(item =>
-          item.productId === productId && item.size === cleanSize
-            ? { ...item, quantity: item.quantity + cleanQuantity }
+        this.cartItems().map(item =>
+          item.productId === productId && item.size === selectedSize
+            ? { ...item, quantity: item.quantity + quantity }
             : item
         )
       );
     } else {
       this.cartItems.set([
-        ...existingItems,
+        ...this.cartItems(),
         {
           productId,
-          size: cleanSize,
-          quantity: cleanQuantity
+          size: selectedSize,
+          quantity
         }
       ]);
     }
@@ -128,16 +114,11 @@ export class ShopStateService {
     this.saveCartItems();
   }
 
-  updateCartQuantity(productId: number, size: string, quantity: number): void {
-    if (quantity <= 0) {
-      this.removeFromCart(productId, size);
-      return;
-    }
-
+  increaseCartQuantity(productId: number, size: string): void {
     this.cartItems.set(
       this.cartItems().map(item =>
         item.productId === productId && item.size === size
-          ? { ...item, quantity }
+          ? { ...item, quantity: item.quantity + 1 }
           : item
       )
     );
@@ -145,33 +126,23 @@ export class ShopStateService {
     this.saveCartItems();
   }
 
-  increaseCartQuantity(productId: number, size: string): void {
-    const item = this.cartItems().find(
-      cartItem => cartItem.productId === productId && cartItem.size === size
-    );
-
-    if (!item)
-      return;
-
-    this.updateCartQuantity(productId, size, item.quantity + 1);
-  }
-
   decreaseCartQuantity(productId: number, size: string): void {
-    const item = this.cartItems().find(
-      cartItem => cartItem.productId === productId && cartItem.size === size
+    this.cartItems.set(
+      this.cartItems()
+        .map(item =>
+          item.productId === productId && item.size === size
+            ? { ...item, quantity: item.quantity - 1 }
+            : item
+        )
+        .filter(item => item.quantity > 0)
     );
 
-    if (!item)
-      return;
-
-    this.updateCartQuantity(productId, size, item.quantity - 1);
+    this.saveCartItems();
   }
 
   removeFromCart(productId: number, size: string): void {
     this.cartItems.set(
-      this.cartItems().filter(item =>
-        !(item.productId === productId && item.size === size)
-      )
+      this.cartItems().filter(item => !(item.productId === productId && item.size === size))
     );
 
     this.saveCartItems();
@@ -182,35 +153,27 @@ export class ShopStateService {
     this.saveCartItems();
   }
 
-  isInWishlist(productId: number): boolean {
-    return this.wishlistProductIds().includes(productId);
-  }
-
-  addToWishlist(productId: number): void {
-    const product = this.getProductById(productId);
-
-    if (!product || this.isInWishlist(productId))
-      return;
-
-    this.wishlistProductIds.set([...this.wishlistProductIds(), productId]);
-    this.saveWishlistIds();
-  }
-
-  removeFromWishlist(productId: number): void {
-    this.wishlistProductIds.set(
-      this.wishlistProductIds().filter(id => id !== productId)
-    );
-
-    this.saveWishlistIds();
-  }
-
   toggleWishlist(productId: number): void {
     if (this.isInWishlist(productId)) {
       this.removeFromWishlist(productId);
       return;
     }
 
-    this.addToWishlist(productId);
+    this.wishlistProductIds.set([...this.wishlistProductIds(), productId]);
+    this.saveWishlistIds();
+  }
+
+  removeFromWishlist(productId: number): void {
+    this.wishlistProductIds.set(this.wishlistProductIds().filter(id => id !== productId));
+    this.saveWishlistIds();
+  }
+
+  isInWishlist(productId: number): boolean {
+    return this.wishlistProductIds().includes(productId);
+  }
+
+  getProductById(productId: number): ProductCatalogItem | undefined {
+    return this.productCatalogService.getProductById(productId);
   }
 
   private loadCartItems(): CartItem[] {
@@ -220,40 +183,7 @@ export class ShopStateService {
       if (!storedItems)
         return [];
 
-      const parsedItems = JSON.parse(storedItems);
-
-      if (!Array.isArray(parsedItems))
-        return [];
-
-      return parsedItems
-        .filter(item =>
-          typeof item.productId === 'number' &&
-          typeof item.size === 'string' &&
-          typeof item.quantity === 'number'
-        )
-        .map(item => ({
-          productId: item.productId,
-          size: item.size,
-          quantity: Math.max(1, item.quantity)
-        }));
-    } catch {
-      return [];
-    }
-  }
-
-  private loadWishlistIds(): number[] {
-    try {
-      const storedIds = localStorage.getItem(this.wishlistStorageKey);
-
-      if (!storedIds)
-        return [];
-
-      const parsedIds = JSON.parse(storedIds);
-
-      if (!Array.isArray(parsedIds))
-        return [];
-
-      return parsedIds.filter(id => typeof id === 'number');
+      return JSON.parse(storedItems) as CartItem[];
     } catch {
       return [];
     }
@@ -263,11 +193,26 @@ export class ShopStateService {
     localStorage.setItem(this.cartStorageKey, JSON.stringify(this.cartItems()));
   }
 
+  private loadWishlistIds(): number[] {
+    try {
+      const storedIds = localStorage.getItem(this.wishlistStorageKey);
+
+      if (!storedIds)
+        return [];
+
+      return JSON.parse(storedIds) as number[];
+    } catch {
+      return [];
+    }
+  }
+
   private saveWishlistIds(): void {
     localStorage.setItem(this.wishlistStorageKey, JSON.stringify(this.wishlistProductIds()));
   }
 
-  private formatPrice(price: number): string {
-    return `R${price.toLocaleString('en-ZA').replace(',', ' ')}`;
+  private formatPrice(amount: number): string {
+    return `R${amount.toLocaleString('en-ZA', {
+      maximumFractionDigits: 0
+    }).replace(/,/g, ' ')}`;
   }
 }

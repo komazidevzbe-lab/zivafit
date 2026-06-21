@@ -38,8 +38,26 @@ public static class ApplicationServiceExtensions
         services.AddScoped<IPasswordResetCodeService, PasswordResetCodeService>();
 
         // ===============================
+        // Product catalogue services
+        // Handles public products, admin product management, variants, stock, and images.
+        // ===============================
+        services.AddScoped<IProductCatalogService, ProductCatalogService>();
+
+        // ===============================
+        // Storefront content services
+        // Handles seeded Home page content so the Home page is not hardcoded in Angular.
+        // ===============================
+        services.AddScoped<IStorefrontContentService, StorefrontContentService>();
+
+        // ===============================
+        // Photo service
+        // Handles product image uploads and deletes through Cloudinary.
+        // ===============================
+        services.AddScoped<IPhotoService, PhotoService>();
+
+        // ===============================
         // Cloudinary settings
-        // Upload services will be added later when product images are built.
+        // Used by the product image upload service.
         // ===============================
         services.Configure<CloudinarySettings>(config.GetSection("CloudinarySettings"));
 

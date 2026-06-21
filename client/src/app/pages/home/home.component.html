@@ -1,47 +1,50 @@
-<section class="home-page">
+<section class="home-page" *ngIf="homeContent as content">
   <section class="home-hero">
     <div class="hero-copy">
-      <p class="eyebrow">Confident. Strong. Unstoppable.</p>
+      <p class="eyebrow">{{ content.heroEyebrow }}</p>
 
-      <h1>Made for <em>every you.</em></h1>
+      <h1>
+        {{ content.heroTitle }}
+        <em>{{ content.heroHighlight }}</em>
+      </h1>
 
       <p class="hero-text">
-        Performance meets confidence in activewear that moves with you and celebrates you.
+        {{ content.heroText }}
       </p>
 
       <div class="hero-actions">
-        <a routerLink="/new-in" class="ziva-btn-dark">
-          Shop New Arrivals
+        <a [routerLink]="content.primaryButtonRoute" class="ziva-btn-dark">
+          {{ content.primaryButtonLabel }}
         </a>
 
-        <a routerLink="/shop" class="ziva-btn-outline">
-          Shop Collections
+        <a [routerLink]="content.secondaryButtonRoute" class="ziva-btn-outline">
+          {{ content.secondaryButtonLabel }}
         </a>
       </div>
     </div>
 
-    <div class="hero-visual" aria-label="ZivaFit activewear set previews">
+    <div class="hero-visual">
       <div
         class="model-card"
-        *ngFor="let card of heroCards; trackBy: trackByHeroTitle"
+        *ngFor="let card of content.heroCards; trackBy: trackByHeroCardId"
         [ngClass]="card.cardClass"
       >
-        <img [src]="card.imageUrl" [alt]="card.alt" />
+        <img [src]="card.imageUrl" [alt]="card.imageAlt" />
       </div>
     </div>
   </section>
 
-  <section class="category-row" aria-label="Shop ZivaFit categories">
+  <section class="category-row">
     <a
-      *ngFor="let category of categories; trackBy: trackByCategoryTitle"
+      *ngFor="let category of content.categoryCards; trackBy: trackByCategoryCardId"
       [routerLink]="category.route"
       class="category-card"
     >
       <div class="category-image">
         <img
-          *ngFor="let image of category.images; let imageIndex = index; trackBy: trackByImageUrl"
-          [src]="image.url"
-          [alt]="image.alt"
+          *ngFor="let image of category.images; let imageIndex = index; trackBy: trackByCategoryImageId"
+          [src]="image.imageUrl"
+          [alt]="image.imageAlt"
           [style.animation-delay]="getSlideDelay(imageIndex)"
         />
       </div>
@@ -50,7 +53,7 @@
         <h3>{{ category.title }}</h3>
 
         <span>
-          Shop Now
+          {{ category.linkLabel }}
           <i class="bi bi-arrow-right" aria-hidden="true"></i>
         </span>
       </div>
@@ -58,40 +61,22 @@
   </section>
 
   <section class="benefits-strip">
-    <div>
-      <i class="bi bi-leaf" aria-hidden="true"></i>
-      <strong>Sustainably Made</strong>
-      <span>Thoughtful fabrics for a better planet.</span>
-    </div>
-
-    <div>
-      <i class="bi bi-stars" aria-hidden="true"></i>
-      <strong>Squat-Proof Confidence</strong>
-      <span>Feel covered and supported always.</span>
-    </div>
-
-    <div>
-      <i class="bi bi-droplet" aria-hidden="true"></i>
-      <strong>Sweat-Wicking</strong>
-      <span>Stay cool, dry, and comfortable.</span>
-    </div>
-
-    <div>
-      <i class="bi bi-heart" aria-hidden="true"></i>
-      <strong>Designed for Every Body</strong>
-      <span>Inclusive sizing that celebrates you.</span>
+    <div *ngFor="let benefit of content.benefits; trackBy: trackByBenefitId">
+      <i [class]="benefit.iconClass" aria-hidden="true"></i>
+      <strong>{{ benefit.title }}</strong>
+      <span>{{ benefit.text }}</span>
     </div>
   </section>
 
   <section class="best-sellers">
     <div class="section-header">
       <div>
-        <p class="eyebrow">Customer favourites</p>
-        <h2>Best Sellers</h2>
+        <p class="eyebrow">{{ content.bestSellersEyebrow }}</p>
+        <h2>{{ content.bestSellersTitle }}</h2>
       </div>
 
-      <a routerLink="/shop">
-        Shop all best sellers
+      <a [routerLink]="content.bestSellersLinkRoute">
+        {{ content.bestSellersLinkLabel }}
         <i class="bi bi-arrow-right" aria-hidden="true"></i>
       </a>
     </div>
@@ -108,7 +93,7 @@
           <div class="product-image">
             <img [src]="item.imageUrl" [alt]="item.imageAlt" />
 
-            <span class="product-badge">
+            <span class="product-badge" *ngIf="item.badge">
               {{ item.badge }}
             </span>
           </div>
@@ -122,7 +107,7 @@
 
             <div class="product-footer">
               <div class="product-link">
-                View Product
+                {{ content.productCardLinkLabel }}
                 <i class="bi bi-arrow-right" aria-hidden="true"></i>
               </div>
 

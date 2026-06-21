@@ -113,7 +113,7 @@ Main landing section shown when the customer opens the store.
 
 /* ===============================
 Hero visual cards
-Uses sets1 to sets4 inside the four hero cards.
+Uses the database-backed hero card images.
 =============================== */
 
 .hero-visual {
@@ -223,7 +223,7 @@ Each category uses a slow image slideshow.
 }
 
 .category-image {
-  height: 155px;
+  height: 175px;
   border-radius: 10px;
   background: #eadbcd;
   margin-bottom: 0.8rem;
@@ -238,7 +238,7 @@ Each category uses a slow image slideshow.
   width: 100%;
   height: 100%;
   display: block;
-  object-fit: auto;
+  object-fit: cover;
   object-position: center top;
   opacity: 0;
   transform-origin: left center;
@@ -349,7 +349,7 @@ Quick value messages for the store.
 
 /* ===============================
 Best sellers
-Real frontend catalogue product cards before backend catalogue connection.
+Uses products loaded from the Product API.
 =============================== */
 
 .best-sellers {
@@ -426,7 +426,7 @@ Real frontend catalogue product cards before backend catalogue connection.
 }
 
 .product-image {
-  height: 220px;
+  height: 240px;
   border-radius: 10px;
   background: #eadbcd;
   position: relative;
@@ -437,7 +437,7 @@ Real frontend catalogue product cards before backend catalogue connection.
   width: 100%;
   height: 100%;
   display: block;
-  object-fit: auto;
+  object-fit: cover;
   object-position: center top;
   transition: 0.35s ease;
 }
@@ -571,7 +571,7 @@ Keeps the landing page clean on tablets and mobile.
   }
 
   .product-image {
-    height: 205px;
+    height: 225px;
   }
 
   .model-card {

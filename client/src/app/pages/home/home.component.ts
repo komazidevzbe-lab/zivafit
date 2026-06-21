@@ -1,28 +1,19 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { Subscription, forkJoin } from 'rxjs';
 
 import { ProductCatalogItem } from '../../_models/product-catalog';
+import {
+  StorefrontBenefitItem,
+  StorefrontCategoryCard,
+  StorefrontCategoryCardImage,
+  StorefrontHeroCard,
+  StorefrontHomeContent
+} from '../../_models/storefront-content';
 import { ProductCatalogService } from '../../_services/product-catalog.service';
 import { ShopStateService } from '../../_services/shop-state.service';
-
-interface HomeImage {
-  url: string;
-  alt: string;
-}
-
-interface HomeHeroCard {
-  title: string;
-  imageUrl: string;
-  alt: string;
-  cardClass: string;
-}
-
-interface HomeCategory {
-  title: string;
-  route: string;
-  images: HomeImage[];
-}
+import { StorefrontContentService } from '../../_services/storefront-content.service';
 
 @Component({
   selector: 'app-home',
@@ -31,8 +22,10 @@ interface HomeCategory {
   templateUrl: './home.component.html',
   styleUrl: './home.component.css'
 })
-export class HomeComponent {
+export class HomeComponent implements OnInit, OnDestroy {
   private productCatalogService = inject(ProductCatalogService);
+  private storefrontContentService = inject(StorefrontContentService);
+  private homeSubscription?: Subscription;
 
   shopStateService = inject(ShopStateService);
 
@@ -40,108 +33,46 @@ export class HomeComponent {
 
   ratingStars = [1, 2, 3, 4, 5];
 
-  heroCards: HomeHeroCard[] = [
-    {
-      title: 'ZivaFit Set One',
-      imageUrl: 'assets/sets1.png',
-      alt: 'Woman wearing a ZivaFit activewear set',
-      cardClass: 'card-one'
-    },
-    {
-      title: 'ZivaFit Set Two',
-      imageUrl: 'assets/sets2.png',
-      alt: 'Woman posing in a matching ZivaFit gym set',
-      cardClass: 'card-two'
-    },
-    {
-      title: 'ZivaFit Set Three',
-      imageUrl: 'assets/sets3.png',
-      alt: 'ZivaFit activewear set styled for gym and movement',
-      cardClass: 'card-three'
-    },
-    {
-      title: 'ZivaFit Set Four',
-      imageUrl: 'assets/sets4.png',
-      alt: 'Woman wearing a premium ZivaFit matching set',
-      cardClass: 'card-four'
-    }
-  ];
+  homeContent: StorefrontHomeContent | null = null;
+  bestSellers: ProductCatalogItem[] = [];
 
-  categories: HomeCategory[] = [
-    {
-      title: 'Leggings',
-      route: '/leggings',
-      images: [
-        { url: 'assets/leggings1.png', alt: 'ZivaFit leggings product preview' },
-        { url: 'assets/leggings2.png', alt: 'ZivaFit high-waist leggings product preview' },
-        { url: 'assets/bootlegleggings1.png', alt: 'ZivaFit bootleg leggings product preview' },
-        { url: 'assets/bootlegleggings2.png', alt: 'ZivaFit bootleg activewear leggings' }
-      ]
-    },
-    {
-      title: 'Sports Bras',
-      route: '/sports-bras',
-      images: [
-        { url: 'assets/bra1.png', alt: 'ZivaFit sports bra product preview' },
-        { url: 'assets/bra2.png', alt: 'ZivaFit supportive sports bra' },
-        { url: 'assets/bra3.png', alt: 'ZivaFit sports bra in activewear styling' },
-        { url: 'assets/bra4.png', alt: 'ZivaFit gym sports bra product image' }
-      ]
-    },
-    {
-      title: 'Tops',
-      route: '/tops',
-      images: [
-        { url: 'assets/longsleeveshirt1.png', alt: 'ZivaFit long sleeve gym top' },
-        { url: 'assets/longsleeveshirt2.png', alt: 'ZivaFit fitted long sleeve activewear top' },
-        { url: 'assets/shortsleeveshirt1.png', alt: 'ZivaFit short sleeve activewear top' },
-        { url: 'assets/shortsleeveshirt2.png', alt: 'ZivaFit gym top product preview' }
-      ]
-    },
-    {
-      title: 'Sets',
-      route: '/sets',
-      images: [
-        { url: 'assets/sets1.png', alt: 'ZivaFit matching activewear set' },
-        { url: 'assets/sets2.png', alt: 'ZivaFit coordinated gym set' },
-        { url: 'assets/sets3.png', alt: 'ZivaFit premium activewear set' },
-        { url: 'assets/sets4.png', alt: 'ZivaFit matching set product preview' }
-      ]
-    },
-    {
-      title: 'Shorts',
-      route: '/shorts',
-      images: [
-        { url: 'assets/short1.png', alt: 'ZivaFit activewear shorts' },
-        { url: 'assets/short2.png', alt: 'ZivaFit gym shorts product preview' },
-        { url: 'assets/skort1.png', alt: 'ZivaFit skort activewear product preview' },
-        { url: 'assets/skort2.png', alt: 'ZivaFit skirt shorts product preview' }
-      ]
-    },
-    {
-      title: 'Accessories',
-      route: '/accessories',
-      images: [
-        { url: 'assets/gymbag1.png', alt: 'ZivaFit gym bag product preview' },
-        { url: 'assets/gymbag2.png', alt: 'ZivaFit activewear accessory bag' },
-        { url: 'assets/gymbag3.png', alt: 'ZivaFit gym duffle bag' },
-        { url: 'assets/gymbag4.png', alt: 'ZivaFit fitness bag product preview' }
-      ]
-    }
-  ];
+  isLoading = false;
 
-  get bestSellers(): ProductCatalogItem[] {
-    const activeBestSellers = this.productCatalogService
-      .getProducts()
-      .filter(product => product.isActive && product.isBestSeller);
+  ngOnInit(): void {
+    this.loadHomePage();
+  }
 
-    if (activeBestSellers.length > 0)
-      return activeBestSellers.slice(0, 8);
+  ngOnDestroy(): void {
+    this.homeSubscription?.unsubscribe();
+  }
 
-    return this.productCatalogService
-      .getProducts()
-      .filter(product => product.isActive)
-      .slice(0, 8);
+  // ===============================
+  // Load Home page
+  // Loads Home content from the Storefront API and product cards from the Product API.
+  // No hero cards, category cards, benefits, or Home copy are hardcoded here.
+  // ===============================
+  private loadHomePage(): void {
+    this.isLoading = true;
+
+    this.homeSubscription = forkJoin({
+      content: this.storefrontContentService.loadHomeContent(),
+      bestSellers: this.productCatalogService.getBestSellers()
+    }).subscribe({
+      next: result => {
+        this.homeContent = result.content;
+        this.bestSellers = result.bestSellers.slice(0, 4);
+        this.isLoading = false;
+      },
+      error: () => {
+        this.homeContent = null;
+        this.bestSellers = [];
+        this.isLoading = false;
+      }
+    });
+  }
+
+  getSlideDelay(index: number): string {
+    return `${index * this.categorySlideDelaySeconds}s`;
   }
 
   toggleWishlist(productId: number, event: Event): void {
@@ -151,20 +82,20 @@ export class HomeComponent {
     this.shopStateService.toggleWishlist(productId);
   }
 
-  getSlideDelay(index: number): string {
-    return `${index * this.categorySlideDelaySeconds}s`;
+  trackByHeroCardId(index: number, item: StorefrontHeroCard): number {
+    return item.id;
   }
 
-  trackByHeroTitle(index: number, item: HomeHeroCard): string {
-    return item.title;
+  trackByCategoryCardId(index: number, item: StorefrontCategoryCard): number {
+    return item.id;
   }
 
-  trackByCategoryTitle(index: number, item: HomeCategory): string {
-    return item.title;
+  trackByCategoryImageId(index: number, item: StorefrontCategoryCardImage): number {
+    return item.id;
   }
 
-  trackByImageUrl(index: number, item: HomeImage): string {
-    return item.url;
+  trackByBenefitId(index: number, item: StorefrontBenefitItem): number {
+    return item.id;
   }
 
   trackByProductId(index: number, item: ProductCatalogItem): number {

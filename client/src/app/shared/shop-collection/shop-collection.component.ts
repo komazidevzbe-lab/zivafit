@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, inject } from '@angular/core';
+import { Component, Input, OnChanges, OnDestroy, SimpleChanges, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { Subscription } from 'rxjs';
 
 import {
   ProductCatalogItem,
@@ -22,8 +23,9 @@ interface FilterOption {
   templateUrl: './shop-collection.component.html',
   styleUrl: './shop-collection.component.css'
 })
-export class ShopCollectionComponent {
+export class ShopCollectionComponent implements OnChanges, OnDestroy {
   private productCatalogService = inject(ProductCatalogService);
+  private loadSubscription?: Subscription;
 
   shopStateService = inject(ShopStateService);
 
@@ -33,18 +35,21 @@ export class ShopCollectionComponent {
   selectedSort: ProductSort = 'featured';
   ratingStars = [1, 2, 3, 4, 5];
 
-  get sectionId(): string {
-    return `${this.config.pageKey}-products`;
+  baseProducts: ProductCatalogItem[] = [];
+  isLoading = false;
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['config'] && this.config) {
+      this.loadProducts();
+    }
   }
 
-  get baseProducts(): ProductCatalogItem[] {
-    if (this.config.mode === 'new')
-      return this.productCatalogService.getNewProducts();
+  ngOnDestroy(): void {
+    this.loadSubscription?.unsubscribe();
+  }
 
-    if (this.config.mode === 'category' && this.config.category)
-      return this.productCatalogService.getProductsByCategory(this.config.category);
-
-    return this.productCatalogService.getProducts();
+  get sectionId(): string {
+    return `${this.config.pageKey}-products`;
   }
 
   get filterOptions(): FilterOption[] {
@@ -64,13 +69,41 @@ export class ShopCollectionComponent {
     const filtered = this.activeFilter === 'All'
       ? [...this.baseProducts]
       : this.baseProducts.filter(product => {
-        if (this.config.filterType === 'category')
-          return product.category === (this.activeFilter as ProductCategory);
+          if (this.config.filterType === 'category')
+            return product.category === (this.activeFilter as ProductCategory);
 
-        return product.fitType === this.activeFilter;
-      });
+          return product.fitType === this.activeFilter;
+        });
 
     return this.sortProducts(filtered);
+  }
+
+  // ===============================
+  // Load products
+  // Replaces frontend dummy catalogue data with API data from the database.
+  // ===============================
+  private loadProducts(): void {
+    this.isLoading = true;
+    this.activeFilter = 'All';
+
+    this.loadSubscription?.unsubscribe();
+
+    const request = this.config.mode === 'new'
+      ? this.productCatalogService.getNewProducts()
+      : this.config.mode === 'category' && this.config.category
+        ? this.productCatalogService.getProductsByCategory(this.config.category)
+        : this.productCatalogService.loadProducts();
+
+    this.loadSubscription = request.subscribe({
+      next: products => {
+        this.baseProducts = products;
+        this.isLoading = false;
+      },
+      error: () => {
+        this.baseProducts = [];
+        this.isLoading = false;
+      }
+    });
   }
 
   scrollToProducts(): void {
