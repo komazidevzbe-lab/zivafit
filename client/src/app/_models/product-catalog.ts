@@ -1,10 +1,4 @@
-export type ProductCategory =
-  | 'Leggings'
-  | 'Sports Bras'
-  | 'Tops'
-  | 'Sets'
-  | 'Shorts'
-  | 'Accessories';
+export type ProductCategory = string;
 
 export type ProductSort = 'featured' | 'priceLow' | 'priceHigh' | 'name';
 
@@ -66,7 +60,7 @@ export interface ProductCatalogItem {
 }
 
 export interface ProductCatalogParams {
-  category?: ProductCategory | string;
+  category?: ProductCategory;
   search?: string;
   sort?: ProductSort | string;
   isNew?: boolean;
@@ -128,48 +122,4 @@ export interface CreateProductImageRequest {
 export interface UpdateProductImageRequest {
   imageAlt: string;
   isMain: boolean;
-}
-
-export interface ShopCollectionHeroPoint {
-  iconClass: string;
-  label: string;
-}
-
-export interface ShopCollectionHeroImage {
-  imageUrl: string;
-  imageAlt: string;
-}
-
-export interface ShopCollectionBenefit {
-  iconClass: string;
-  title: string;
-  text: string;
-}
-
-export interface ShopCollectionConfig {
-  pageKey: string;
-  mode: ProductCollectionMode;
-  category?: ProductCategory;
-  filterType: ProductFilterType;
-
-  heroEyebrow: string;
-  heroTitle: string;
-  heroText: string;
-  heroButtonLabel: string;
-  secondaryButtonLabel: string;
-  secondaryButtonRoute: string;
-
-  heroPoints: ShopCollectionHeroPoint[];
-  heroImages: ShopCollectionHeroImage[];
-  benefits: ShopCollectionBenefit[];
-
-  collectionEyebrow: string;
-  collectionTitle: string;
-
-  emptyTitle: string;
-  emptyText: string;
-
-  noteEyebrow: string;
-  noteTitle: string;
-  noteText: string;
 }

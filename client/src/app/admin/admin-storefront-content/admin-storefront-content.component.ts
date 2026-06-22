@@ -6,10 +6,18 @@ import { RouterLink } from '@angular/router';
 import {
   StorefrontBenefitItem,
   StorefrontCategoryCardImage,
+  StorefrontCollectionBenefit,
+  StorefrontCollectionHeroImage,
+  StorefrontCollectionHeroPoint,
+  StorefrontCollectionPage,
   StorefrontHeroCard,
   StorefrontHomeContent,
   UpdateStorefrontBenefitItemRequest,
   UpdateStorefrontCategoryCardImageRequest,
+  UpdateStorefrontCollectionBenefitRequest,
+  UpdateStorefrontCollectionHeroImageRequest,
+  UpdateStorefrontCollectionHeroPointRequest,
+  UpdateStorefrontCollectionPageRequest,
   UpdateStorefrontHeroCardRequest,
   UpdateStorefrontHomeContentRequest
 } from '../../_models/storefront-content';
@@ -17,6 +25,7 @@ import { StorefrontContentService } from '../../_services/storefront-content.ser
 
 type StorefrontContentTab = 'home' | 'collections' | 'footer';
 type StorefrontPanel = 'content' | 'media' | 'categories' | 'benefits';
+type CollectionPanel = 'content' | 'points' | 'media' | 'benefits';
 
 interface StorefrontTabCard {
   key: StorefrontContentTab;
@@ -37,8 +46,11 @@ export class AdminStorefrontContentComponent implements OnInit {
 
   activeTab: StorefrontContentTab = 'home';
   openPanel: StorefrontPanel = 'content';
+  openCollectionPanel: CollectionPanel = 'content';
 
   homeContent: StorefrontHomeContent | null = null;
+  collectionPages: StorefrontCollectionPage[] = [];
+  selectedCollectionPageId: number | null = null;
 
   successMessage = '';
   errorMessage = '';
@@ -46,6 +58,7 @@ export class AdminStorefrontContentComponent implements OnInit {
 
   private heroImageFiles = new Map<number, File>();
   private categoryImageFiles = new Map<number, File>();
+  private collectionHeroImageFiles = new Map<number, File>();
 
   tabCards: StorefrontTabCard[] = [
     {
@@ -70,6 +83,7 @@ export class AdminStorefrontContentComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadHomeContent();
+    this.loadCollectionPages();
   }
 
   // ===============================
@@ -93,21 +107,63 @@ export class AdminStorefrontContentComponent implements OnInit {
   }
 
   // ===============================
+  // Load collection pages
+  // Loads public collection page content from the database for admin editing.
+  // ===============================
+  loadCollectionPages(): void {
+    this.storefrontContentService.loadAdminCollectionPages().subscribe({
+      next: pages => {
+        this.collectionPages = structuredClone(pages);
+
+        if (!this.selectedCollectionPageId && this.collectionPages.length > 0) {
+          this.selectedCollectionPageId = this.collectionPages[0].id;
+        }
+      },
+      error: error => {
+        this.errorMessage = error?.error?.message || 'Collection page content could not be loaded.';
+      }
+    });
+  }
+
+  // ===============================
   // Select tab
   // Switches between storefront content areas.
   // ===============================
   selectTab(tab: StorefrontContentTab): void {
     this.activeTab = tab;
     this.openPanel = 'content';
+    this.openCollectionPanel = 'content';
     this.clearMessages();
+
+    if (tab === 'collections' && this.collectionPages.length === 0) {
+      this.loadCollectionPages();
+    }
   }
 
   // ===============================
-  // Toggle panel
+  // Toggle Home panel
   // Opens one Home management panel at a time.
   // ===============================
   togglePanel(panel: StorefrontPanel): void {
     this.openPanel = this.openPanel === panel ? 'content' : panel;
+  }
+
+  // ===============================
+  // Toggle collection panel
+  // Opens one collection management panel at a time.
+  // ===============================
+  toggleCollectionPanel(panel: CollectionPanel): void {
+    this.openCollectionPanel = this.openCollectionPanel === panel ? 'content' : panel;
+  }
+
+  // ===============================
+  // Select collection page
+  // Uses database collection page ID.
+  // ===============================
+  selectCollectionPage(collectionPageId: number): void {
+    this.selectedCollectionPageId = collectionPageId;
+    this.openCollectionPanel = 'content';
+    this.clearMessages();
   }
 
   // ===============================
@@ -140,6 +196,151 @@ export class AdminStorefrontContentComponent implements OnInit {
       },
       error: error => {
         this.errorMessage = error?.error?.message || 'Home content could not be saved.';
+      }
+    });
+  }
+
+  // ===============================
+  // Save collection page
+  // Saves collection page copy and labels only.
+  // Page key, mode, category, and routes stay controlled by the backend/app.
+  // ===============================
+  saveCollectionPage(page: StorefrontCollectionPage): void {
+    const request: UpdateStorefrontCollectionPageRequest = {
+      heroEyebrow: page.heroEyebrow,
+      heroTitle: page.heroTitle,
+      heroText: page.heroText,
+      heroButtonLabel: page.heroButtonLabel,
+      secondaryButtonLabel: page.secondaryButtonLabel,
+      collectionEyebrow: page.collectionEyebrow,
+      collectionTitle: page.collectionTitle,
+      productCardLinkLabel: page.productCardLinkLabel,
+      emptyTitle: page.emptyTitle,
+      emptyText: page.emptyText,
+      noteEyebrow: page.noteEyebrow,
+      noteTitle: page.noteTitle,
+      noteText: page.noteText
+    };
+
+    this.clearMessages();
+
+    this.storefrontContentService.updateCollectionPage(page.id, request).subscribe({
+      next: updatedPage => {
+        this.replaceCollectionPage(updatedPage);
+        this.successMessage = 'Collection page content has been saved successfully.';
+      },
+      error: error => {
+        this.errorMessage = error?.error?.message || 'Collection page content could not be saved.';
+      }
+    });
+  }
+
+  // ===============================
+  // Save collection hero point
+  // Updates one hero point shown in the collection hero section.
+  // ===============================
+  saveCollectionHeroPoint(point: StorefrontCollectionHeroPoint): void {
+    const request: UpdateStorefrontCollectionHeroPointRequest = {
+      iconClass: point.iconClass,
+      label: point.label
+    };
+
+    this.clearMessages();
+
+    this.storefrontContentService.updateCollectionHeroPoint(point.id, request).subscribe({
+      next: updatedPoint => {
+        this.replaceCollectionHeroPoint(updatedPoint);
+        this.successMessage = 'Collection hero point has been saved.';
+      },
+      error: error => {
+        this.errorMessage = error?.error?.message || 'Collection hero point could not be saved.';
+      }
+    });
+  }
+
+  // ===============================
+  // Save collection hero image
+  // Updates alt text only.
+  // ===============================
+  saveCollectionHeroImage(image: StorefrontCollectionHeroImage): void {
+    const request: UpdateStorefrontCollectionHeroImageRequest = {
+      imageAlt: image.imageAlt
+    };
+
+    this.clearMessages();
+
+    this.storefrontContentService.updateCollectionHeroImage(image.id, request).subscribe({
+      next: updatedImage => {
+        this.replaceCollectionHeroImage(updatedImage);
+        this.successMessage = 'Collection hero image text has been saved.';
+      },
+      error: error => {
+        this.errorMessage = error?.error?.message || 'Collection hero image text could not be saved.';
+      }
+    });
+  }
+
+  // ===============================
+  // Select collection hero image file
+  // Stores the selected local file for upload.
+  // ===============================
+  onCollectionHeroImageFileSelected(image: StorefrontCollectionHeroImage, event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+
+    if (file) {
+      this.collectionHeroImageFiles.set(image.id, file);
+    }
+  }
+
+  // ===============================
+  // Upload collection hero image
+  // Uploads a replacement collection image from the admin device.
+  // ===============================
+  uploadCollectionHeroImage(image: StorefrontCollectionHeroImage): void {
+    const file = this.collectionHeroImageFiles.get(image.id);
+
+    if (!file)
+      return;
+
+    this.clearMessages();
+
+    this.storefrontContentService.uploadCollectionHeroImage(
+      image.id,
+      file,
+      image.imageAlt
+    ).subscribe({
+      next: updatedImage => {
+        this.replaceCollectionHeroImage(updatedImage);
+        this.collectionHeroImageFiles.delete(image.id);
+        this.successMessage = 'Collection hero image has been uploaded successfully.';
+      },
+      error: error => {
+        this.errorMessage = error?.error?.message || 'Collection hero image could not be uploaded.';
+      }
+    });
+  }
+
+  // ===============================
+  // Save collection benefit
+  // Updates one benefit card shown on a collection page.
+  // ===============================
+  saveCollectionBenefit(benefit: StorefrontCollectionBenefit): void {
+    const request: UpdateStorefrontCollectionBenefitRequest = {
+      iconClass: benefit.iconClass,
+      title: benefit.title,
+      text: benefit.text
+    };
+
+    this.clearMessages();
+
+    this.storefrontContentService.updateCollectionBenefit(benefit.id, request).subscribe({
+      next: updatedBenefit => {
+        this.replaceCollectionBenefit(updatedBenefit);
+        this.successMessage = 'Collection benefit has been saved.';
+      },
+      error: error => {
+        this.errorMessage = error?.error?.message || 'Collection benefit could not be saved.';
       }
     });
   }
@@ -297,6 +498,17 @@ export class AdminStorefrontContentComponent implements OnInit {
     return this.categoryImageFiles.has(imageId);
   }
 
+  hasCollectionHeroFile(imageId: number): boolean {
+    return this.collectionHeroImageFiles.has(imageId);
+  }
+
+  get selectedCollectionPage(): StorefrontCollectionPage | null {
+    if (!this.selectedCollectionPageId)
+      return null;
+
+    return this.collectionPages.find(page => page.id === this.selectedCollectionPageId) || null;
+  }
+
   trackByTabKey(index: number, item: StorefrontTabCard): StorefrontContentTab {
     return item.key;
   }
@@ -314,6 +526,22 @@ export class AdminStorefrontContentComponent implements OnInit {
   }
 
   trackByBenefitId(index: number, item: StorefrontBenefitItem): number {
+    return item.id;
+  }
+
+  trackByCollectionPageId(index: number, item: StorefrontCollectionPage): number {
+    return item.id;
+  }
+
+  trackByCollectionHeroPointId(index: number, item: StorefrontCollectionHeroPoint): number {
+    return item.id;
+  }
+
+  trackByCollectionHeroImageId(index: number, item: StorefrontCollectionHeroImage): number {
+    return item.id;
+  }
+
+  trackByCollectionBenefitId(index: number, item: StorefrontCollectionBenefit): number {
     return item.id;
   }
 
@@ -348,6 +576,31 @@ export class AdminStorefrontContentComponent implements OnInit {
       ...this.homeContent,
       benefits: this.homeContent.benefits.map(item => item.id === benefit.id ? benefit : item)
     };
+  }
+
+  private replaceCollectionPage(page: StorefrontCollectionPage): void {
+    this.collectionPages = this.collectionPages.map(item => item.id === page.id ? structuredClone(page) : item);
+  }
+
+  private replaceCollectionHeroPoint(point: StorefrontCollectionHeroPoint): void {
+    this.collectionPages = this.collectionPages.map(page => ({
+      ...page,
+      heroPoints: page.heroPoints.map(item => item.id === point.id ? point : item)
+    }));
+  }
+
+  private replaceCollectionHeroImage(image: StorefrontCollectionHeroImage): void {
+    this.collectionPages = this.collectionPages.map(page => ({
+      ...page,
+      heroImages: page.heroImages.map(item => item.id === image.id ? image : item)
+    }));
+  }
+
+  private replaceCollectionBenefit(benefit: StorefrontCollectionBenefit): void {
+    this.collectionPages = this.collectionPages.map(page => ({
+      ...page,
+      benefits: page.benefits.map(item => item.id === benefit.id ? benefit : item)
+    }));
   }
 
   private clearMessages(): void {

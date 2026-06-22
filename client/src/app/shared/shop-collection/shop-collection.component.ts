@@ -6,11 +6,12 @@ import { Subscription } from 'rxjs';
 import {
   ProductCatalogItem,
   ProductCategory,
-  ProductSort,
-  ShopCollectionConfig
+  ProductSort
 } from '../../_models/product-catalog';
+import { StorefrontCollectionPage } from '../../_models/storefront-content';
 import { ProductCatalogService } from '../../_services/product-catalog.service';
 import { ShopStateService } from '../../_services/shop-state.service';
+import { StorefrontContentService } from '../../_services/storefront-content.service';
 
 interface FilterOption {
   label: string;
@@ -25,36 +26,44 @@ interface FilterOption {
 })
 export class ShopCollectionComponent implements OnChanges, OnDestroy {
   private productCatalogService = inject(ProductCatalogService);
-  private loadSubscription?: Subscription;
+  private storefrontContentService = inject(StorefrontContentService);
+
+  private contentSubscription?: Subscription;
+  private productsSubscription?: Subscription;
 
   shopStateService = inject(ShopStateService);
 
-  @Input({ required: true }) config!: ShopCollectionConfig;
+  @Input({ required: true }) pageKey = '';
 
+  content: StorefrontCollectionPage | null = null;
   activeFilter = 'All';
   selectedSort: ProductSort = 'featured';
-  ratingStars = [1, 2, 3, 4, 5];
 
   baseProducts: ProductCatalogItem[] = [];
   isLoading = false;
+  isContentLoading = false;
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['config'] && this.config) {
-      this.loadProducts();
+    if (changes['pageKey'] && this.pageKey) {
+      this.loadCollectionPage();
     }
   }
 
   ngOnDestroy(): void {
-    this.loadSubscription?.unsubscribe();
+    this.contentSubscription?.unsubscribe();
+    this.productsSubscription?.unsubscribe();
   }
 
   get sectionId(): string {
-    return `${this.config.pageKey}-products`;
+    return this.content ? `${this.content.pageKey}-products` : 'collection-products';
   }
 
   get filterOptions(): FilterOption[] {
+    if (!this.content)
+      return [{ label: 'All' }];
+
     const values = this.baseProducts.map(product =>
-      this.config.filterType === 'category' ? product.category : product.fitType
+      this.content?.filterType === 'category' ? product.category : product.fitType
     );
 
     const uniqueValues = Array.from(new Set(values));
@@ -66,35 +75,65 @@ export class ShopCollectionComponent implements OnChanges, OnDestroy {
   }
 
   get filteredProducts(): ProductCatalogItem[] {
+    if (!this.content)
+      return [];
+
     const filtered = this.activeFilter === 'All'
       ? [...this.baseProducts]
       : this.baseProducts.filter(product => {
-          if (this.config.filterType === 'category')
-            return product.category === (this.activeFilter as ProductCategory);
+        if (this.content?.filterType === 'category')
+          return product.category === (this.activeFilter as ProductCategory);
 
-          return product.fitType === this.activeFilter;
-        });
+        return product.fitType === this.activeFilter;
+      });
 
     return this.sortProducts(filtered);
   }
 
   // ===============================
-  // Load products
-  // Replaces frontend dummy catalogue data with API data from the database.
+  // Load collection page
+  // Loads page content from the backend using the internal page key.
   // ===============================
-  private loadProducts(): void {
+  private loadCollectionPage(): void {
+    this.isContentLoading = true;
+    this.isLoading = true;
+    this.activeFilter = 'All';
+    this.content = null;
+    this.baseProducts = [];
+
+    this.contentSubscription?.unsubscribe();
+    this.productsSubscription?.unsubscribe();
+
+    this.contentSubscription = this.storefrontContentService.loadCollectionPage(this.pageKey).subscribe({
+      next: content => {
+        this.content = content;
+        this.isContentLoading = false;
+        this.loadProducts(content);
+      },
+      error: () => {
+        this.content = null;
+        this.baseProducts = [];
+        this.isContentLoading = false;
+        this.isLoading = false;
+      }
+    });
+  }
+
+  // ===============================
+  // Load products
+  // Uses the database-backed product catalogue according to collection content mode.
+  // ===============================
+  private loadProducts(content: StorefrontCollectionPage): void {
     this.isLoading = true;
     this.activeFilter = 'All';
 
-    this.loadSubscription?.unsubscribe();
-
-    const request = this.config.mode === 'new'
+    const request = content.mode === 'new'
       ? this.productCatalogService.getNewProducts()
-      : this.config.mode === 'category' && this.config.category
-        ? this.productCatalogService.getProductsByCategory(this.config.category)
+      : content.mode === 'category' && content.category
+        ? this.productCatalogService.getProductsByCategory(content.category)
         : this.productCatalogService.loadProducts();
 
-    this.loadSubscription = request.subscribe({
+    this.productsSubscription = request.subscribe({
       next: products => {
         this.baseProducts = products;
         this.isLoading = false;
@@ -106,24 +145,13 @@ export class ShopCollectionComponent implements OnChanges, OnDestroy {
     });
   }
 
-  scrollToProducts(): void {
-    const productsSection = document.getElementById(this.sectionId);
-
-    if (!productsSection)
-      return;
-
-    productsSection.scrollIntoView({
-      behavior: 'smooth',
-      block: 'start'
-    });
-  }
-
   setActiveFilter(filter: string): void {
     this.activeFilter = filter;
   }
 
   onSortChange(event: Event): void {
-    this.selectedSort = (event.target as HTMLSelectElement).value as ProductSort;
+    const select = event.target as HTMLSelectElement;
+    this.selectedSort = select.value as ProductSort;
   }
 
   toggleWishlist(productId: number, event: Event): void {
@@ -131,6 +159,35 @@ export class ShopCollectionComponent implements OnChanges, OnDestroy {
     event.stopPropagation();
 
     this.shopStateService.toggleWishlist(productId);
+  }
+
+  scrollToProducts(): void {
+    const element = document.getElementById(this.sectionId);
+
+    if (element) {
+      element.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }
+  }
+
+  private sortProducts(products: ProductCatalogItem[]): ProductCatalogItem[] {
+    if (this.selectedSort === 'priceLow')
+      return [...products].sort((a, b) => a.price - b.price);
+
+    if (this.selectedSort === 'priceHigh')
+      return [...products].sort((a, b) => b.price - a.price);
+
+    if (this.selectedSort === 'name')
+      return [...products].sort((a, b) => a.name.localeCompare(b.name));
+
+    return [...products].sort((a, b) => {
+      if (a.isFeatured !== b.isFeatured)
+        return Number(b.isFeatured) - Number(a.isFeatured);
+
+      return a.displayOrder - b.displayOrder;
+    });
   }
 
   trackByProductId(index: number, product: ProductCatalogItem): number {
@@ -141,50 +198,19 @@ export class ShopCollectionComponent implements OnChanges, OnDestroy {
     return filter.label;
   }
 
-  trackByHeroImage(index: number, image: { imageUrl: string }): string {
-    return image.imageUrl;
+  trackByHeroPointId(index: number, point: { id: number }): number {
+    return point.id;
   }
 
-  trackByHeroPoint(index: number, point: { label: string }): string {
-    return point.label;
+  trackByHeroImageId(index: number, image: { id: number }): number {
+    return image.id;
   }
 
-  trackByBenefitTitle(index: number, benefit: { title: string }): string {
-    return benefit.title;
+  trackByBenefitId(index: number, benefit: { id: number }): number {
+    return benefit.id;
   }
 
   trackBySize(index: number, size: string): string {
     return size;
-  }
-
-  trackByStar(index: number, star: number): number {
-    return star;
-  }
-
-  private sortProducts(products: ProductCatalogItem[]): ProductCatalogItem[] {
-    switch (this.selectedSort) {
-      case 'priceLow':
-        return [...products].sort((a, b) => a.price - b.price);
-
-      case 'priceHigh':
-        return [...products].sort((a, b) => b.price - a.price);
-
-      case 'name':
-        return [...products].sort((a, b) => a.name.localeCompare(b.name));
-
-      default:
-        return [...products].sort((a, b) => {
-          if (a.isFeatured !== b.isFeatured)
-            return a.isFeatured ? -1 : 1;
-
-          if (a.isBestSeller !== b.isBestSeller)
-            return a.isBestSeller ? -1 : 1;
-
-          if (a.isNew !== b.isNew)
-            return a.isNew ? -1 : 1;
-
-          return a.displayOrder - b.displayOrder;
-        });
-    }
   }
 }

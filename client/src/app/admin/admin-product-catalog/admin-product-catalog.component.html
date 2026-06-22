@@ -22,98 +22,112 @@
     {{ errorMessage }}
   </div>
 
-  <div class="category-tabs">
-    <button
-      type="button"
-      *ngFor="let category of visibleCategories; trackBy: trackByCategoryId"
-      [class.active]="activeCategory === category.name"
-      (click)="selectCategory(category.name)"
-    >
-      <span>
-        <img *ngIf="category.imageUrl" [src]="category.imageUrl" [alt]="category.imageAlt" />
-        <i *ngIf="!category.imageUrl" class="bi bi-grid" aria-hidden="true"></i>
-      </span>
+  <ng-container *ngIf="visibleCategories.length > 0; else noCategories">
+    <div class="category-tabs">
+      <button
+        type="button"
+        *ngFor="let category of visibleCategories; trackBy: trackByCategoryId"
+        [class.active]="activeCategory === category.name"
+        (click)="selectCategory(category.name)"
+      >
+        <span>
+          <img *ngIf="category.imageUrl" [src]="category.imageUrl" [alt]="category.imageAlt" />
+          <i *ngIf="!category.imageUrl" class="bi bi-grid" aria-hidden="true"></i>
+        </span>
 
-      <div>
-        <strong>{{ category.name }}</strong>
-        <small>{{ getCategoryProductCount(category.name) }} products</small>
-      </div>
-    </button>
-  </div>
-
-  <section class="category-products-panel">
-    <div class="panel-heading">
-      <div>
-        <h2>{{ activeCategory }}</h2>
-        <p>
-          {{ activeCategoryCount }} products in this category.
-        </p>
-      </div>
-
-      <button type="button" class="primary-action" (click)="createProduct()">
-        <i class="bi bi-plus-lg" aria-hidden="true"></i>
-        Add Product
+        <div>
+          <strong>{{ category.name }}</strong>
+          <small>{{ getCategoryProductCount(category.name) }} products</small>
+        </div>
       </button>
     </div>
 
-    <div class="product-grid" *ngIf="activeCategoryProducts.length > 0; else emptyCategory">
-      <article
-        class="admin-product-card"
-        *ngFor="let product of activeCategoryProducts; trackBy: trackByProductId"
-        [class.active]="selectedProduct?.id === product.id && !isCreatingProduct"
-      >
-        <button type="button" class="product-card-main" (click)="selectProduct(product.id)">
-          <div class="product-image">
-            <img *ngIf="product.imageUrl" [src]="product.imageUrl" [alt]="product.imageAlt" />
-            <i *ngIf="!product.imageUrl" class="bi bi-image" aria-hidden="true"></i>
-
-            <span class="product-status" [class.inactive]="!product.isActive">
-              {{ product.isActive ? 'Active' : 'Inactive' }}
-            </span>
-          </div>
-
-          <div class="product-card-body">
-            <p>{{ product.category }}</p>
-            <h3>{{ product.name }}</h3>
-            <span>{{ product.description }}</span>
-
-            <div class="product-meta">
-              <strong>{{ product.priceText }}</strong>
-              <small>{{ product.colour }}</small>
-            </div>
-
-            <div class="product-flags">
-              <em *ngIf="product.isNew">New In</em>
-              <em *ngIf="product.isBestSeller">Best Seller</em>
-              <em *ngIf="product.isFeatured">Featured</em>
-            </div>
-          </div>
-        </button>
-
-        <div class="product-card-actions">
-          <button type="button" class="small-action" (click)="selectProduct(product.id)">
-            Edit
-          </button>
-
-          <button type="button" class="icon-danger" (click)="deleteProduct(product.id)">
-            <i class="bi bi-trash" aria-hidden="true"></i>
-          </button>
+    <section class="category-products-panel">
+      <div class="panel-heading">
+        <div>
+          <h2>{{ activeCategory }}</h2>
+          <p>
+            {{ activeCategoryCount }} products in this category.
+          </p>
         </div>
-      </article>
-    </div>
-
-    <ng-template #emptyCategory>
-      <div class="empty-state compact">
-        <i class="bi bi-box-seam" aria-hidden="true"></i>
-        <h2>No {{ activeCategory }} Products Yet</h2>
-        <p>Add the first product for this category.</p>
 
         <button type="button" class="primary-action" (click)="createProduct()">
-          Add {{ activeCategory }} Product
+          <i class="bi bi-plus-lg" aria-hidden="true"></i>
+          Add Product
         </button>
       </div>
-    </ng-template>
-  </section>
+
+      <div class="product-grid" *ngIf="activeCategoryProducts.length > 0; else emptyCategory">
+        <article
+          class="admin-product-card"
+          *ngFor="let product of activeCategoryProducts; trackBy: trackByProductId"
+          [class.active]="selectedProduct?.id === product.id && !isCreatingProduct"
+        >
+          <button type="button" class="product-card-main" (click)="selectProduct(product.id)">
+            <div class="product-image">
+              <img *ngIf="product.imageUrl" [src]="product.imageUrl" [alt]="product.imageAlt" />
+              <i *ngIf="!product.imageUrl" class="bi bi-image" aria-hidden="true"></i>
+
+              <span class="product-status" [class.inactive]="!product.isActive">
+                {{ product.isActive ? 'Active' : 'Inactive' }}
+              </span>
+            </div>
+
+            <div class="product-card-body">
+              <p>{{ product.category }}</p>
+              <h3>{{ product.name }}</h3>
+              <span>{{ product.description }}</span>
+
+              <div class="product-meta">
+                <strong>{{ product.priceText }}</strong>
+                <small>{{ product.colour }}</small>
+              </div>
+
+              <div class="product-flags">
+                <em *ngIf="product.isNew">New In</em>
+                <em *ngIf="product.isBestSeller">Best Seller</em>
+                <em *ngIf="product.isFeatured">Featured</em>
+              </div>
+            </div>
+          </button>
+
+          <div class="product-card-actions">
+            <button type="button" class="small-action" (click)="selectProduct(product.id)">
+              Edit
+            </button>
+
+            <button type="button" class="icon-danger" (click)="deleteProduct(product.id)">
+              <i class="bi bi-trash" aria-hidden="true"></i>
+            </button>
+          </div>
+        </article>
+      </div>
+
+      <ng-template #emptyCategory>
+        <div class="empty-state compact">
+          <i class="bi bi-box-seam" aria-hidden="true"></i>
+          <h2>No {{ activeCategory }} Products Yet</h2>
+          <p>Add the first product for this database category.</p>
+
+          <button type="button" class="primary-action" (click)="createProduct()">
+            Add {{ activeCategory }} Product
+          </button>
+        </div>
+      </ng-template>
+    </section>
+  </ng-container>
+
+  <ng-template #noCategories>
+    <section class="category-products-panel">
+      <div class="empty-state compact">
+        <i class="bi bi-grid" aria-hidden="true"></i>
+        <h2>No Product Categories Found</h2>
+        <p>
+          Product categories must come from the backend seed data or database before products can be managed.
+        </p>
+      </div>
+    </section>
+  </ng-template>
 
   <section class="editor-panel" *ngIf="selectedProduct">
     <div class="editor-heading">
@@ -133,7 +147,7 @@
     <div class="editor-section">
       <div class="section-heading">
         <h3>Product Details</h3>
-        <p>Product category is taken from the selected category tab.</p>
+        <p>Product category is taken from the selected database category tab.</p>
       </div>
 
       <div class="form-grid">
@@ -386,12 +400,15 @@
             *ngFor="let variant of selectedProductVariants; trackBy: trackByVariantId"
           >
             <input class="form-control" [(ngModel)]="variant.size" [name]="'size' + variant.id" />
+
             <input
               class="form-control"
               [(ngModel)]="variant.colour"
               [name]="'colour' + variant.id"
             />
+
             <input class="form-control" [(ngModel)]="variant.sku" [name]="'sku' + variant.id" />
+
             <input
               class="form-control"
               type="number"

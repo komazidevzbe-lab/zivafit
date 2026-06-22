@@ -8,7 +8,8 @@
 
       <h1>Storefront Content</h1>
       <p>
-        Manage the public-facing content sections that are not part of product stock, orders, or customers.
+        Manage the public-facing content sections that are not part of product stock,
+        orders, or customers.
       </p>
     </div>
   </div>
@@ -148,7 +149,7 @@
         >
           <div>
             <strong>Hero Media</strong>
-            <small>Upload the four homepage hero images.</small>
+            <small>Manage homepage hero card images and alt text.</small>
           </div>
 
           <span>{{ openPanel === 'media' ? 'Collapse' : 'Expand' }}</span>
@@ -156,10 +157,7 @@
 
         <div class="panel-body" *ngIf="openPanel === 'media'">
           <div class="media-grid">
-            <article
-              class="media-card"
-              *ngFor="let card of content.heroCards; trackBy: trackByHeroCardId"
-            >
+            <article class="media-card" *ngFor="let card of content.heroCards; trackBy: trackByHeroCardId">
               <div class="media-preview">
                 <img [src]="card.imageUrl" [alt]="card.imageAlt" />
               </div>
@@ -171,11 +169,7 @@
 
               <div class="form-group">
                 <label>Image Alt Text</label>
-                <input
-                  class="form-control"
-                  [(ngModel)]="card.imageAlt"
-                  [name]="'heroAlt' + card.id"
-                />
+                <input class="form-control" [(ngModel)]="card.imageAlt" [name]="'heroAlt' + card.id" />
               </div>
 
               <div class="form-group">
@@ -215,8 +209,8 @@
           (click)="togglePanel('categories')"
         >
           <div>
-            <strong>Category Display</strong>
-            <small>Upload homepage category display images and manage alt text.</small>
+            <strong>Home Category Cards</strong>
+            <small>Manage rotating category card images on the homepage.</small>
           </div>
 
           <span>{{ openPanel === 'categories' ? 'Collapse' : 'Expand' }}</span>
@@ -296,10 +290,7 @@
 
         <div class="panel-body" *ngIf="openPanel === 'benefits'">
           <div class="benefit-grid">
-            <article
-              class="benefit-card"
-              *ngFor="let benefit of content.benefits; trackBy: trackByBenefitId"
-            >
+            <article class="benefit-card" *ngFor="let benefit of content.benefits; trackBy: trackByBenefitId">
               <div class="benefit-icon">
                 <i [class]="benefit.iconClass" aria-hidden="true"></i>
               </div>
@@ -349,18 +340,351 @@
     </ng-template>
   </ng-container>
 
-  <section class="content-panel locked-panel" *ngIf="activeTab === 'collections'">
-    <div class="panel-body">
-      <div class="empty-state compact">
-        <i class="bi bi-grid" aria-hidden="true"></i>
-        <h2>Collection Page Content Comes Later</h2>
-        <p>
-          The Collections tab will manage public collection pages such as Shop, New In, Leggings,
-          Sports Bras, Tops, Sets, Shorts, and Accessories. It is separate from the Home tab.
-        </p>
+  <ng-container *ngIf="activeTab === 'collections'">
+    <ng-container *ngIf="collectionPages.length > 0; else loadingCollections">
+      <section class="collection-admin-layout">
+        <nav class="collection-list" aria-label="Collection page tabs">
+          <button
+            type="button"
+            *ngFor="let page of collectionPages; trackBy: trackByCollectionPageId"
+            [class.active]="selectedCollectionPageId === page.id"
+            (click)="selectCollectionPage(page.id)"
+          >
+            <strong>{{ page.pageName }}</strong>
+          </button>
+        </nav>
+
+        <section class="collection-editor" *ngIf="selectedCollectionPage as page">
+          <div class="content-panel">
+            <button
+              type="button"
+              class="panel-toggle"
+              [class.open]="openCollectionPanel === 'content'"
+              (click)="toggleCollectionPanel('content')"
+            >
+              <div>
+                <strong>{{ page.pageName }} Page Content</strong>
+                <small>Manage hero copy, section labels, empty state, and note text.</small>
+              </div>
+
+              <span>{{ openCollectionPanel === 'content' ? 'Collapse' : 'Expand' }}</span>
+            </button>
+
+            <div class="panel-body" *ngIf="openCollectionPanel === 'content'">
+              <div class="readonly-grid">
+                <div>
+                  <span>Page Key</span>
+                  <strong>{{ page.pageKey }}</strong>
+                </div>
+
+                <div>
+                  <span>Mode</span>
+                  <strong>{{ page.mode }}</strong>
+                </div>
+
+                <div>
+                  <span>Category</span>
+                  <strong>{{ page.category || 'All Products' }}</strong>
+                </div>
+
+                <div>
+                  <span>Secondary Route</span>
+                  <strong>{{ page.secondaryButtonRoute }}</strong>
+                </div>
+              </div>
+
+              <div class="form-grid">
+                <div class="form-group">
+                  <label>Hero Eyebrow</label>
+                  <input class="form-control" [(ngModel)]="page.heroEyebrow" [name]="'heroEyebrow' + page.id" />
+                </div>
+
+                <div class="form-group">
+                  <label>Hero Title</label>
+                  <input class="form-control" [(ngModel)]="page.heroTitle" [name]="'heroTitle' + page.id" />
+                </div>
+
+                <div class="form-group">
+                  <label>Hero Button Label</label>
+                  <input
+                    class="form-control"
+                    [(ngModel)]="page.heroButtonLabel"
+                    [name]="'heroButtonLabel' + page.id"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label>Secondary Button Label</label>
+                  <input
+                    class="form-control"
+                    [(ngModel)]="page.secondaryButtonLabel"
+                    [name]="'secondaryButtonLabel' + page.id"
+                  />
+                </div>
+
+                <div class="form-group wide">
+                  <label>Hero Text</label>
+                  <textarea
+                    class="form-control"
+                    [(ngModel)]="page.heroText"
+                    [name]="'heroText' + page.id"
+                  ></textarea>
+                </div>
+
+                <div class="form-group">
+                  <label>Collection Eyebrow</label>
+                  <input
+                    class="form-control"
+                    [(ngModel)]="page.collectionEyebrow"
+                    [name]="'collectionEyebrow' + page.id"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label>Collection Title</label>
+                  <input
+                    class="form-control"
+                    [(ngModel)]="page.collectionTitle"
+                    [name]="'collectionTitle' + page.id"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label>Product Card Link Label</label>
+                  <input
+                    class="form-control"
+                    [(ngModel)]="page.productCardLinkLabel"
+                    [name]="'productCardLinkLabel' + page.id"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label>Empty Title</label>
+                  <input class="form-control" [(ngModel)]="page.emptyTitle" [name]="'emptyTitle' + page.id" />
+                </div>
+
+                <div class="form-group wide">
+                  <label>Empty Text</label>
+                  <textarea
+                    class="form-control"
+                    [(ngModel)]="page.emptyText"
+                    [name]="'emptyText' + page.id"
+                  ></textarea>
+                </div>
+
+                <div class="form-group">
+                  <label>Note Eyebrow</label>
+                  <input class="form-control" [(ngModel)]="page.noteEyebrow" [name]="'noteEyebrow' + page.id" />
+                </div>
+
+                <div class="form-group">
+                  <label>Note Title</label>
+                  <input class="form-control" [(ngModel)]="page.noteTitle" [name]="'noteTitle' + page.id" />
+                </div>
+
+                <div class="form-group wide">
+                  <label>Note Text</label>
+                  <textarea
+                    class="form-control"
+                    [(ngModel)]="page.noteText"
+                    [name]="'noteText' + page.id"
+                  ></textarea>
+                </div>
+
+                <div class="form-actions wide">
+                  <button type="button" class="primary-action" (click)="saveCollectionPage(page)">
+                    Save Collection Page
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="content-panel">
+            <button
+              type="button"
+              class="panel-toggle"
+              [class.open]="openCollectionPanel === 'points'"
+              (click)="toggleCollectionPanel('points')"
+            >
+              <div>
+                <strong>Hero Points</strong>
+                <small>Manage hero point labels shown in the collection hero section.</small>
+              </div>
+
+              <span>{{ openCollectionPanel === 'points' ? 'Collapse' : 'Expand' }}</span>
+            </button>
+
+            <div class="panel-body" *ngIf="openCollectionPanel === 'points'">
+              <div class="benefit-grid">
+                <article
+                  class="benefit-card"
+                  *ngFor="let point of page.heroPoints; trackBy: trackByCollectionHeroPointId"
+                >
+                  <div class="benefit-icon">
+                    <i [class]="point.iconClass" aria-hidden="true"></i>
+                  </div>
+
+                  <div class="form-group">
+                    <label>Icon Class</label>
+                    <input
+                      class="form-control"
+                      [(ngModel)]="point.iconClass"
+                      [name]="'collectionPointIcon' + point.id"
+                    />
+                  </div>
+
+                  <div class="form-group">
+                    <label>Label</label>
+                    <input
+                      class="form-control"
+                      [(ngModel)]="point.label"
+                      [name]="'collectionPointLabel' + point.id"
+                    />
+                  </div>
+
+                  <button type="button" class="primary-action" (click)="saveCollectionHeroPoint(point)">
+                    Save Point
+                  </button>
+                </article>
+              </div>
+            </div>
+          </div>
+
+          <div class="content-panel">
+            <button
+              type="button"
+              class="panel-toggle"
+              [class.open]="openCollectionPanel === 'media'"
+              (click)="toggleCollectionPanel('media')"
+            >
+              <div>
+                <strong>Hero Images</strong>
+                <small>Manage hero images shown on this collection page.</small>
+              </div>
+
+              <span>{{ openCollectionPanel === 'media' ? 'Collapse' : 'Expand' }}</span>
+            </button>
+
+            <div class="panel-body" *ngIf="openCollectionPanel === 'media'">
+              <div class="media-grid">
+                <article
+                  class="media-card"
+                  *ngFor="let image of page.heroImages; trackBy: trackByCollectionHeroImageId"
+                >
+                  <div class="media-preview">
+                    <img [src]="image.imageUrl" [alt]="image.imageAlt" />
+                  </div>
+
+                  <div class="form-group">
+                    <label>Image Alt Text</label>
+                    <input
+                      class="form-control"
+                      [(ngModel)]="image.imageAlt"
+                      [name]="'collectionHeroAlt' + image.id"
+                    />
+                  </div>
+
+                  <div class="form-group">
+                    <label>Upload Replacement Image</label>
+                    <input
+                      class="form-control"
+                      type="file"
+                      accept="image/png,image/jpeg,image/webp"
+                      (change)="onCollectionHeroImageFileSelected(image, $event)"
+                    />
+                  </div>
+
+                  <div class="media-actions">
+                    <button type="button" class="small-action" (click)="saveCollectionHeroImage(image)">
+                      Save Text
+                    </button>
+
+                    <button
+                      type="button"
+                      class="primary-action"
+                      [disabled]="!hasCollectionHeroFile(image.id)"
+                      (click)="uploadCollectionHeroImage(image)"
+                    >
+                      Upload Image
+                    </button>
+                  </div>
+                </article>
+              </div>
+            </div>
+          </div>
+
+          <div class="content-panel">
+            <button
+              type="button"
+              class="panel-toggle"
+              [class.open]="openCollectionPanel === 'benefits'"
+              (click)="toggleCollectionPanel('benefits')"
+            >
+              <div>
+                <strong>Benefits</strong>
+                <small>Manage benefit cards shown below this collection hero.</small>
+              </div>
+
+              <span>{{ openCollectionPanel === 'benefits' ? 'Collapse' : 'Expand' }}</span>
+            </button>
+
+            <div class="panel-body" *ngIf="openCollectionPanel === 'benefits'">
+              <div class="benefit-grid">
+                <article
+                  class="benefit-card"
+                  *ngFor="let benefit of page.benefits; trackBy: trackByCollectionBenefitId"
+                >
+                  <div class="benefit-icon">
+                    <i [class]="benefit.iconClass" aria-hidden="true"></i>
+                  </div>
+
+                  <div class="form-group">
+                    <label>Icon Class</label>
+                    <input
+                      class="form-control"
+                      [(ngModel)]="benefit.iconClass"
+                      [name]="'collectionBenefitIcon' + benefit.id"
+                    />
+                  </div>
+
+                  <div class="form-group">
+                    <label>Title</label>
+                    <input
+                      class="form-control"
+                      [(ngModel)]="benefit.title"
+                      [name]="'collectionBenefitTitle' + benefit.id"
+                    />
+                  </div>
+
+                  <div class="form-group">
+                    <label>Text</label>
+                    <textarea
+                      class="form-control"
+                      [(ngModel)]="benefit.text"
+                      [name]="'collectionBenefitText' + benefit.id"
+                    ></textarea>
+                  </div>
+
+                  <button type="button" class="primary-action" (click)="saveCollectionBenefit(benefit)">
+                    Save Benefit
+                  </button>
+                </article>
+              </div>
+            </div>
+          </div>
+        </section>
+      </section>
+    </ng-container>
+
+    <ng-template #loadingCollections>
+      <div class="empty-state">
+        <i class="bi bi-hourglass-split" aria-hidden="true"></i>
+        <h2>Loading Collection Content</h2>
+        <p>Please wait while collection page content loads from the API.</p>
       </div>
-    </div>
-  </section>
+    </ng-template>
+  </ng-container>
 
   <section class="content-panel locked-panel" *ngIf="activeTab === 'footer'">
     <div class="panel-body">
@@ -368,8 +692,8 @@
         <i class="bi bi-layout-text-window" aria-hidden="true"></i>
         <h2>Footer Content Comes Later</h2>
         <p>
-          The Footer tab will manage footer copy, newsletter text, support information, and social
-          link labels. It is separate from Home page content.
+          The Footer tab will manage footer copy, newsletter text, support information,
+          and social link labels. It is separate from Phase 3 product and collection content.
         </p>
       </div>
     </div>

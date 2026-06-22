@@ -31,7 +31,7 @@ export class AdminProductCatalogComponent implements OnInit {
   products: ProductCatalogItem[] = [];
   categories: ProductCatalogCategory[] = [];
 
-  activeCategory: ProductCategory = 'Leggings';
+  activeCategory: ProductCategory = '';
 
   selectedProduct: ProductCatalogItem | null = null;
   isCreatingProduct = false;
@@ -47,15 +47,6 @@ export class AdminProductCatalogComponent implements OnInit {
 
   newVariant: ProductCatalogVariant = this.createEmptyVariant();
 
-  fallbackCategories: ProductCategory[] = [
-    'Leggings',
-    'Sports Bras',
-    'Tops',
-    'Sets',
-    'Shorts',
-    'Accessories'
-  ];
-
   ngOnInit(): void {
     this.loadData();
   }
@@ -63,7 +54,7 @@ export class AdminProductCatalogComponent implements OnInit {
   // ===============================
   // Load data
   // Loads admin products and categories from the API.
-  // Products are displayed by category tabs.
+  // Category tabs come from the database only.
   // ===============================
   loadData(selectedProductId?: number): void {
     this.isLoading = true;
@@ -77,8 +68,12 @@ export class AdminProductCatalogComponent implements OnInit {
         this.products = result.products;
         this.categories = result.categories;
 
-        if (this.categories.length > 0 && !this.categories.some(category => category.name === this.activeCategory)) {
+        if (!this.activeCategory && this.categories.length > 0) {
           this.activeCategory = this.categories[0].name;
+        }
+
+        if (this.activeCategory && !this.categories.some(category => category.name === this.activeCategory)) {
+          this.activeCategory = this.categories[0]?.name || '';
         }
 
         if (selectedProductId) {
@@ -99,7 +94,7 @@ export class AdminProductCatalogComponent implements OnInit {
 
   // ===============================
   // Select category
-  // Shows products only for the selected category.
+  // Shows products only for the selected database category.
   // ===============================
   selectCategory(category: ProductCategory): void {
     this.activeCategory = category;
@@ -148,10 +143,14 @@ export class AdminProductCatalogComponent implements OnInit {
 
   // ===============================
   // Create product
-  // Opens an empty product form under the selected category.
-  // Product images are uploaded after the product is saved.
+  // Opens an empty product form under the selected database category.
   // ===============================
   createProduct(): void {
+    if (!this.activeCategory) {
+      this.errorMessage = 'Please load or create product categories before adding products.';
+      return;
+    }
+
     this.selectedProduct = this.createEmptyProduct(this.activeCategory);
     this.sizesText = '';
     this.newVariant = this.createEmptyVariant();
@@ -176,9 +175,9 @@ export class AdminProductCatalogComponent implements OnInit {
     const saveRequest = this.isCreatingProduct
       ? this.productCatalogService.createProduct(request)
       : this.productCatalogService.updateProduct(
-          this.selectedProduct.id,
-          request as UpdateProductRequest
-        );
+        this.selectedProduct.id,
+        request as UpdateProductRequest
+      );
 
     saveRequest.subscribe({
       next: product => {
@@ -242,7 +241,10 @@ export class AdminProductCatalogComponent implements OnInit {
     this.productCatalogService.createVariant(this.selectedProduct.id, request).subscribe({
       next: () => {
         this.successMessage = 'Variant has been added successfully.';
-        this.newVariant = this.createEmptyVariant(this.selectedProduct?.id || 0, this.selectedProduct?.colour || '');
+        this.newVariant = this.createEmptyVariant(
+          this.selectedProduct?.id || 0,
+          this.selectedProduct?.colour || ''
+        );
         this.loadSelectedProduct(this.selectedProduct!.id);
       },
       error: error => {
@@ -420,22 +422,13 @@ export class AdminProductCatalogComponent implements OnInit {
   }
 
   get visibleCategories(): ProductCatalogCategory[] {
-    if (this.categories.length > 0)
-      return this.categories;
-
-    return this.fallbackCategories.map((category, index) => ({
-      id: index + 1,
-      name: category,
-      description: '',
-      imageUrl: '',
-      imageAlt: '',
-      displayOrder: index + 1,
-      showInNavbar: true,
-      isActive: true
-    }));
+    return this.categories;
   }
 
   get activeCategoryProducts(): ProductCatalogItem[] {
+    if (!this.activeCategory)
+      return [];
+
     return this.products.filter(product => product.category === this.activeCategory);
   }
 
@@ -518,7 +511,7 @@ export class AdminProductCatalogComponent implements OnInit {
   private buildProductRequest(product: ProductCatalogItem): CreateProductRequest {
     return {
       name: product.name,
-      category: product.category as ProductCategory,
+      category: product.category,
       fitType: product.fitType,
       description: product.description || '',
       price: product.price,

@@ -1,4 +1,4 @@
-<section class="shop-collection-page">
+<section class="shop-collection-page" *ngIf="content as config; else collectionLoading">
   <section class="collection-hero">
     <div class="collection-hero-copy">
       <p class="eyebrow">{{ config.heroEyebrow }}</p>
@@ -10,7 +10,7 @@
       </p>
 
       <div class="hero-points">
-        <span *ngFor="let point of config.heroPoints; trackBy: trackByHeroPoint">
+        <span *ngFor="let point of config.heroPoints; trackBy: trackByHeroPointId">
           <i [class]="point.iconClass" aria-hidden="true"></i>
           {{ point.label }}
         </span>
@@ -32,7 +32,7 @@
     <div class="collection-hero-gallery" aria-label="ZivaFit collection preview images">
       <div
         class="hero-image-card"
-        *ngFor="let image of config.heroImages; let imageIndex = index; trackBy: trackByHeroImage"
+        *ngFor="let image of config.heroImages; let imageIndex = index; trackBy: trackByHeroImageId"
         [class.hero-image-card-large]="imageIndex === 1"
       >
         <img [src]="image.imageUrl" [alt]="image.imageAlt" />
@@ -41,7 +41,7 @@
   </section>
 
   <section class="collection-benefits" aria-label="Collection benefits">
-    <div *ngFor="let benefit of config.benefits; trackBy: trackByBenefitTitle">
+    <div *ngFor="let benefit of config.benefits; trackBy: trackByBenefitId">
       <i [class]="benefit.iconClass" aria-hidden="true"></i>
       <strong>{{ benefit.title }}</strong>
       <span>{{ benefit.text }}</span>
@@ -50,7 +50,10 @@
 
   <section class="collection-shop-section" [id]="sectionId">
     <div class="section-header">
-      <h2>{{ config.collectionTitle }}</h2>
+      <div>
+        <p class="eyebrow">{{ config.collectionEyebrow }}</p>
+        <h2>{{ config.collectionTitle }}</h2>
+      </div>
     </div>
 
     <div class="filter-sort-row">
@@ -81,71 +84,71 @@
       </div>
     </div>
 
-    <div class="products-grid" *ngIf="filteredProducts.length > 0; else noProducts">
-      <article
-        class="product-card"
-        *ngFor="let product of filteredProducts; trackBy: trackByProductId"
-      >
-        <a
-          class="product-card-link"
-          [routerLink]="['/product-details', product.id]"
+    <div class="empty-state" *ngIf="isLoading; else loadedProducts">
+      <i class="bi bi-arrow-repeat" aria-hidden="true"></i>
+      <h3>Loading products</h3>
+      <p>Loading products from the product catalogue.</p>
+    </div>
+
+    <ng-template #loadedProducts>
+      <div class="products-grid" *ngIf="filteredProducts.length > 0; else noProducts">
+        <article
+          class="product-card"
+          *ngFor="let product of filteredProducts; trackBy: trackByProductId"
         >
-          <div class="product-image">
-            <img [src]="product.imageUrl" [alt]="product.imageAlt" />
+          <a
+            class="product-card-link"
+            [routerLink]="['/product-details', product.id]"
+          >
+            <div class="product-image">
+              <img [src]="product.imageUrl" [alt]="product.imageAlt" />
 
-            <span class="product-badge">
-              {{ product.badge }}
-            </span>
-          </div>
-
-          <div class="product-info">
-            <div class="product-meta">
-              <span>{{ product.fitType }}</span>
-              <span>{{ product.colour }}</span>
-            </div>
-
-            <h3>{{ product.name }}</h3>
-
-            <p class="product-price">{{ product.priceText }}</p>
-
-            <div class="size-row" aria-label="Available sizes">
-              <span *ngFor="let size of product.sizes; trackBy: trackBySize">
-                {{ size }}
+              <span class="product-badge" *ngIf="product.badge">
+                {{ product.badge }}
               </span>
             </div>
 
-            <div class="product-footer">
-              <div class="product-link">
-                View Product
-                <i class="bi bi-arrow-right" aria-hidden="true"></i>
+            <div class="product-info">
+              <div class="product-meta">
+                <span>{{ product.fitType }}</span>
+                <span>{{ product.colour }}</span>
               </div>
 
-              <div class="product-rating" aria-label="Five star rating">
-                <i
-                  class="bi bi-star-fill"
-                  *ngFor="let star of ratingStars; trackBy: trackByStar"
-                  aria-hidden="true"
-                ></i>
+              <h3>{{ product.name }}</h3>
+
+              <p class="product-price">{{ product.priceText }}</p>
+
+              <div class="size-row" aria-label="Available sizes">
+                <span *ngFor="let size of product.sizes; trackBy: trackBySize">
+                  {{ size }}
+                </span>
+              </div>
+
+              <div class="product-footer">
+                <div class="product-link">
+                  {{ config.productCardLinkLabel }}
+                  <i class="bi bi-arrow-right" aria-hidden="true"></i>
+                </div>
               </div>
             </div>
-          </div>
-        </a>
+          </a>
 
-        <button
-          type="button"
-          class="product-wishlist"
-          [class.active]="shopStateService.isInWishlist(product.id)"
-          (click)="toggleWishlist(product.id, $event)"
-          [attr.aria-label]="shopStateService.isInWishlist(product.id) ? 'Remove from wishlist' : 'Add to wishlist'"
-        >
-          <i
-            class="bi"
-            [ngClass]="shopStateService.isInWishlist(product.id) ? 'bi-heart-fill' : 'bi-heart'"
-            aria-hidden="true"
-          ></i>
-        </button>
-      </article>
-    </div>
+          <button
+            type="button"
+            class="product-wishlist"
+            [class.active]="shopStateService.isInWishlist(product.id)"
+            (click)="toggleWishlist(product.id, $event)"
+            [attr.aria-label]="shopStateService.isInWishlist(product.id) ? 'Remove from wishlist' : 'Add to wishlist'"
+          >
+            <i
+              class="bi"
+              [ngClass]="shopStateService.isInWishlist(product.id) ? 'bi-heart-fill' : 'bi-heart'"
+              aria-hidden="true"
+            ></i>
+          </button>
+        </article>
+      </div>
+    </ng-template>
 
     <ng-template #noProducts>
       <div class="empty-state">
@@ -167,3 +170,13 @@
     </p>
   </section>
 </section>
+
+<ng-template #collectionLoading>
+  <section class="shop-collection-page">
+    <div class="empty-state">
+      <i class="bi bi-arrow-repeat" aria-hidden="true"></i>
+      <h3>Loading collection</h3>
+      <p>Loading collection page content from the storefront API.</p>
+    </div>
+  </section>
+</ng-template>

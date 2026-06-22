@@ -21,4 +21,32 @@ public class StorefrontController(IStorefrontContentService storefrontContentSer
 
         return Ok(homeContent);
     }
+
+    // ===============================
+    // Get collection pages
+    // Public endpoint used when Angular needs the available public collection pages.
+    // ===============================
+    [HttpGet("collections")]
+    public async Task<ActionResult<IReadOnlyList<StorefrontCollectionPageDto>>> GetCollectionPages()
+    {
+        var pages = await storefrontContentService.GetCollectionPagesAsync();
+
+        return Ok(pages);
+    }
+
+    // ===============================
+    // Get collection page by key
+    // Public endpoint used by Shop, New In, Leggings, Sports Bras, Tops, Sets, Shorts, and Accessories.
+    // Page keys are internal content keys, not customer/admin editable slugs.
+    // ===============================
+    [HttpGet("collections/{pageKey}")]
+    public async Task<ActionResult<StorefrontCollectionPageDto>> GetCollectionPage(string pageKey)
+    {
+        var page = await storefrontContentService.GetCollectionPageAsync(pageKey);
+
+        if (page == null)
+            return NotFound(new { message = "Collection page content has not been configured." });
+
+        return Ok(page);
+    }
 }
