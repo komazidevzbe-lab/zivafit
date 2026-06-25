@@ -1,229 +1,176 @@
-<section class="checkout-page">
-  <header class="checkout-header">
-    <div>
-      <p class="page-eyebrow">ZivaFit Checkout</p>
-      <h1>Checkout</h1>
-      <p>Confirm your delivery details, review your order, and place your ZivaFit order.</p>
-    </div>
+<section class="phase-page">
+  <div class="page-hero">
+    <p class="eyebrow">Secure checkout</p>
+    <h1>Checkout</h1>
+    <p>Create your order, then complete payment securely through PayFast.</p>
+  </div>
 
-    <a routerLink="/cart" class="outline-btn">
-      Back To Cart
-      <i class="bi bi-arrow-right" aria-hidden="true"></i>
-    </a>
-  </header>
+  <div class="page-alert error" *ngIf="errorMessage">{{ errorMessage }}</div>
 
-  <ng-container *ngIf="hasCartItems; else emptyCheckout">
-    <section class="checkout-layout">
-      <form class="checkout-form" #checkoutForm="ngForm" (ngSubmit)="placeOrder()">
-        <section class="checkout-card">
-          <div class="card-heading">
-            <p class="page-eyebrow">Step One</p>
-            <h2>Contact Details</h2>
+  <div class="loading-card" *ngIf="isLoadingCart">
+    Loading checkout...
+  </div>
+
+  <div class="checkout-layout" *ngIf="!isLoadingCart">
+    <form class="checkout-form" (ngSubmit)="placeOrderAndPay()" #checkoutForm="ngForm">
+      <div class="form-section">
+        <p class="section-label">Contact details</p>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label>First name</label>
+            <input name="firstName" class="form-control" [(ngModel)]="model.firstName" required />
           </div>
 
-          <div class="form-grid">
-            <div class="form-group">
-              <label for="contactEmail">Email Address</label>
-              <input
-                id="contactEmail"
-                name="contactEmail"
-                type="email"
-                [(ngModel)]="contactEmail"
-                required
-              />
-            </div>
-
-            <div class="form-group">
-              <label for="phone">Phone Number</label>
-              <input
-                id="phone"
-                name="phone"
-                type="tel"
-                [(ngModel)]="checkoutAddress.phone"
-                required
-              />
-            </div>
-          </div>
-        </section>
-
-        <section class="checkout-card" *ngIf="customerAddressService.addresses().length > 0">
-          <div class="card-heading">
-            <p class="page-eyebrow">Saved Addresses</p>
-            <h2>Choose Delivery Address</h2>
+          <div class="form-group">
+            <label>Last name</label>
+            <input name="lastName" class="form-control" [(ngModel)]="model.lastName" required />
           </div>
 
-          <div class="saved-address-grid">
-            <button
-              type="button"
-              *ngFor="let address of customerAddressService.addresses(); trackBy: trackByAddressId"
-              [class.active]="selectedAddressId === address.id"
-              (click)="selectSavedAddress(address)"
-            >
-              <strong>{{ address.label || 'Address' }}</strong>
-              <span>{{ address.addressLine1 }}, {{ address.city }}</span>
-              <small *ngIf="address.isDefault">Default</small>
-            </button>
-          </div>
-        </section>
-
-        <section class="checkout-card">
-          <div class="card-heading">
-            <p class="page-eyebrow">Step Two</p>
-            <h2>Delivery Address</h2>
+          <div class="form-group">
+            <label>Email</label>
+            <input name="email" type="email" class="form-control" [(ngModel)]="model.email" required />
           </div>
 
-          <div class="form-grid">
-            <div class="form-group">
-              <label for="label">Address Label</label>
-              <input id="label" name="label" type="text" [(ngModel)]="checkoutAddress.label" />
-            </div>
-
-            <div class="form-group">
-              <label for="fullName">Recipient Name</label>
-              <input id="fullName" name="fullName" type="text" [(ngModel)]="checkoutAddress.fullName" required />
-            </div>
-
-            <div class="form-group">
-              <label for="addressLine1">Street Address</label>
-              <input id="addressLine1" name="addressLine1" type="text" [(ngModel)]="checkoutAddress.addressLine1" required />
-            </div>
-
-            <div class="form-group">
-              <label for="addressLine2">Apartment / Complex</label>
-              <input id="addressLine2" name="addressLine2" type="text" [(ngModel)]="checkoutAddress.addressLine2" />
-            </div>
-
-            <div class="form-group">
-              <label for="suburb">Suburb</label>
-              <input id="suburb" name="suburb" type="text" [(ngModel)]="checkoutAddress.suburb" />
-            </div>
-
-            <div class="form-group">
-              <label for="city">City</label>
-              <input id="city" name="city" type="text" [(ngModel)]="checkoutAddress.city" required />
-            </div>
-
-            <div class="form-group">
-              <label for="province">Province</label>
-              <select id="province" name="province" [(ngModel)]="checkoutAddress.province" required>
-                <option *ngFor="let province of provinces" [value]="province">{{ province }}</option>
-              </select>
-            </div>
-
-            <div class="form-group">
-              <label for="postalCode">Postal Code</label>
-              <input id="postalCode" name="postalCode" type="text" [(ngModel)]="checkoutAddress.postalCode" required />
-            </div>
-
-            <label class="check-row">
-              <input type="checkbox" name="saveAddress" [(ngModel)]="saveAddress" />
-              <span>Save this address for next time</span>
-            </label>
+          <div class="form-group">
+            <label>Phone number</label>
+            <input name="phoneNumber" class="form-control" [(ngModel)]="model.phoneNumber" required />
           </div>
-        </section>
-
-        <section class="checkout-card">
-          <div class="card-heading">
-            <p class="page-eyebrow">Step Three</p>
-            <h2>Payment Method</h2>
-          </div>
-
-          <div class="payment-grid">
-            <label
-              class="payment-option"
-              *ngFor="let method of paymentMethods"
-              [class.active]="paymentMethod === method.value"
-            >
-              <input
-                type="radio"
-                name="paymentMethod"
-                [value]="method.value"
-                [(ngModel)]="paymentMethod"
-              />
-
-              <span>
-                <strong>{{ method.label }}</strong>
-                {{ method.text }}
-              </span>
-            </label>
-          </div>
-
-          <div class="form-group order-note">
-            <label for="orderNote">Order Note</label>
-            <textarea
-              id="orderNote"
-              name="orderNote"
-              rows="3"
-              [(ngModel)]="orderNote"
-              placeholder="Optional delivery note"
-            ></textarea>
-          </div>
-        </section>
-
-        <div class="form-alert error" *ngIf="formError">
-          <i class="bi bi-exclamation-circle" aria-hidden="true"></i>
-          <span>{{ formError }}</span>
         </div>
-      </form>
+      </div>
 
-      <aside class="checkout-summary">
-        <p class="page-eyebrow">Order Summary</p>
-        <h2>Cart Total</h2>
+      <div class="form-section">
+        <p class="section-label">Delivery address</p>
 
-        <div class="summary-items">
-          <article
-            class="summary-item"
-            *ngFor="let line of shopStateService.cartLines(); trackBy: trackByCartLine"
-          >
-            <img [src]="line.product.imageUrl" [alt]="line.product.imageAlt" />
-
-            <div>
-              <h3>{{ line.product.name }}</h3>
-              <p>Size {{ line.size }} · Qty {{ line.quantity }}</p>
-            </div>
-
-            <strong>{{ line.lineTotalText }}</strong>
-          </article>
+        <div class="form-group">
+          <label>Address line 1</label>
+          <input name="addressLine1" class="form-control" [(ngModel)]="model.addressLine1" required />
         </div>
 
-        <div class="summary-row">
-          <span>Subtotal</span>
-          <strong>{{ shopStateService.cartSubtotalText() }}</strong>
+        <div class="form-group">
+          <label>Address line 2</label>
+          <input name="addressLine2" class="form-control" [(ngModel)]="model.addressLine2" />
         </div>
 
-        <div class="summary-row">
-          <span>Delivery</span>
-          <strong>{{ shopStateService.deliveryFeeText() }}</strong>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Suburb</label>
+            <input name="suburb" class="form-control" [(ngModel)]="model.suburb" required />
+          </div>
+
+          <div class="form-group">
+            <label>City</label>
+            <input name="city" class="form-control" [(ngModel)]="model.city" required />
+          </div>
+
+          <div class="form-group">
+            <label>Province</label>
+            <select name="province" class="form-control" [(ngModel)]="model.province" required>
+              <option value="">Select province</option>
+              <option *ngFor="let province of provinces" [value]="province">
+                {{ province }}
+              </option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Postal code</label>
+            <input name="postalCode" class="form-control" [(ngModel)]="model.postalCode" required />
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <p class="section-label">Delivery method</p>
+
+        <div class="delivery-box">
+          <input
+            id="standardDelivery"
+            name="deliveryMethod"
+            type="radio"
+            value="Standard Delivery"
+            [(ngModel)]="model.deliveryMethod"
+          />
+
+          <label for="standardDelivery">
+            <strong>{{ cart().deliveryMethod }}</strong>
+            <span>{{ cart().deliveryMessage }}</span>
+          </label>
         </div>
 
-        <div class="summary-note">
-          <i class="bi bi-truck" aria-hidden="true"></i>
-          <span>Free delivery on orders R1000+.</span>
+        <div class="form-group">
+          <label>Customer note</label>
+          <textarea
+            name="customerNote"
+            class="form-control"
+            rows="4"
+            [(ngModel)]="model.customerNote"
+            placeholder="Optional delivery note."
+          ></textarea>
         </div>
+      </div>
 
-        <div class="summary-total">
-          <span>Total</span>
-          <strong>{{ shopStateService.cartTotalText() }}</strong>
-        </div>
-
-        <button type="button" class="place-order-btn" (click)="placeOrder()">
-          Place Order
-          <i class="bi bi-lock" aria-hidden="true"></i>
+      <div class="checkout-actions">
+        <button type="button" class="ziva-btn-light" (click)="backToCart()">
+          Back To Cart
         </button>
-      </aside>
-    </section>
-  </ng-container>
 
-  <ng-template #emptyCheckout>
-    <section class="empty-state">
-      <i class="bi bi-bag-x" aria-hidden="true"></i>
-      <h2>Your cart is empty.</h2>
-      <p>Add ZivaFit products to your cart before checking out.</p>
+        <button
+          type="submit"
+          class="ziva-btn-dark"
+          [disabled]="checkoutForm.invalid || isSubmitting || cart().items.length === 0"
+        >
+          {{ isSubmitting ? 'Opening PayFast...' : 'Pay With PayFast' }}
+        </button>
+      </div>
+    </form>
 
-      <a routerLink="/shop">
-        Shop Products
-        <i class="bi bi-arrow-right" aria-hidden="true"></i>
-      </a>
-    </section>
-  </ng-template>
+    <aside class="summary-card">
+      <p class="eyebrow">Order summary</p>
+
+      <div class="summary-items">
+        <div class="summary-item" *ngFor="let item of cart().items">
+          <img [src]="item.imageUrl" [alt]="item.imageAlt" />
+
+          <div>
+            <strong>{{ item.productName }}</strong>
+            <span>Qty {{ item.quantity }} | {{ item.size }}</span>
+          </div>
+
+          <p>{{ item.lineTotalText }}</p>
+        </div>
+      </div>
+
+      <div class="summary-row">
+        <span>Subtotal</span>
+        <strong>{{ cart().subtotalText }}</strong>
+      </div>
+
+      <div class="summary-row">
+        <span>Delivery</span>
+        <strong>{{ cart().deliveryFeeText }}</strong>
+      </div>
+
+      <div class="summary-row total-row">
+        <span>Total</span>
+        <strong>{{ cart().totalText }}</strong>
+      </div>
+
+      <p class="summary-note" *ngIf="cart().deliveryRuleText">
+        {{ cart().deliveryRuleText }}
+      </p>
+
+      <p class="summary-note" *ngIf="cart().items.length > 0 && !cart().isFreeDelivery">
+        Add {{ cart().amountUntilFreeDeliveryText }} more to qualify for free delivery.
+      </p>
+
+      <p class="summary-note" *ngIf="cart().items.length > 0 && cart().isFreeDelivery">
+        Your order qualifies for free delivery.
+      </p>
+
+      <p class="summary-note">
+        PayFast will open after your order is created. Your order stays pending until PayFast confirms payment.
+      </p>
+    </aside>
+  </div>
 </section>

@@ -3,15 +3,11 @@ import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 
-import {
-  CustomerAddress,
-  CustomerPaymentMethod
-} from '../../_models/customer-account';
-import { CartLine } from '../../_models/shopping-state';
+import { CreateOrder } from '../../_models/order';
 import { AccountService } from '../../_services/account.service';
-import { CustomerAddressService } from '../../_services/customer-address.service';
-import { CustomerOrderService } from '../../_services/customer-order.service';
-import { ShopStateService } from '../../_services/shop-state.service';
+import { CartService } from '../../_services/cart.service';
+import { OrderService } from '../../_services/order.service';
+import { PaymentService } from '../../_services/payment.service';
 
 @Component({
   selector: 'app-checkout',
@@ -22,11 +18,31 @@ import { ShopStateService } from '../../_services/shop-state.service';
 })
 export class CheckoutComponent implements OnInit {
   private accountService = inject(AccountService);
+  private cartService = inject(CartService);
+  private orderService = inject(OrderService);
+  private paymentService = inject(PaymentService);
   private router = inject(Router);
 
-  shopStateService = inject(ShopStateService);
-  customerAddressService = inject(CustomerAddressService);
-  customerOrderService = inject(CustomerOrderService);
+  cart = this.cartService.currentCart;
+
+  model: CreateOrder = {
+    firstName: '',
+    lastName: '',
+    email: '',
+    phoneNumber: '',
+    addressLine1: '',
+    addressLine2: '',
+    suburb: '',
+    city: '',
+    province: '',
+    postalCode: '',
+    deliveryMethod: 'Standard Delivery',
+    customerNote: ''
+  };
+
+  isLoadingCart = false;
+  isSubmitting = false;
+  errorMessage = '';
 
   provinces = [
     'Eastern Cape',
@@ -40,140 +56,87 @@ export class CheckoutComponent implements OnInit {
     'Western Cape'
   ];
 
-  paymentMethods: { value: CustomerPaymentMethod; label: string; text: string }[] = [
-    {
-      value: 'PayFast',
-      label: 'PayFast',
-      text: 'Local secure payment flow for South African checkout.'
-    },
-    {
-      value: 'Card',
-      label: 'Card',
-      text: 'Use a debit or credit card when payment gateway is connected.'
-    },
-    {
-      value: 'EFT',
-      label: 'EFT',
-      text: 'Manual payment option for later backend payment handling.'
-    }
-  ];
-
-  checkoutAddress: CustomerAddress = this.createEmptyAddress();
-  contactEmail = '';
-  paymentMethod: CustomerPaymentMethod = 'PayFast';
-  orderNote = '';
-  saveAddress = true;
-  selectedAddressId: number | null = null;
-
-  formError = '';
-
+  // ===============================
+  // Page setup
+  // Loads cart and fills customer details from logged-in user.
+  // ===============================
   ngOnInit(): void {
-    this.prefillCustomerDetails();
-  }
-
-  get hasCartItems(): boolean {
-    return this.shopStateService.cartLines().length > 0;
-  }
-
-  selectSavedAddress(address: CustomerAddress): void {
-    this.selectedAddressId = address.id;
-    this.checkoutAddress = { ...address };
-    this.formError = '';
-  }
-
-  placeOrder(): void {
-    this.formError = '';
-
-    if (!this.hasCartItems) {
-      this.formError = 'Your cart is empty. Add products before placing an order.';
-      return;
-    }
-
-    if (!this.isCheckoutValid()) {
-      this.formError = 'Please complete your contact and delivery details before placing the order.';
-      return;
-    }
-
-    if (this.saveAddress) {
-      if (this.selectedAddressId) {
-        this.customerAddressService.updateAddress({
-          ...this.checkoutAddress,
-          id: this.selectedAddressId
-        });
-      } else {
-        const savedAddress = this.customerAddressService.addAddress({
-          ...this.checkoutAddress,
-          id: 0
-        });
-
-        this.checkoutAddress = { ...savedAddress };
-      }
-    }
-
-    this.customerOrderService.createOrder(
-      this.shopStateService.cartLines(),
-      this.checkoutAddress,
-      this.contactEmail.trim(),
-      this.checkoutAddress.phone.trim(),
-      this.paymentMethod,
-      this.orderNote.trim()
-    );
-
-    this.shopStateService.clearCart();
-    this.router.navigateByUrl('/order-confirmation');
-  }
-
-  trackByAddressId(index: number, address: CustomerAddress): number {
-    return address.id;
-  }
-
-  trackByCartLine(index: number, line: CartLine): string {
-    return `${line.product.id}-${line.size}`;
-  }
-
-  private prefillCustomerDetails(): void {
     const user = this.accountService.currentUser();
-    const defaultAddress = this.customerAddressService.getDefaultAddress();
 
-    this.contactEmail = user?.email || '';
+    if (user) {
+      this.model.firstName = user.firstName;
+      this.model.lastName = user.lastName;
+      this.model.email = user.email;
+    }
 
-    if (defaultAddress) {
-      this.selectedAddressId = defaultAddress.id;
-      this.checkoutAddress = { ...defaultAddress };
+    this.loadCart();
+  }
+
+  // ===============================
+  // Load cart
+  // Checkout requires a backend cart before creating an order.
+  // ===============================
+  loadCart() {
+    this.isLoadingCart = true;
+    this.errorMessage = '';
+
+    this.cartService.getCart().subscribe({
+      next: cart => {
+        this.isLoadingCart = false;
+
+        if (cart.items.length === 0) {
+          this.errorMessage = 'Your cart is empty. Add products before checkout.';
+        }
+      },
+      error: error => {
+        this.isLoadingCart = false;
+        this.errorMessage = error?.error?.message || 'Could not load your cart.';
+      }
+    });
+  }
+
+  // ===============================
+  // Place order and pay
+  // Creates pending order first, then starts PayFast payment.
+  // ===============================
+  placeOrderAndPay() {
+    this.errorMessage = '';
+
+    if (this.cart().items.length === 0) {
+      this.errorMessage = 'Your cart is empty.';
       return;
     }
 
-    this.checkoutAddress = {
-      ...this.checkoutAddress,
-      fullName: user ? `${user.firstName} ${user.lastName}`.trim() : ''
-    };
+    this.isSubmitting = true;
+
+    this.orderService.createOrder(this.model).subscribe({
+      next: order => {
+        sessionStorage.setItem('lastOrderId', order.id.toString());
+
+        this.paymentService.initiatePayFastPayment({ orderId: order.id }).subscribe({
+          next: payment => {
+            this.isSubmitting = false;
+            this.cartService.clearLocalCart();
+            this.paymentService.submitPayFastForm(payment);
+          },
+          error: error => {
+            this.isSubmitting = false;
+            this.errorMessage = error?.error?.message || 'Order created, but PayFast could not be started.';
+          }
+        });
+      },
+      error: error => {
+        this.isSubmitting = false;
+        this.errorMessage = error?.error?.message || 'Could not create your order.';
+      }
+    });
   }
 
-  private isCheckoutValid(): boolean {
-    return !!(
-      this.contactEmail.trim() &&
-      this.checkoutAddress.fullName.trim() &&
-      this.checkoutAddress.phone.trim() &&
-      this.checkoutAddress.addressLine1.trim() &&
-      this.checkoutAddress.city.trim() &&
-      this.checkoutAddress.province.trim() &&
-      this.checkoutAddress.postalCode.trim()
-    );
-  }
-
-  private createEmptyAddress(): CustomerAddress {
-    return {
-      id: 0,
-      label: 'Home',
-      fullName: '',
-      phone: '',
-      addressLine1: '',
-      addressLine2: '',
-      suburb: '',
-      city: '',
-      province: 'Gauteng',
-      postalCode: '',
-      isDefault: true
-    };
+  // ===============================
+  // Back to cart
+  // Lets customer adjust cart before checkout.
+  // ===============================
+  backToCart() {
+    this.router.navigateByUrl('/cart');
   }
 }

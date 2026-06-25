@@ -1,72 +1,46 @@
-<section class="wishlist-page">
-  <div class="page-header">
-    <div>
-      <p class="page-eyebrow">ZivaFit Wishlist</p>
-      <h1>Your Wishlist</h1>
-      <p>Keep your favourite ZivaFit pieces in one place.</p>
-    </div>
-
-    <a routerLink="/shop" class="outline-btn">
-      Continue Shopping
-      <i class="bi bi-arrow-right" aria-hidden="true"></i>
-    </a>
+<section class="phase-page">
+  <div class="page-hero">
+    <p class="eyebrow">Saved pieces</p>
+    <h1>Wishlist</h1>
+    <p>Keep track of the ZivaFit pieces you want to come back to.</p>
   </div>
 
-  <ng-container *ngIf="shopStateService.wishlistProducts().length > 0; else emptyWishlist">
-    <div class="wishlist-grid">
-      <article
-        class="wishlist-card"
-        *ngFor="let product of shopStateService.wishlistProducts(); trackBy: trackByProductId"
-      >
-        <a
-          class="wishlist-image"
-          [routerLink]="['/product-details', product.id]"
-        >
-          <img [src]="product.imageUrl" [alt]="product.imageAlt" />
+  <div class="page-alert error" *ngIf="errorMessage">{{ errorMessage }}</div>
+  <div class="page-alert success" *ngIf="successMessage">{{ successMessage }}</div>
 
-          <span>{{ product.badge }}</span>
-        </a>
+  <div class="loading-card" *ngIf="isLoading">
+    Loading your wishlist...
+  </div>
 
-        <div class="wishlist-info">
-          <div class="product-meta">
-            <span>{{ product.fitType }}</span>
-            <span>{{ product.colour }}</span>
-          </div>
+  <ng-container *ngIf="!isLoading">
+    <div class="empty-state" *ngIf="wishlistService.wishlistItems().length === 0">
+      <i class="bi bi-heart"></i>
+      <h2>Your wishlist is empty.</h2>
+      <p>Save your favourite pieces while browsing the store.</p>
+      <a routerLink="/shop" class="ziva-btn-dark">Shop Now</a>
+    </div>
 
-          <h2>{{ product.name }}</h2>
+    <div class="wishlist-grid" *ngIf="wishlistService.wishlistItems().length > 0">
+      <article class="wishlist-card" *ngFor="let item of wishlistService.wishlistItems()">
+        <div class="image-wrap">
+          <img [src]="item.imageUrl" [alt]="item.imageAlt" />
+          <span class="badge" *ngIf="item.badge">{{ item.badge }}</span>
+        </div>
 
-          <p>{{ product.priceText }}</p>
+        <div class="card-body">
+          <p>{{ item.category }}</p>
+          <h2>{{ item.name }}</h2>
+          <span>{{ item.fitType }} | {{ item.colour }}</span>
+          <strong>{{ item.priceText }}</strong>
 
-          <div class="wishlist-actions">
-            <button type="button" class="add-btn" (click)="addToCart(product)">
-              Add To Cart
-              <i class="bi bi-bag" aria-hidden="true"></i>
-            </button>
-
-            <button
-              type="button"
-              class="remove-btn"
-              (click)="removeFromWishlist(product.id)"
-              aria-label="Remove from wishlist"
-            >
-              <i class="bi bi-trash" aria-hidden="true"></i>
+          <div class="card-actions">
+            <a [routerLink]="['/product-details', item.productId]">View Product</a>
+            <button type="button" (click)="removeItem(item.productId)">
+              Remove
             </button>
           </div>
         </div>
       </article>
     </div>
   </ng-container>
-
-  <ng-template #emptyWishlist>
-    <div class="empty-state">
-      <i class="bi bi-heart" aria-hidden="true"></i>
-      <h2>Your wishlist is empty.</h2>
-      <p>Browse the store and save your favourite ZivaFit products for later.</p>
-
-      <a routerLink="/shop">
-        Shop Products
-        <i class="bi bi-arrow-right" aria-hidden="true"></i>
-      </a>
-    </div>
-  </ng-template>
 </section>

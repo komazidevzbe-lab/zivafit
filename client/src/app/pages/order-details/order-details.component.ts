@@ -2,11 +2,8 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 
-import {
-  CustomerOrder,
-  CustomerOrderLine
-} from '../../_models/customer-account';
-import { CustomerOrderService } from '../../_services/customer-order.service';
+import { Order } from '../../_models/order';
+import { OrderService } from '../../_services/order.service';
 
 @Component({
   selector: 'app-order-details',
@@ -17,21 +14,45 @@ import { CustomerOrderService } from '../../_services/customer-order.service';
 })
 export class OrderDetailsComponent implements OnInit {
   private route = inject(ActivatedRoute);
+  private orderService = inject(OrderService);
 
-  customerOrderService = inject(CustomerOrderService);
-  order?: CustomerOrder;
+  order?: Order;
 
+  isLoading = false;
+  errorMessage = '';
+
+  // ===============================
+  // Page setup
+  // Reads order ID from route and loads customer order details.
+  // ===============================
   ngOnInit(): void {
-    const orderNumber =
-      this.route.snapshot.paramMap.get('orderNumber') ||
-      this.route.snapshot.queryParamMap.get('orderNumber');
+    const orderId = Number(this.route.snapshot.paramMap.get('id'));
 
-    this.order = this.customerOrderService.getOrderByNumber(orderNumber)
-      || this.customerOrderService.lastOrder()
-      || undefined;
+    if (!orderId) {
+      this.errorMessage = 'Order ID is missing.';
+      return;
+    }
+
+    this.loadOrder(orderId);
   }
 
-  trackByOrderLine(index: number, line: CustomerOrderLine): string {
-    return `${line.productId}-${line.size}`;
+  // ===============================
+  // Load order
+  // Gets one customer order from the backend.
+  // ===============================
+  loadOrder(orderId: number) {
+    this.isLoading = true;
+    this.errorMessage = '';
+
+    this.orderService.getMyOrder(orderId).subscribe({
+      next: order => {
+        this.order = order;
+        this.isLoading = false;
+      },
+      error: error => {
+        this.isLoading = false;
+        this.errorMessage = error?.error?.message || 'Could not load order details.';
+      }
+    });
   }
 }

@@ -1,79 +1,111 @@
-<section class="confirmation-page">
-  <ng-container *ngIf="customerOrderService.lastOrder() as order; else noOrder">
-    <section class="confirmation-card">
-      <div class="success-icon">
-        <i class="bi bi-check2" aria-hidden="true"></i>
+<section class="phase-page">
+  <div class="confirmation-card" *ngIf="isLoading && !order">
+    <i class="bi bi-hourglass-split"></i>
+    <h1>Loading your order...</h1>
+    <p>Please wait while we check your order status.</p>
+  </div>
+
+  <div class="confirmation-card error-state" *ngIf="errorMessage">
+    <i class="bi bi-exclamation-circle"></i>
+    <h1>Order confirmation issue</h1>
+    <p>{{ errorMessage }}</p>
+    <a routerLink="/my-orders" class="ziva-btn-dark">View My Orders</a>
+  </div>
+
+  <ng-container *ngIf="order && !errorMessage">
+    <div class="confirmation-card paid-state" *ngIf="isPaid">
+      <i class="bi bi-check-circle"></i>
+      <p class="eyebrow">Payment confirmed</p>
+      <h1>Thank you for your order.</h1>
+      <p>Your PayFast payment has been confirmed and your order is now being processed.</p>
+    </div>
+
+    <div class="confirmation-card waiting-state" *ngIf="waitingForPayment">
+      <i class="bi bi-clock-history"></i>
+      <p class="eyebrow">Waiting for PayFast</p>
+      <h1>Payment received, confirmation pending.</h1>
+      <p>
+        PayFast has returned you to ZivaFit. We are waiting for the secure PayFast notify request
+        to update your order.
+      </p>
+    </div>
+
+    <div class="confirmation-card error-state" *ngIf="isFailed">
+      <i class="bi bi-x-circle"></i>
+      <p class="eyebrow">Payment failed</p>
+      <h1>Your payment was not completed.</h1>
+      <p>Please try checkout again or contact support if the issue continues.</p>
+    </div>
+
+    <div class="confirmation-card error-state" *ngIf="isCancelled">
+      <i class="bi bi-x-circle"></i>
+      <p class="eyebrow">Payment cancelled</p>
+      <h1>Your payment was cancelled.</h1>
+      <p>Your order was not confirmed because the payment was cancelled.</p>
+    </div>
+
+    <div class="order-card">
+      <div class="order-heading">
+        <div>
+          <p class="eyebrow">Order</p>
+          <h2>{{ order.orderNumber }}</h2>
+        </div>
+
+        <div class="status-pills">
+          <span>{{ order.orderStatus }}</span>
+          <span>{{ order.paymentStatus }}</span>
+        </div>
       </div>
 
-      <p class="page-eyebrow">Order Confirmed</p>
-      <h1>Thank You For Your Order</h1>
-      <p class="confirmation-text">
-        Your ZivaFit order has been received. A confirmation email will be sent
-        once backend order notifications are connected.
-      </p>
-
-      <div class="order-reference">
+      <div class="summary-grid">
         <div>
-          <span>Order Number</span>
-          <strong>{{ order.orderNumber }}</strong>
+          <span>Subtotal</span>
+          <strong>{{ order.subtotalText }}</strong>
+        </div>
+
+        <div>
+          <span>Delivery</span>
+          <strong>{{ order.deliveryFeeText }}</strong>
         </div>
 
         <div>
           <span>Total</span>
           <strong>{{ order.totalText }}</strong>
         </div>
+      </div>
+
+      <div class="summary-grid">
+        <div>
+          <span>Items</span>
+          <strong>{{ order.totalItems }}</strong>
+        </div>
 
         <div>
-          <span>Status</span>
-          <strong>{{ order.status }}</strong>
+          <span>Delivery method</span>
+          <strong>{{ order.deliveryMethod }}</strong>
         </div>
+
+        <div>
+          <span>Payment</span>
+          <strong>{{ order.paymentStatus }}</strong>
+        </div>
+      </div>
+
+      <div class="order-items">
+        <article *ngFor="let item of order.items">
+          <img [src]="item.imageUrl" [alt]="item.imageAlt" />
+          <div>
+            <strong>{{ item.productName }}</strong>
+            <span>{{ item.size }} | {{ item.colour }} | Qty {{ item.quantity }}</span>
+          </div>
+          <p>{{ item.lineTotalText }}</p>
+        </article>
       </div>
 
       <div class="confirmation-actions">
-        <a [routerLink]="['/order-details', order.orderNumber]" class="dark-btn">
-          View Order Details
-          <i class="bi bi-arrow-right" aria-hidden="true"></i>
-        </a>
-
-        <a routerLink="/shop" class="light-btn">
-          Continue Shopping
-          <i class="bi bi-arrow-right" aria-hidden="true"></i>
-        </a>
+        <a routerLink="/my-orders" class="ziva-btn-dark">View My Orders</a>
+        <a routerLink="/shop" class="ziva-btn-light">Continue Shopping</a>
       </div>
-    </section>
-
-    <section class="order-preview-card">
-      <div class="card-heading">
-        <p class="page-eyebrow">Order Summary</p>
-        <h2>Purchased Items</h2>
-      </div>
-
-      <article
-        class="order-line"
-        *ngFor="let line of order.lines; trackBy: trackByOrderLine"
-      >
-        <img [src]="line.imageUrl" [alt]="line.imageAlt" />
-
-        <div>
-          <h3>{{ line.name }}</h3>
-          <p>{{ line.category }} · Size {{ line.size }} · Qty {{ line.quantity }}</p>
-        </div>
-
-        <strong>{{ line.lineTotalText }}</strong>
-      </article>
-    </section>
+    </div>
   </ng-container>
-
-  <ng-template #noOrder>
-    <section class="empty-state">
-      <i class="bi bi-bag-check" aria-hidden="true"></i>
-      <h1>No Recent Order Found</h1>
-      <p>Once checkout is completed, the order confirmation will appear here.</p>
-
-      <a routerLink="/shop">
-        Continue Shopping
-        <i class="bi bi-arrow-right" aria-hidden="true"></i>
-      </a>
-    </section>
-  </ng-template>
 </section>

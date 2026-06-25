@@ -50,6 +50,21 @@ public static class ApplicationServiceExtensions
         services.AddScoped<IStorefrontContentService, StorefrontContentService>();
 
         // ===============================
+        // Checkout settings service
+        // Reads delivery fee and free-delivery threshold from the database.
+        // ===============================
+        services.AddScoped<ICheckoutSettingsService, CheckoutSettingsService>();
+
+        // ===============================
+        // Phase 4 ecommerce services
+        // Handles customer cart, wishlist, checkout, orders, admin orders, and payment flow.
+        // ===============================
+        services.AddScoped<ICartService, CartService>();
+        services.AddScoped<IWishlistService, WishlistService>();
+        services.AddScoped<IOrderService, OrderService>();
+        services.AddScoped<IPaymentService, PayFastPaymentService>();
+
+        // ===============================
         // Photo service
         // Handles product image uploads and deletes through Cloudinary.
         // ===============================
@@ -66,6 +81,12 @@ public static class ApplicationServiceExtensions
         // Used by Gmail SMTP for real password reset emails.
         // ===============================
         services.Configure<EmailSettings>(config.GetSection("EmailSettings"));
+
+        // ===============================
+        // PayFast settings
+        // Used by the PayFast payment service.
+        // ===============================
+        services.Configure<PayFastSettings>(config.GetSection("PayFastSettings"));
 
         return services;
     }

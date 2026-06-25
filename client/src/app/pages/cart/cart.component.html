@@ -1,127 +1,95 @@
-<section class="cart-page">
-  <div class="page-header">
-    <div>
-      <p class="page-eyebrow">ZivaFit Cart</p>
-      <h1>Your Cart</h1>
-      <p>Review your selected ZivaFit products before checkout.</p>
-    </div>
-
-    <a routerLink="/shop" class="outline-btn">
-      Continue Shopping
-      <i class="bi bi-arrow-right" aria-hidden="true"></i>
-    </a>
+<section class="phase-page">
+  <div class="page-hero">
+    <p class="eyebrow">Your bag</p>
+    <h1>Cart</h1>
+    <p>Review your selected ZivaFit pieces before checkout.</p>
   </div>
 
-  <ng-container *ngIf="shopStateService.cartLines().length > 0; else emptyCart">
-    <div class="cart-layout">
+  <div class="page-alert error" *ngIf="errorMessage">{{ errorMessage }}</div>
+  <div class="page-alert success" *ngIf="successMessage">{{ successMessage }}</div>
+
+  <div class="loading-card" *ngIf="isLoading">
+    Loading your cart...
+  </div>
+
+  <ng-container *ngIf="!isLoading">
+    <div class="empty-state" *ngIf="cartService.currentCart().items.length === 0">
+      <i class="bi bi-bag"></i>
+      <h2>Your cart is empty.</h2>
+      <p>Start with leggings, tops, sets, sports bras, shorts, or accessories.</p>
+      <a routerLink="/shop" class="ziva-btn-dark">Continue Shopping</a>
+    </div>
+
+    <div class="cart-layout" *ngIf="cartService.currentCart().items.length > 0">
       <div class="cart-items">
-        <div
-          class="cart-item"
-          *ngFor="let line of shopStateService.cartLines(); trackBy: trackByCartLine"
-        >
-          <a
-            class="cart-item-image"
-            [routerLink]="['/product-details', line.product.id]"
-          >
-            <img [src]="line.product.imageUrl" [alt]="line.product.imageAlt" />
-          </a>
+        <article class="cart-item" *ngFor="let item of cartService.currentCart().items">
+          <img [src]="item.imageUrl" [alt]="item.imageAlt" />
 
-          <div class="cart-item-info">
-            <div class="cart-item-top">
-              <div>
-                <p class="item-category">{{ line.product.category }}</p>
-                <h2>{{ line.product.name }}</h2>
-              </div>
-
-              <button
-                type="button"
-                class="remove-btn"
-                (click)="removeItem(line)"
-                aria-label="Remove item"
-              >
-                <i class="bi bi-trash" aria-hidden="true"></i>
-              </button>
-            </div>
-
-            <div class="item-meta">
-              <span>{{ line.product.fitType }}</span>
-              <span>{{ line.product.colour }}</span>
-              <span>Size {{ line.size }}</span>
-            </div>
-
-            <div class="cart-item-bottom">
-              <div class="quantity-control" aria-label="Quantity selector">
-                <button
-                  type="button"
-                  (click)="decreaseQuantity(line)"
-                  aria-label="Decrease quantity"
-                >
-                  <i class="bi bi-dash" aria-hidden="true"></i>
-                </button>
-
-                <span>{{ line.quantity }}</span>
-
-                <button
-                  type="button"
-                  (click)="increaseQuantity(line)"
-                  aria-label="Increase quantity"
-                >
-                  <i class="bi bi-plus" aria-hidden="true"></i>
-                </button>
-              </div>
-
-              <strong>{{ line.lineTotalText }}</strong>
-            </div>
+          <div class="item-info">
+            <p class="item-category">{{ item.category }}</p>
+            <h2>{{ item.productName }}</h2>
+            <p>Size: {{ item.size }} | Colour: {{ item.colour }}</p>
+            <p class="sku">SKU: {{ item.sku }}</p>
+            <p class="stock">Available stock: {{ item.availableStock }}</p>
           </div>
-        </div>
+
+          <div class="quantity-control">
+            <button type="button" (click)="decreaseQuantity(item)">−</button>
+            <span>{{ item.quantity }}</span>
+            <button type="button" (click)="increaseQuantity(item)">+</button>
+          </div>
+
+          <div class="item-price">
+            <strong>{{ item.lineTotalText }}</strong>
+            <span>{{ item.unitPriceText }} each</span>
+            <button type="button" (click)="removeItem(item)">Remove</button>
+          </div>
+        </article>
       </div>
 
-      <aside class="cart-summary">
-        <p class="eyebrow">Order Summary</p>
-        <h2>Cart Total</h2>
+      <aside class="summary-card">
+        <p class="eyebrow">Order summary</p>
+
+        <div class="summary-row">
+          <span>Items</span>
+          <strong>{{ cartService.currentCart().totalItems }}</strong>
+        </div>
 
         <div class="summary-row">
           <span>Subtotal</span>
-          <strong>{{ shopStateService.cartSubtotalText() }}</strong>
+          <strong>{{ cartService.currentCart().subtotalText }}</strong>
         </div>
 
         <div class="summary-row">
           <span>Delivery</span>
-          <strong>{{ shopStateService.deliveryFeeText() }}</strong>
+          <strong>{{ cartService.currentCart().deliveryFeeText }}</strong>
         </div>
 
-        <div class="summary-note">
-          <i class="bi bi-truck" aria-hidden="true"></i>
-          <span>Free delivery on orders R1000+.</span>
-        </div>
-
-        <div class="summary-total">
+        <div class="summary-row">
           <span>Total</span>
-          <strong>{{ shopStateService.cartTotalText() }}</strong>
+          <strong>{{ cartService.currentCart().totalText }}</strong>
         </div>
 
-        <a routerLink="/checkout" class="checkout-btn">
-          Proceed To Checkout
-          <i class="bi bi-lock" aria-hidden="true"></i>
-        </a>
+        <p class="summary-note" *ngIf="cartService.currentCart().deliveryRuleText">
+          {{ cartService.currentCart().deliveryRuleText }}
+        </p>
 
-        <button type="button" class="clear-btn" (click)="clearCart()">
+        <p class="summary-note" *ngIf="!cartService.currentCart().isFreeDelivery">
+          Add {{ cartService.currentCart().amountUntilFreeDeliveryText }} more to qualify for free delivery.
+        </p>
+
+        <p class="summary-note" *ngIf="cartService.currentCart().isFreeDelivery">
+          Your order qualifies for free delivery.
+        </p>
+
+        <button type="button" class="ziva-btn-dark w-100" (click)="goToCheckout()">
+          Checkout
+        </button>
+
+        <button type="button" class="ziva-btn-light w-100" (click)="clearCart()">
           Clear Cart
         </button>
       </aside>
     </div>
   </ng-container>
-
-  <ng-template #emptyCart>
-    <div class="empty-state">
-      <i class="bi bi-bag" aria-hidden="true"></i>
-      <h2>Your cart is empty.</h2>
-      <p>Start shopping and add your favourite ZivaFit pieces to your cart.</p>
-
-      <a routerLink="/shop">
-        Shop Products
-        <i class="bi bi-arrow-right" aria-hidden="true"></i>
-      </a>
-    </div>
-  </ng-template>
 </section>

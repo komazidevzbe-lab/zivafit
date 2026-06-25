@@ -29,14 +29,18 @@ namespace API.Data
         public DbSet<StorefrontCollectionHeroImage> StorefrontCollectionHeroImages { get; set; } = null!;
         public DbSet<StorefrontCollectionBenefit> StorefrontCollectionBenefits { get; set; } = null!;
 
+        public DbSet<StoreCheckoutSettings> StoreCheckoutSettings { get; set; } = null!;
+
+        public DbSet<CartItem> CartItems { get; set; } = null!;
+        public DbSet<WishlistItem> WishlistItems { get; set; } = null!;
+        public DbSet<Order> Orders { get; set; } = null!;
+        public DbSet<OrderItem> OrderItems { get; set; } = null!;
+        public DbSet<OrderPayment> OrderPayments { get; set; } = null!;
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
 
-            // ===============================
-            // AppUser -> AppUserRole
-            // Connects users to their roles through the custom join entity.
-            // ===============================
             builder.Entity<AppUser>(b =>
             {
                 b.HasMany(u => u.UserRoles)
@@ -45,10 +49,6 @@ namespace API.Data
                     .IsRequired();
             });
 
-            // ===============================
-            // AppRole -> AppUserRole
-            // Connects roles to users through the custom join entity.
-            // ===============================
             builder.Entity<AppRole>(b =>
             {
                 b.HasMany(r => r.UserRoles)
@@ -57,10 +57,6 @@ namespace API.Data
                     .IsRequired();
             });
 
-            // ===============================
-            // PasswordResetCode
-            // Stores hashed password reset codes for real forgot-password flow.
-            // ===============================
             builder.Entity<PasswordResetCode>(b =>
             {
                 b.HasKey(prc => prc.Id);
@@ -85,11 +81,6 @@ namespace API.Data
                 b.HasIndex(prc => new { prc.AppUserId, prc.IsUsed, prc.ExpiresAt });
             });
 
-            // ===============================
-            // ProductCategory
-            // Stores fixed store categories used by public shop pages and admin product forms.
-            // No slug is stored because Angular routes and API filters handle navigation.
-            // ===============================
             builder.Entity<ProductCategory>(b =>
             {
                 b.HasKey(c => c.Id);
@@ -123,10 +114,6 @@ namespace API.Data
                     .IsUnique();
             });
 
-            // ===============================
-            // Product
-            // Stores catalogue products shown publicly and managed by admin.
-            // ===============================
             builder.Entity<Product>(b =>
             {
                 b.HasKey(p => p.Id);
@@ -178,10 +165,6 @@ namespace API.Data
                     .OnDelete(DeleteBehavior.Cascade);
             });
 
-            // ===============================
-            // ProductVariant
-            // Stores product sizes, colours, SKU, and stock.
-            // ===============================
             builder.Entity<ProductVariant>(b =>
             {
                 b.HasKey(v => v.Id);
@@ -208,10 +191,6 @@ namespace API.Data
                     .IsUnique();
             });
 
-            // ===============================
-            // ProductImage
-            // Stores product image URLs and main image state.
-            // ===============================
             builder.Entity<ProductImage>(b =>
             {
                 b.HasKey(i => i.Id);
@@ -234,76 +213,26 @@ namespace API.Data
                     .IsRequired();
             });
 
-            // ===============================
-            // StorefrontHomeContent
-            // Stores Home page content so Angular does not hardcode it.
-            // ===============================
             builder.Entity<StorefrontHomeContent>(b =>
             {
                 b.HasKey(h => h.Id);
 
-                b.Property(h => h.HeroEyebrow)
-                    .IsRequired()
-                    .HasMaxLength(160);
-
-                b.Property(h => h.HeroTitle)
-                    .IsRequired()
-                    .HasMaxLength(160);
-
-                b.Property(h => h.HeroHighlight)
-                    .IsRequired()
-                    .HasMaxLength(160);
-
-                b.Property(h => h.HeroText)
-                    .IsRequired()
-                    .HasMaxLength(600);
-
-                b.Property(h => h.PrimaryButtonLabel)
-                    .IsRequired()
-                    .HasMaxLength(80);
-
-                b.Property(h => h.PrimaryButtonRoute)
-                    .IsRequired()
-                    .HasMaxLength(160);
-
-                b.Property(h => h.SecondaryButtonLabel)
-                    .IsRequired()
-                    .HasMaxLength(80);
-
-                b.Property(h => h.SecondaryButtonRoute)
-                    .IsRequired()
-                    .HasMaxLength(160);
-
-                b.Property(h => h.HeroVisualAriaLabel)
-                    .IsRequired()
-                    .HasMaxLength(160);
-
-                b.Property(h => h.CategorySectionAriaLabel)
-                    .IsRequired()
-                    .HasMaxLength(160);
-
-                b.Property(h => h.BestSellersEyebrow)
-                    .IsRequired()
-                    .HasMaxLength(160);
-
-                b.Property(h => h.BestSellersTitle)
-                    .IsRequired()
-                    .HasMaxLength(160);
-
-                b.Property(h => h.BestSellersLinkLabel)
-                    .IsRequired()
-                    .HasMaxLength(80);
-
-                b.Property(h => h.BestSellersLinkRoute)
-                    .IsRequired()
-                    .HasMaxLength(160);
-
-                b.Property(h => h.ProductCardLinkLabel)
-                    .IsRequired()
-                    .HasMaxLength(80);
-
-                b.Property(h => h.IsActive)
-                    .IsRequired();
+                b.Property(h => h.HeroEyebrow).IsRequired().HasMaxLength(160);
+                b.Property(h => h.HeroTitle).IsRequired().HasMaxLength(160);
+                b.Property(h => h.HeroHighlight).IsRequired().HasMaxLength(160);
+                b.Property(h => h.HeroText).IsRequired().HasMaxLength(600);
+                b.Property(h => h.PrimaryButtonLabel).IsRequired().HasMaxLength(80);
+                b.Property(h => h.PrimaryButtonRoute).IsRequired().HasMaxLength(160);
+                b.Property(h => h.SecondaryButtonLabel).IsRequired().HasMaxLength(80);
+                b.Property(h => h.SecondaryButtonRoute).IsRequired().HasMaxLength(160);
+                b.Property(h => h.HeroVisualAriaLabel).IsRequired().HasMaxLength(160);
+                b.Property(h => h.CategorySectionAriaLabel).IsRequired().HasMaxLength(160);
+                b.Property(h => h.BestSellersEyebrow).IsRequired().HasMaxLength(160);
+                b.Property(h => h.BestSellersTitle).IsRequired().HasMaxLength(160);
+                b.Property(h => h.BestSellersLinkLabel).IsRequired().HasMaxLength(80);
+                b.Property(h => h.BestSellersLinkRoute).IsRequired().HasMaxLength(160);
+                b.Property(h => h.ProductCardLinkLabel).IsRequired().HasMaxLength(80);
+                b.Property(h => h.IsActive).IsRequired();
 
                 b.HasMany(h => h.HeroCards)
                     .WithOne(c => c.HomeContent)
@@ -321,63 +250,27 @@ namespace API.Data
                     .OnDelete(DeleteBehavior.Cascade);
             });
 
-            // ===============================
-            // StorefrontHeroCard
-            // Stores Home hero visual cards.
-            // ===============================
             builder.Entity<StorefrontHeroCard>(b =>
             {
                 b.HasKey(c => c.Id);
 
-                b.Property(c => c.Title)
-                    .IsRequired()
-                    .HasMaxLength(120);
-
-                b.Property(c => c.ImageUrl)
-                    .IsRequired()
-                    .HasMaxLength(700);
-
-                b.Property(c => c.ImageAlt)
-                    .IsRequired()
-                    .HasMaxLength(250);
-
-                b.Property(c => c.CardClass)
-                    .IsRequired()
-                    .HasMaxLength(80);
-
-                b.Property(c => c.DisplayOrder)
-                    .IsRequired();
-
-                b.Property(c => c.IsActive)
-                    .IsRequired();
+                b.Property(c => c.Title).IsRequired().HasMaxLength(120);
+                b.Property(c => c.ImageUrl).IsRequired().HasMaxLength(700);
+                b.Property(c => c.ImageAlt).IsRequired().HasMaxLength(250);
+                b.Property(c => c.CardClass).IsRequired().HasMaxLength(80);
+                b.Property(c => c.DisplayOrder).IsRequired();
+                b.Property(c => c.IsActive).IsRequired();
             });
 
-            // ===============================
-            // StorefrontCategoryCard
-            // Stores Home category cards and fixed Angular routes.
-            // These are not slugs and are not customer-managed.
-            // ===============================
             builder.Entity<StorefrontCategoryCard>(b =>
             {
                 b.HasKey(c => c.Id);
 
-                b.Property(c => c.Title)
-                    .IsRequired()
-                    .HasMaxLength(120);
-
-                b.Property(c => c.Route)
-                    .IsRequired()
-                    .HasMaxLength(160);
-
-                b.Property(c => c.LinkLabel)
-                    .IsRequired()
-                    .HasMaxLength(80);
-
-                b.Property(c => c.DisplayOrder)
-                    .IsRequired();
-
-                b.Property(c => c.IsActive)
-                    .IsRequired();
+                b.Property(c => c.Title).IsRequired().HasMaxLength(120);
+                b.Property(c => c.Route).IsRequired().HasMaxLength(160);
+                b.Property(c => c.LinkLabel).IsRequired().HasMaxLength(80);
+                b.Property(c => c.DisplayOrder).IsRequired();
+                b.Property(c => c.IsActive).IsRequired();
 
                 b.HasMany(c => c.Images)
                     .WithOne(i => i.CategoryCard)
@@ -385,145 +278,52 @@ namespace API.Data
                     .OnDelete(DeleteBehavior.Cascade);
             });
 
-            // ===============================
-            // StorefrontCategoryCardImage
-            // Stores rotating images inside Home category cards.
-            // ===============================
             builder.Entity<StorefrontCategoryCardImage>(b =>
             {
                 b.HasKey(i => i.Id);
 
-                b.Property(i => i.ImageUrl)
-                    .IsRequired()
-                    .HasMaxLength(700);
-
-                b.Property(i => i.ImageAlt)
-                    .IsRequired()
-                    .HasMaxLength(250);
-
-                b.Property(i => i.DisplayOrder)
-                    .IsRequired();
-
-                b.Property(i => i.IsActive)
-                    .IsRequired();
+                b.Property(i => i.ImageUrl).IsRequired().HasMaxLength(700);
+                b.Property(i => i.ImageAlt).IsRequired().HasMaxLength(250);
+                b.Property(i => i.DisplayOrder).IsRequired();
+                b.Property(i => i.IsActive).IsRequired();
             });
 
-            // ===============================
-            // StorefrontBenefitItem
-            // Stores Home benefits.
-            // ===============================
             builder.Entity<StorefrontBenefitItem>(b =>
             {
                 b.HasKey(i => i.Id);
 
-                b.Property(i => i.IconClass)
-                    .IsRequired()
-                    .HasMaxLength(80);
-
-                b.Property(i => i.Title)
-                    .IsRequired()
-                    .HasMaxLength(120);
-
-                b.Property(i => i.Text)
-                    .IsRequired()
-                    .HasMaxLength(250);
-
-                b.Property(i => i.DisplayOrder)
-                    .IsRequired();
-
-                b.Property(i => i.IsActive)
-                    .IsRequired();
+                b.Property(i => i.IconClass).IsRequired().HasMaxLength(80);
+                b.Property(i => i.Title).IsRequired().HasMaxLength(120);
+                b.Property(i => i.Text).IsRequired().HasMaxLength(250);
+                b.Property(i => i.DisplayOrder).IsRequired();
+                b.Property(i => i.IsActive).IsRequired();
             });
 
-            // ===============================
-            // StorefrontCollectionPage
-            // Stores public Shop, New In, and category page content.
-            // PageKey is an internal content key, not a customer/admin editable slug.
-            // ===============================
             builder.Entity<StorefrontCollectionPage>(b =>
             {
                 b.HasKey(p => p.Id);
 
-                b.Property(p => p.PageKey)
-                    .IsRequired()
-                    .HasMaxLength(80);
-
-                b.Property(p => p.PageName)
-                    .IsRequired()
-                    .HasMaxLength(120);
-
-                b.Property(p => p.Mode)
-                    .IsRequired()
-                    .HasMaxLength(40);
-
-                b.Property(p => p.Category)
-                    .HasMaxLength(80);
-
-                b.Property(p => p.FilterType)
-                    .IsRequired()
-                    .HasMaxLength(40);
-
-                b.Property(p => p.HeroEyebrow)
-                    .IsRequired()
-                    .HasMaxLength(160);
-
-                b.Property(p => p.HeroTitle)
-                    .IsRequired()
-                    .HasMaxLength(180);
-
-                b.Property(p => p.HeroText)
-                    .IsRequired()
-                    .HasMaxLength(700);
-
-                b.Property(p => p.HeroButtonLabel)
-                    .IsRequired()
-                    .HasMaxLength(80);
-
-                b.Property(p => p.SecondaryButtonLabel)
-                    .IsRequired()
-                    .HasMaxLength(80);
-
-                b.Property(p => p.SecondaryButtonRoute)
-                    .IsRequired()
-                    .HasMaxLength(160);
-
-                b.Property(p => p.CollectionEyebrow)
-                    .IsRequired()
-                    .HasMaxLength(160);
-
-                b.Property(p => p.CollectionTitle)
-                    .IsRequired()
-                    .HasMaxLength(160);
-
-                b.Property(p => p.ProductCardLinkLabel)
-                    .IsRequired()
-                    .HasMaxLength(80);
-
-                b.Property(p => p.EmptyTitle)
-                    .IsRequired()
-                    .HasMaxLength(160);
-
-                b.Property(p => p.EmptyText)
-                    .IsRequired()
-                    .HasMaxLength(300);
-
-                b.Property(p => p.NoteEyebrow)
-                    .IsRequired()
-                    .HasMaxLength(160);
-
-                b.Property(p => p.NoteTitle)
-                    .IsRequired()
-                    .HasMaxLength(200);
-
-                b.Property(p => p.NoteText)
-                    .IsRequired()
-                    .HasMaxLength(900);
-
-                b.Property(p => p.DisplayOrder)
-                    .IsRequired();
-
-                b.Property(p => p.IsActive)
-                    .IsRequired();
+                b.Property(p => p.PageKey).IsRequired().HasMaxLength(80);
+                b.Property(p => p.PageName).IsRequired().HasMaxLength(120);
+                b.Property(p => p.Mode).IsRequired().HasMaxLength(40);
+                b.Property(p => p.Category).HasMaxLength(80);
+                b.Property(p => p.FilterType).IsRequired().HasMaxLength(40);
+                b.Property(p => p.HeroEyebrow).IsRequired().HasMaxLength(160);
+                b.Property(p => p.HeroTitle).IsRequired().HasMaxLength(180);
+                b.Property(p => p.HeroText).IsRequired().HasMaxLength(700);
+                b.Property(p => p.HeroButtonLabel).IsRequired().HasMaxLength(80);
+                b.Property(p => p.SecondaryButtonLabel).IsRequired().HasMaxLength(80);
+                b.Property(p => p.SecondaryButtonRoute).IsRequired().HasMaxLength(160);
+                b.Property(p => p.CollectionEyebrow).IsRequired().HasMaxLength(160);
+                b.Property(p => p.CollectionTitle).IsRequired().HasMaxLength(160);
+                b.Property(p => p.ProductCardLinkLabel).IsRequired().HasMaxLength(80);
+                b.Property(p => p.EmptyTitle).IsRequired().HasMaxLength(160);
+                b.Property(p => p.EmptyText).IsRequired().HasMaxLength(300);
+                b.Property(p => p.NoteEyebrow).IsRequired().HasMaxLength(160);
+                b.Property(p => p.NoteTitle).IsRequired().HasMaxLength(200);
+                b.Property(p => p.NoteText).IsRequired().HasMaxLength(900);
+                b.Property(p => p.DisplayOrder).IsRequired();
+                b.Property(p => p.IsActive).IsRequired();
 
                 b.HasIndex(p => p.PageKey)
                     .IsUnique();
@@ -544,77 +344,219 @@ namespace API.Data
                     .OnDelete(DeleteBehavior.Cascade);
             });
 
-            // ===============================
-            // StorefrontCollectionHeroPoint
-            // Stores collection hero point chips.
-            // ===============================
             builder.Entity<StorefrontCollectionHeroPoint>(b =>
             {
                 b.HasKey(p => p.Id);
 
-                b.Property(p => p.IconClass)
-                    .IsRequired()
-                    .HasMaxLength(80);
-
-                b.Property(p => p.Label)
-                    .IsRequired()
-                    .HasMaxLength(120);
-
-                b.Property(p => p.DisplayOrder)
-                    .IsRequired();
-
-                b.Property(p => p.IsActive)
-                    .IsRequired();
+                b.Property(p => p.IconClass).IsRequired().HasMaxLength(80);
+                b.Property(p => p.Label).IsRequired().HasMaxLength(120);
+                b.Property(p => p.DisplayOrder).IsRequired();
+                b.Property(p => p.IsActive).IsRequired();
             });
 
-            // ===============================
-            // StorefrontCollectionHeroImage
-            // Stores collection hero images.
-            // ===============================
             builder.Entity<StorefrontCollectionHeroImage>(b =>
             {
                 b.HasKey(i => i.Id);
 
-                b.Property(i => i.ImageUrl)
-                    .IsRequired()
-                    .HasMaxLength(700);
-
-                b.Property(i => i.ImageAlt)
-                    .IsRequired()
-                    .HasMaxLength(250);
-
-                b.Property(i => i.DisplayOrder)
-                    .IsRequired();
-
-                b.Property(i => i.IsActive)
-                    .IsRequired();
+                b.Property(i => i.ImageUrl).IsRequired().HasMaxLength(700);
+                b.Property(i => i.ImageAlt).IsRequired().HasMaxLength(250);
+                b.Property(i => i.DisplayOrder).IsRequired();
+                b.Property(i => i.IsActive).IsRequired();
             });
 
-            // ===============================
-            // StorefrontCollectionBenefit
-            // Stores collection benefit cards.
-            // ===============================
             builder.Entity<StorefrontCollectionBenefit>(b =>
             {
                 b.HasKey(i => i.Id);
 
-                b.Property(i => i.IconClass)
-                    .IsRequired()
-                    .HasMaxLength(80);
+                b.Property(i => i.IconClass).IsRequired().HasMaxLength(80);
+                b.Property(i => i.Title).IsRequired().HasMaxLength(120);
+                b.Property(i => i.Text).IsRequired().HasMaxLength(250);
+                b.Property(i => i.DisplayOrder).IsRequired();
+                b.Property(i => i.IsActive).IsRequired();
+            });
 
-                b.Property(i => i.Title)
+            builder.Entity<StoreCheckoutSettings>(b =>
+            {
+                b.HasKey(s => s.Id);
+
+                b.Property(s => s.SettingsName)
                     .IsRequired()
                     .HasMaxLength(120);
 
-                b.Property(i => i.Text)
+                b.Property(s => s.DeliveryMethodName)
                     .IsRequired()
-                    .HasMaxLength(300);
+                    .HasMaxLength(80);
 
-                b.Property(i => i.DisplayOrder)
+                b.Property(s => s.DeliveryMessage)
+                    .IsRequired()
+                    .HasMaxLength(250);
+
+                b.Property(s => s.DeliveryRuleText)
+                    .IsRequired()
+                    .HasMaxLength(600);
+
+                b.Property(s => s.SmallOrderDeliveryFee)
+                    .HasColumnType("decimal(18,2)");
+
+                b.Property(s => s.MediumDeliveryThreshold)
+                    .HasColumnType("decimal(18,2)");
+
+                b.Property(s => s.MediumOrderDeliveryFee)
+                    .HasColumnType("decimal(18,2)");
+
+                b.Property(s => s.FreeDeliveryThreshold)
+                    .HasColumnType("decimal(18,2)");
+
+                b.Property(s => s.IsActive)
                     .IsRequired();
 
-                b.Property(i => i.IsActive)
+                b.Property(s => s.CreatedAt)
                     .IsRequired();
+
+                b.Property(s => s.UpdatedAt)
+                    .IsRequired();
+
+                b.HasIndex(s => s.IsActive);
+            });
+
+            builder.Entity<CartItem>(b =>
+            {
+                b.HasKey(c => c.Id);
+
+                b.Property(c => c.Quantity).IsRequired();
+                b.Property(c => c.CreatedAt).IsRequired();
+                b.Property(c => c.UpdatedAt).IsRequired();
+
+                b.HasOne(c => c.AppUser)
+                    .WithMany()
+                    .HasForeignKey(c => c.AppUserId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                b.HasOne(c => c.Product)
+                    .WithMany()
+                    .HasForeignKey(c => c.ProductId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                b.HasOne(c => c.ProductVariant)
+                    .WithMany()
+                    .HasForeignKey(c => c.ProductVariantId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                b.HasIndex(c => new { c.AppUserId, c.ProductVariantId })
+                    .IsUnique();
+            });
+
+            builder.Entity<WishlistItem>(b =>
+            {
+                b.HasKey(w => w.Id);
+
+                b.Property(w => w.CreatedAt).IsRequired();
+
+                b.HasOne(w => w.AppUser)
+                    .WithMany()
+                    .HasForeignKey(w => w.AppUserId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                b.HasOne(w => w.Product)
+                    .WithMany()
+                    .HasForeignKey(w => w.ProductId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                b.HasIndex(w => new { w.AppUserId, w.ProductId })
+                    .IsUnique();
+            });
+
+            builder.Entity<Order>(b =>
+            {
+                b.HasKey(o => o.Id);
+
+                b.Property(o => o.OrderNumber).IsRequired().HasMaxLength(80);
+                b.Property(o => o.OrderStatus).IsRequired().HasMaxLength(80);
+                b.Property(o => o.PaymentStatus).IsRequired().HasMaxLength(80);
+
+                b.Property(o => o.FirstName).IsRequired().HasMaxLength(80);
+                b.Property(o => o.LastName).IsRequired().HasMaxLength(80);
+                b.Property(o => o.Email).IsRequired().HasMaxLength(160);
+                b.Property(o => o.PhoneNumber).IsRequired().HasMaxLength(40);
+
+                b.Property(o => o.AddressLine1).IsRequired().HasMaxLength(180);
+                b.Property(o => o.AddressLine2).HasMaxLength(180);
+                b.Property(o => o.Suburb).IsRequired().HasMaxLength(120);
+                b.Property(o => o.City).IsRequired().HasMaxLength(120);
+                b.Property(o => o.Province).IsRequired().HasMaxLength(120);
+                b.Property(o => o.PostalCode).IsRequired().HasMaxLength(20);
+                b.Property(o => o.DeliveryMethod).IsRequired().HasMaxLength(80);
+                b.Property(o => o.CustomerNote).HasMaxLength(600);
+
+                b.Property(o => o.SubtotalAmount).HasColumnType("decimal(18,2)");
+                b.Property(o => o.DeliveryFee).HasColumnType("decimal(18,2)");
+                b.Property(o => o.TotalAmount).HasColumnType("decimal(18,2)");
+
+                b.Property(o => o.CreatedAt).IsRequired();
+                b.Property(o => o.UpdatedAt).IsRequired();
+
+                b.HasOne(o => o.AppUser)
+                    .WithMany()
+                    .HasForeignKey(o => o.AppUserId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                b.HasMany(o => o.Items)
+                    .WithOne(i => i.Order)
+                    .HasForeignKey(i => i.OrderId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                b.HasMany(o => o.Payments)
+                    .WithOne(p => p.Order)
+                    .HasForeignKey(p => p.OrderId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                b.HasIndex(o => o.OrderNumber)
+                    .IsUnique();
+
+                b.HasIndex(o => new { o.AppUserId, o.CreatedAt });
+            });
+
+            builder.Entity<OrderItem>(b =>
+            {
+                b.HasKey(i => i.Id);
+
+                b.Property(i => i.ProductName).IsRequired().HasMaxLength(160);
+                b.Property(i => i.Category).IsRequired().HasMaxLength(80);
+                b.Property(i => i.Size).IsRequired().HasMaxLength(40);
+                b.Property(i => i.Colour).IsRequired().HasMaxLength(80);
+                b.Property(i => i.Sku).IsRequired().HasMaxLength(120);
+                b.Property(i => i.ImageUrl).IsRequired().HasMaxLength(700);
+                b.Property(i => i.ImageAlt).IsRequired().HasMaxLength(250);
+
+                b.Property(i => i.UnitPrice).HasColumnType("decimal(18,2)");
+                b.Property(i => i.LineTotal).HasColumnType("decimal(18,2)");
+                b.Property(i => i.Quantity).IsRequired();
+
+                b.HasOne(i => i.Product)
+                    .WithMany()
+                    .HasForeignKey(i => i.ProductId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                b.HasOne(i => i.ProductVariant)
+                    .WithMany()
+                    .HasForeignKey(i => i.ProductVariantId)
+                    .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            builder.Entity<OrderPayment>(b =>
+            {
+                b.HasKey(p => p.Id);
+
+                b.Property(p => p.Provider).IsRequired().HasMaxLength(80);
+                b.Property(p => p.Status).IsRequired().HasMaxLength(80);
+                b.Property(p => p.Amount).HasColumnType("decimal(18,2)");
+                b.Property(p => p.MerchantReference).IsRequired().HasMaxLength(120);
+                b.Property(p => p.GatewayPaymentId).HasMaxLength(160);
+                b.Property(p => p.RawGatewayResponse).HasColumnType("nvarchar(max)");
+                b.Property(p => p.CreatedAt).IsRequired();
+
+                b.HasIndex(p => p.MerchantReference);
+                b.HasIndex(p => p.GatewayPaymentId);
             });
         }
     }

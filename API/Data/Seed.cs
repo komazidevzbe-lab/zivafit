@@ -14,5 +14,6 @@ public class Seed
         await SeedUsers.SeedAsync(userManager, roleManager, context);
         await SeedProductCatalog.SeedAsync(context);
         await SeedStorefrontContent.SeedAsync(context);
+        await SeedCheckoutSettings.SeedAsync(context);
     }
 }

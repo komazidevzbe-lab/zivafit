@@ -7,7 +7,7 @@
 .addresses-page {
   width: min(100%, 1500px);
   min-height: 80vh;
-  padding: 2.5rem 4rem 3.5rem;
+  padding: 3rem 4rem 4rem;
   margin: 0 auto;
   background: #fffaf4;
 }
@@ -17,7 +17,7 @@
   justify-content: space-between;
   align-items: flex-end;
   gap: 1.3rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 2rem;
 }
 
 .page-eyebrow {
@@ -26,7 +26,7 @@
   font-size: 0.68rem;
   font-weight: 800;
   color: #735f52;
-  margin: 0 0 0.85rem;
+  margin: 0 0 0.8rem;
   line-height: 1;
 }
 
@@ -39,8 +39,8 @@
 }
 
 .addresses-header h1 {
-  font-size: clamp(2rem, 3.6vw, 3.1rem);
-  line-height: 0.98;
+  font-size: clamp(2.25rem, 3.7vw, 3.55rem);
+  line-height: 1;
 }
 
 .addresses-header p,
@@ -50,13 +50,14 @@
 }
 
 .addresses-header p {
-  margin: 0.65rem 0 0;
-  font-size: 0.92rem;
+  margin: 0.8rem 0 0;
+  font-size: 0.95rem;
+  line-height: 1.6;
 }
 
 .addresses-layout {
   display: grid;
-  grid-template-columns: 1fr 430px;
+  grid-template-columns: minmax(0, 1fr) 430px;
   gap: 1rem;
   align-items: flex-start;
 }
@@ -65,9 +66,8 @@
 .address-list-card {
   background: #fff;
   border: 1px solid #eadbcd;
-  border-radius: 18px;
+  border-radius: 16px;
   padding: 1.25rem;
-  box-shadow: 0 14px 35px rgba(43, 27, 19, 0.07);
 }
 
 .form-heading {
@@ -104,7 +104,7 @@
   width: 100%;
   min-height: 40px;
   border: 1px solid #eadbcd;
-  border-radius: 8px;
+  border-radius: 7px;
   background: #fffaf4;
   color: #2b1b13;
   padding: 0 0.8rem;
@@ -171,18 +171,19 @@
 .light-btn,
 .address-top button,
 .address-actions button {
-  min-height: 38px;
+  min-height: 40px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.38rem;
   padding: 0 0.95rem;
-  border-radius: 8px;
+  border-radius: 6px;
   text-decoration: none;
   text-transform: uppercase;
-  letter-spacing: 0.05rem;
+  letter-spacing: 0.055rem;
   font-size: 0.68rem;
   font-weight: 900;
+  font-family: inherit;
   transition: 0.2s ease;
   cursor: pointer;
 }
@@ -193,7 +194,7 @@
 .address-actions button {
   border: 1px solid #2b1b13;
   color: #2b1b13;
-  background: transparent;
+  background: #fff;
 }
 
 .dark-btn {
@@ -214,7 +215,7 @@
 
 .empty-state {
   border: 1px dashed #eadbcd;
-  border-radius: 14px;
+  border-radius: 12px;
   padding: 2rem 1rem;
   text-align: center;
 }
@@ -243,7 +244,7 @@
 
 .address-card {
   border: 1px solid #eadbcd;
-  border-radius: 14px;
+  border-radius: 12px;
   padding: 1rem;
   background: #fffaf4;
 }
@@ -265,9 +266,9 @@
 .address-top span {
   display: inline-flex;
   border-radius: 999px;
-  background: #2b1b13;
-  color: #fffaf4;
-  padding: 0.2rem 0.5rem;
+  background: #f5e9dc;
+  color: #2b1b13;
+  padding: 0.25rem 0.6rem;
   text-transform: uppercase;
   font-size: 0.58rem;
   font-weight: 900;
@@ -298,6 +299,11 @@
 }
 
 @media (max-width: 1100px) {
+  .addresses-page {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+
   .addresses-layout {
     grid-template-columns: 1fr;
   }
@@ -305,7 +311,7 @@
 
 @media (max-width: 760px) {
   .addresses-page {
-    padding: 2rem;
+    padding: 2.5rem 1rem 3rem;
   }
 
   .addresses-header {
@@ -325,10 +331,6 @@
 }
 
 @media (max-width: 520px) {
-  .addresses-page {
-    padding: 1rem;
-  }
-
   .address-top {
     flex-direction: column;
   }

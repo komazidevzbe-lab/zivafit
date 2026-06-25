@@ -68,7 +68,7 @@ export const routes: Routes = [
       { path: 'checkout', component: CheckoutComponent, canActivate: [authGuard] },
       { path: 'order-confirmation', component: OrderConfirmationComponent, canActivate: [authGuard] },
       { path: 'my-orders', component: MyOrdersComponent, canActivate: [authGuard] },
-      { path: 'order-details/:orderNumber', component: OrderDetailsComponent, canActivate: [authGuard] },
+      { path: 'order-details/:id', component: OrderDetailsComponent, canActivate: [authGuard] },
       { path: 'order-details', component: OrderDetailsComponent, canActivate: [authGuard] },
       { path: 'my-account', component: MyAccountComponent, canActivate: [authGuard] },
       { path: 'edit-profile', component: EditProfileComponent, canActivate: [authGuard] },

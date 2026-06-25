@@ -1,44 +1,52 @@
-<section class="product-details-page" *ngIf="product; else productNotFound">
-  <div class="breadcrumb-row">
+<section class="product-details-page" *ngIf="product as product; else productNotFound">
+  <nav class="breadcrumb-row" aria-label="Product breadcrumb">
     <a routerLink="/">Home</a>
     <i class="bi bi-chevron-right" aria-hidden="true"></i>
+
     <a routerLink="/shop">Shop</a>
     <i class="bi bi-chevron-right" aria-hidden="true"></i>
+
     <span>{{ product.name }}</span>
-  </div>
+  </nav>
 
   <section class="product-details-layout">
     <div class="product-gallery">
       <div class="main-product-image">
-        <img [src]="selectedImageUrl" [alt]="product.imageAlt" />
+        <span class="product-badge" *ngIf="product.badge">{{ product.badge }}</span>
 
-        <span class="product-badge">
-          {{ product.badge }}
-        </span>
+        <img
+          [src]="selectedImageUrl || product.imageUrl"
+          [alt]="product.imageAlt"
+        />
       </div>
 
       <div class="gallery-thumbs">
         <button
           type="button"
-          class="gallery-thumb active"
-          [attr.aria-label]="'Preview ' + product.name"
+          class="gallery-thumb"
+          [class.active]="selectedImageUrl === product.imageUrl"
+          (click)="selectImage(product.imageUrl)"
+          aria-label="View main product image"
         >
           <img [src]="product.imageUrl" [alt]="product.imageAlt" />
         </button>
 
         <button
           type="button"
-          class="gallery-thumb muted-thumb"
-          [attr.aria-label]="'Preview ' + product.category"
+          class="gallery-thumb"
+          *ngFor="let image of productImages; trackBy: trackByImageId"
+          [class.active]="selectedImageUrl === image.imageUrl"
+          (click)="selectImage(image.imageUrl)"
+          [attr.aria-label]="'View image for ' + product.name"
         >
+          <img [src]="image.imageUrl" [alt]="image.imageAlt" />
+        </button>
+
+        <button type="button" class="gallery-thumb muted-thumb" aria-label="Product image placeholder">
           <i class="bi bi-image" aria-hidden="true"></i>
         </button>
 
-        <button
-          type="button"
-          class="gallery-thumb muted-thumb"
-          [attr.aria-label]="'Preview ' + product.fitType"
-        >
+        <button type="button" class="gallery-thumb muted-thumb" aria-label="Product detail placeholder">
           <i class="bi bi-stars" aria-hidden="true"></i>
         </button>
       </div>
@@ -46,12 +54,15 @@
 
     <div class="product-summary">
       <div class="product-heading-row">
-        <p class="eyebrow">{{ product.category }}</p>
+        <div>
+          <p class="eyebrow">{{ product.category }}</p>
+        </div>
 
         <button
           type="button"
           class="wishlist-toggle"
           [class.active]="isWishlisted"
+          [disabled]="isUpdatingWishlist"
           (click)="toggleWishlist()"
           [attr.aria-label]="isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'"
         >
@@ -94,7 +105,7 @@
         <div class="size-options">
           <button
             type="button"
-            *ngFor="let size of product.sizes; trackBy: trackBySize"
+            *ngFor="let size of availableSizes; trackBy: trackBySize"
             [class.active]="selectedSize === size"
             (click)="selectSize(size)"
           >
@@ -116,8 +127,13 @@
           </button>
         </div>
 
-        <button type="button" class="add-cart-btn" (click)="addToCart()">
-          Add To Cart
+        <button
+          type="button"
+          class="add-cart-btn"
+          [disabled]="!canAddToCart"
+          (click)="addToCart()"
+        >
+          {{ isAddingToCart ? 'Adding...' : 'Add To Cart' }}
           <i class="bi bi-bag" aria-hidden="true"></i>
         </button>
       </div>
@@ -125,6 +141,11 @@
       <div class="success-message" *ngIf="successMessage">
         <i class="bi bi-check-circle" aria-hidden="true"></i>
         <span>{{ successMessage }}</span>
+      </div>
+
+      <div class="success-message" *ngIf="errorMessage">
+        <i class="bi bi-exclamation-circle" aria-hidden="true"></i>
+        <span>{{ errorMessage }}</span>
       </div>
     </div>
   </section>
@@ -169,13 +190,13 @@
         <button
           type="button"
           class="related-wishlist"
-          [class.active]="shopStateService.isInWishlist(relatedProduct.id)"
+          [class.active]="isRelatedWishlisted(relatedProduct.id)"
           (click)="toggleRelatedWishlist(relatedProduct.id, $event)"
           aria-label="Toggle wishlist"
         >
           <i
             class="bi"
-            [ngClass]="shopStateService.isInWishlist(relatedProduct.id) ? 'bi-heart-fill' : 'bi-heart'"
+            [ngClass]="isRelatedWishlisted(relatedProduct.id) ? 'bi-heart-fill' : 'bi-heart'"
             aria-hidden="true"
           ></i>
         </button>
@@ -190,7 +211,7 @@
       <i class="bi bi-bag-x" aria-hidden="true"></i>
       <p class="eyebrow">Product not found</p>
       <h1>We could not find this product.</h1>
-      <p>The product may not exist in the temporary frontend catalogue.</p>
+      <p>The product may not exist in the catalogue.</p>
 
       <a routerLink="/shop">
         Back To Shop

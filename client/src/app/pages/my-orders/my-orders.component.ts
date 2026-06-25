@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
-import { CustomerOrder } from '../../_models/customer-account';
-import { CustomerOrderService } from '../../_services/customer-order.service';
+import { Order } from '../../_models/order';
+import { OrderService } from '../../_services/order.service';
 
 @Component({
   selector: 'app-my-orders',
@@ -12,28 +12,39 @@ import { CustomerOrderService } from '../../_services/customer-order.service';
   templateUrl: './my-orders.component.html',
   styleUrl: './my-orders.component.css'
 })
-export class MyOrdersComponent {
-  customerOrderService = inject(CustomerOrderService);
+export class MyOrdersComponent implements OnInit {
+  private orderService = inject(OrderService);
 
-  get orders(): CustomerOrder[] {
-    return this.customerOrderService.orders();
+  orders: Order[] = [];
+
+  isLoading = false;
+  errorMessage = '';
+
+  // ===============================
+  // Page setup
+  // Loads customer orders from the backend.
+  // ===============================
+  ngOnInit(): void {
+    this.loadOrders();
   }
 
-  get latestOrderNumber(): string {
-    if (this.orders.length === 0)
-      return 'None';
+  // ===============================
+  // Load orders
+  // Gets order history for the logged-in customer.
+  // ===============================
+  loadOrders() {
+    this.isLoading = true;
+    this.errorMessage = '';
 
-    return this.orders[0].orderNumber;
-  }
-
-  get latestOrderStatus(): string {
-    if (this.orders.length === 0)
-      return 'No Status';
-
-    return this.orders[0].status;
-  }
-
-  trackByOrderId(index: number, order: CustomerOrder): number {
-    return order.id;
+    this.orderService.getMyOrders().subscribe({
+      next: orders => {
+        this.orders = orders;
+        this.isLoading = false;
+      },
+      error: error => {
+        this.isLoading = false;
+        this.errorMessage = error?.error?.message || 'Could not load your orders.';
+      }
+    });
   }
 }

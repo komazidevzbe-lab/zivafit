@@ -1,130 +1,276 @@
 <section class="account-page">
-  <header class="account-header">
-    <div>
-      <p class="page-eyebrow">ZivaFit Account</p>
-      <h1>My Account</h1>
-      <p>Manage your profile, orders, saved addresses, wishlist, and checkout details.</p>
-    </div>
-
-    <a routerLink="/edit-profile" class="outline-btn">
-      Edit Profile
-      <i class="bi bi-arrow-right" aria-hidden="true"></i>
-    </a>
-  </header>
-
-  <section class="account-hero-card">
-    <div class="profile-mark">
+  <section class="account-hero">
+    <div class="avatar" aria-hidden="true">
       {{ initials }}
     </div>
 
     <div>
-      <p class="page-eyebrow">Customer Profile</p>
-      <h2>{{ fullName }}</h2>
-      <p>{{ accountService.currentUser()?.email }}</p>
-    </div>
-
-    <div class="profile-actions">
-      <a routerLink="/edit-profile">
-        <i class="bi bi-person-gear" aria-hidden="true"></i>
-        Edit Profile
-      </a>
-
-      <a routerLink="/saved-addresses">
-        <i class="bi bi-geo-alt" aria-hidden="true"></i>
-        Saved Addresses
-      </a>
+      <p class="eyebrow">Customer profile</p>
+      <h1>{{ fullName }}</h1>
+      <p>{{ profileModel.email || 'Manage your ZivaFit account details.' }}</p>
     </div>
   </section>
 
-  <section class="account-stats" aria-label="Account summary">
-    <div>
-      <span>{{ customerOrderService.orders().length }}</span>
-      <strong>Orders</strong>
-      <p>Completed through checkout.</p>
+  <div class="account-layout">
+    <form class="account-card" #profileForm="ngForm" (ngSubmit)="saveProfile()">
+      <div class="card-heading">
+        <p class="eyebrow">Profile details</p>
+        <h2>Personal Information</h2>
+        <p>Manage the details linked to your ZivaFit account.</p>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="firstName">First name</label>
+          <input
+            id="firstName"
+            name="firstName"
+            type="text"
+            [(ngModel)]="profileModel.firstName"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="lastName">Last name</label>
+          <input
+            id="lastName"
+            name="lastName"
+            type="text"
+            [(ngModel)]="profileModel.lastName"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email address</label>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            [(ngModel)]="profileModel.email"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="phoneNumber">Phone number</label>
+          <input
+            id="phoneNumber"
+            name="phoneNumber"
+            type="tel"
+            [(ngModel)]="profileModel.phoneNumber"
+            placeholder="Optional"
+          />
+        </div>
+      </div>
+
+      <div class="form-alert error" *ngIf="profileErrorMessage">
+        <i class="bi bi-exclamation-circle" aria-hidden="true"></i>
+        <span>{{ profileErrorMessage }}</span>
+      </div>
+
+      <div class="form-alert success" *ngIf="profileSuccessMessage">
+        <i class="bi bi-check-circle" aria-hidden="true"></i>
+        <span>{{ profileSuccessMessage }}</span>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="ziva-btn-dark" [disabled]="profileForm.invalid">
+          Save Profile
+        </button>
+
+        <button type="button" class="ziva-btn-outline" (click)="resetProfile()">
+          Reset
+        </button>
+      </div>
+    </form>
+
+    <form class="account-card" #addressForm="ngForm" (ngSubmit)="saveAddress()">
+      <div class="card-heading">
+        <p class="eyebrow">{{ editingAddressId ? 'Update address' : 'Delivery address' }}</p>
+        <h2>{{ editingAddressId ? 'Edit Address' : 'Add Address' }}</h2>
+        <p>Save delivery details for faster checkout across South Africa.</p>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="label">Address label</label>
+          <input
+            id="label"
+            name="label"
+            type="text"
+            [(ngModel)]="addressModel.label"
+            placeholder="Home, Work, Campus"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="fullName">Recipient name</label>
+          <input
+            id="fullName"
+            name="fullName"
+            type="text"
+            [(ngModel)]="addressModel.fullName"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="phone">Phone number</label>
+          <input
+            id="phone"
+            name="phone"
+            type="tel"
+            [(ngModel)]="addressModel.phone"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="addressLine1">Street address</label>
+          <input
+            id="addressLine1"
+            name="addressLine1"
+            type="text"
+            [(ngModel)]="addressModel.addressLine1"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="addressLine2">Apartment / complex</label>
+          <input
+            id="addressLine2"
+            name="addressLine2"
+            type="text"
+            [(ngModel)]="addressModel.addressLine2"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="suburb">Suburb</label>
+          <input
+            id="suburb"
+            name="suburb"
+            type="text"
+            [(ngModel)]="addressModel.suburb"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="city">City</label>
+          <input
+            id="city"
+            name="city"
+            type="text"
+            [(ngModel)]="addressModel.city"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="province">Province</label>
+          <select
+            id="province"
+            name="province"
+            [(ngModel)]="addressModel.province"
+            required
+          >
+            <option value="">Select province</option>
+            <option *ngFor="let province of provinces" [value]="province">
+              {{ province }}
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="postalCode">Postal code</label>
+          <input
+            id="postalCode"
+            name="postalCode"
+            type="text"
+            [(ngModel)]="addressModel.postalCode"
+            required
+          />
+        </div>
+
+        <label class="check-row">
+          <input name="isDefault" type="checkbox" [(ngModel)]="addressModel.isDefault" />
+          <span>Set as default delivery address</span>
+        </label>
+      </div>
+
+      <div class="form-alert error" *ngIf="addressErrorMessage">
+        <i class="bi bi-exclamation-circle" aria-hidden="true"></i>
+        <span>{{ addressErrorMessage }}</span>
+      </div>
+
+      <div class="form-alert success" *ngIf="addressSuccessMessage">
+        <i class="bi bi-check-circle" aria-hidden="true"></i>
+        <span>{{ addressSuccessMessage }}</span>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="ziva-btn-dark" [disabled]="addressForm.invalid">
+          {{ editingAddressId ? 'Update Address' : 'Save Address' }}
+        </button>
+
+        <button type="button" class="ziva-btn-outline" (click)="resetAddressForm()" *ngIf="editingAddressId">
+          Cancel
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <section class="account-card saved-address-card">
+    <div class="card-heading">
+      <p class="eyebrow">Saved addresses</p>
+      <h2>Delivery Details</h2>
+      <p>Choose a default address or update the addresses saved for checkout.</p>
     </div>
 
-    <div>
-      <span>{{ shopStateService.wishlistCount() }}</span>
-      <strong>Wishlist Items</strong>
-      <p>Products saved for later.</p>
+    <div class="empty-state" *ngIf="customerAddressService.addresses().length === 0">
+      <i class="bi bi-geo-alt" aria-hidden="true"></i>
+      <h3>No saved addresses yet.</h3>
+      <p>Add your first delivery address using the form above.</p>
     </div>
 
-    <div>
-      <span>{{ shopStateService.cartCount() }}</span>
-      <strong>Cart Items</strong>
-      <p>Products currently in your cart.</p>
+    <div class="address-list" *ngIf="customerAddressService.addresses().length > 0">
+      <article
+        class="address-card"
+        *ngFor="let address of customerAddressService.addresses(); trackBy: trackByAddressId"
+      >
+        <div class="address-top">
+          <div>
+            <h3>{{ address.label || 'Delivery Address' }}</h3>
+            <span *ngIf="address.isDefault">Default</span>
+          </div>
+
+          <button type="button" class="small-btn" (click)="setDefaultAddress(address.id)" *ngIf="!address.isDefault">
+            Make Default
+          </button>
+        </div>
+
+        <p>
+          <strong>{{ address.fullName }}</strong><br />
+          {{ address.phone }}<br />
+          {{ address.addressLine1 }}<br />
+          <ng-container *ngIf="address.addressLine2">{{ address.addressLine2 }}<br /></ng-container>
+          <ng-container *ngIf="address.suburb">{{ address.suburb }}, </ng-container>{{ address.city }}<br />
+          {{ address.province }}, {{ address.postalCode }}
+        </p>
+
+        <div class="address-actions">
+          <button type="button" class="small-btn" (click)="editAddress(address)">
+            Edit
+          </button>
+
+          <button type="button" class="small-btn" (click)="deleteAddress(address.id)">
+            Remove
+          </button>
+        </div>
+      </article>
     </div>
-
-    <div>
-      <span>{{ customerAddressService.addresses().length }}</span>
-      <strong>Addresses</strong>
-      <p>Delivery addresses saved.</p>
-    </div>
-  </section>
-
-  <section class="account-grid">
-    <article class="account-card">
-      <div class="card-icon">
-        <i class="bi bi-bag-check" aria-hidden="true"></i>
-      </div>
-
-      <div>
-        <h3>My Orders</h3>
-        <p>View your ZivaFit order history, totals, delivery details, and order status.</p>
-      </div>
-
-      <a routerLink="/my-orders">
-        View Orders
-        <i class="bi bi-arrow-right" aria-hidden="true"></i>
-      </a>
-    </article>
-
-    <article class="account-card">
-      <div class="card-icon">
-        <i class="bi bi-heart" aria-hidden="true"></i>
-      </div>
-
-      <div>
-        <h3>Wishlist</h3>
-        <p>Return to products you saved and add your favourite pieces to cart.</p>
-      </div>
-
-      <a routerLink="/wishlist">
-        View Wishlist
-        <i class="bi bi-arrow-right" aria-hidden="true"></i>
-      </a>
-    </article>
-
-    <article class="account-card">
-      <div class="card-icon">
-        <i class="bi bi-geo-alt" aria-hidden="true"></i>
-      </div>
-
-      <div>
-        <h3>Default Address</h3>
-        <p>{{ defaultAddressText }}</p>
-      </div>
-
-      <a routerLink="/saved-addresses">
-        Manage Addresses
-        <i class="bi bi-arrow-right" aria-hidden="true"></i>
-      </a>
-    </article>
-
-    <article class="account-card">
-      <div class="card-icon">
-        <i class="bi bi-cart3" aria-hidden="true"></i>
-      </div>
-
-      <div>
-        <h3>Cart</h3>
-        <p>Review selected items and continue to checkout when ready.</p>
-      </div>
-
-      <a routerLink="/cart">
-        View Cart
-        <i class="bi bi-arrow-right" aria-hidden="true"></i>
-      </a>
-    </article>
   </section>
 </section>
