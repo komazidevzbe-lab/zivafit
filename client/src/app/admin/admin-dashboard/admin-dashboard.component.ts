@@ -3,8 +3,10 @@ import { Component, OnInit, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { forkJoin } from 'rxjs';
 
+import { Order } from '../../_models/order';
 import { ProductCatalogCategory, ProductCatalogItem } from '../../_models/product-catalog';
 import { StorefrontCollectionPage } from '../../_models/storefront-content';
+import { OrderService } from '../../_services/order.service';
 import { ProductCatalogService } from '../../_services/product-catalog.service';
 import { StorefrontContentService } from '../../_services/storefront-content.service';
 
@@ -32,10 +34,12 @@ interface AdminAreaCard {
 export class AdminDashboardComponent implements OnInit {
   private productCatalogService = inject(ProductCatalogService);
   private storefrontContentService = inject(StorefrontContentService);
+  private orderService = inject(OrderService);
 
   products: ProductCatalogItem[] = [];
   categories: ProductCatalogCategory[] = [];
   collectionPages: StorefrontCollectionPage[] = [];
+  orders: Order[] = [];
 
   isLoading = false;
 
@@ -45,7 +49,7 @@ export class AdminDashboardComponent implements OnInit {
 
   // ===============================
   // Load dashboard data
-  // Uses Phase 3 backend data instead of mock catalogue counts.
+  // Uses backend data for catalogue, storefront content, and customer orders.
   // ===============================
   loadDashboardData(): void {
     this.isLoading = true;
@@ -53,18 +57,21 @@ export class AdminDashboardComponent implements OnInit {
     forkJoin({
       products: this.productCatalogService.loadAdminProducts(),
       categories: this.productCatalogService.loadAdminCategories(),
-      collectionPages: this.storefrontContentService.loadAdminCollectionPages()
+      collectionPages: this.storefrontContentService.loadAdminCollectionPages(),
+      orders: this.orderService.getAdminOrders()
     }).subscribe({
       next: result => {
         this.products = result.products;
         this.categories = result.categories;
         this.collectionPages = result.collectionPages;
+        this.orders = result.orders;
         this.isLoading = false;
       },
       error: () => {
         this.products = [];
         this.categories = [];
         this.collectionPages = [];
+        this.orders = [];
         this.isLoading = false;
       }
     });
@@ -85,16 +92,16 @@ export class AdminDashboardComponent implements OnInit {
         iconClass: 'bi bi-bag-check'
       },
       {
-        label: 'Categories',
-        value: String(this.categories.length),
-        text: 'Seeded database categories',
-        iconClass: 'bi bi-tags'
+        label: 'Orders',
+        value: String(this.orders.length),
+        text: 'Database customer orders',
+        iconClass: 'bi bi-receipt'
       },
       {
-        label: 'Collection Pages',
-        value: String(this.collectionPages.length),
-        text: 'Database-backed public pages',
-        iconClass: 'bi bi-window-sidebar'
+        label: 'Paid Orders',
+        value: String(this.orders.filter(order => order.paymentStatus === 'Paid').length),
+        text: 'Confirmed PayFast payments',
+        iconClass: 'bi bi-credit-card'
       }
     ];
   }
@@ -114,7 +121,7 @@ export class AdminDashboardComponent implements OnInit {
     },
     {
       title: 'Orders',
-      description: 'Order backend management will be connected in the checkout and orders phase.',
+      description: 'Review customer orders, delivery totals, PayFast payment status, and fulfilment progress.',
       route: '/admin/order-management',
       iconClass: 'bi bi-bag-check'
     },

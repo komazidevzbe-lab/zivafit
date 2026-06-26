@@ -2,7 +2,7 @@
   <div class="page-hero">
     <p class="eyebrow">Secure checkout</p>
     <h1>Checkout</h1>
-    <p>Create your order, then complete payment securely through PayFast.</p>
+    <p>Create your order first, then complete payment securely through PayFast.</p>
   </div>
 
   <div class="page-alert error" *ngIf="errorMessage">{{ errorMessage }}</div>
@@ -34,7 +34,13 @@
 
           <div class="form-group">
             <label>Phone number</label>
-            <input name="phoneNumber" class="form-control" [(ngModel)]="model.phoneNumber" required />
+            <input
+              name="phoneNumber"
+              class="form-control"
+              [(ngModel)]="model.phoneNumber"
+              [disabled]="useDefaultAddressChecked"
+              required
+            />
           </div>
         </div>
       </div>
@@ -42,30 +48,86 @@
       <div class="form-section">
         <p class="section-label">Delivery address</p>
 
-        <div class="form-group">
-          <label>Address line 1</label>
-          <input name="addressLine1" class="form-control" [(ngModel)]="model.addressLine1" required />
+        <div class="saved-address-picker" *ngIf="defaultAddress">
+          <label class="default-address-check">
+            <input
+              name="useDefaultAddress"
+              type="checkbox"
+              [(ngModel)]="useDefaultAddressChecked"
+              (ngModelChange)="toggleDefaultAddress($event)"
+            />
+            <span>Use my default saved delivery address</span>
+          </label>
+
+          <div class="default-address-preview" *ngIf="useDefaultAddressChecked && defaultAddress">
+            <strong>{{ defaultAddress.label || 'Default Address' }}</strong>
+            <p>
+              {{ defaultAddress.addressLine1 }}
+              <ng-container *ngIf="defaultAddress.suburb">, {{ defaultAddress.suburb }}</ng-container>,
+              {{ defaultAddress.city }}, {{ defaultAddress.province }},
+              {{ defaultAddress.postalCode }}
+            </p>
+          </div>
+        </div>
+
+        <div class="saved-address-empty" *ngIf="savedAddresses.length === 0">
+          <span>No saved delivery address yet.</span>
+          <a routerLink="/my-account">Add one in My Account</a>
         </div>
 
         <div class="form-group">
-          <label>Address line 2</label>
-          <input name="addressLine2" class="form-control" [(ngModel)]="model.addressLine2" />
+          <label>Street address</label>
+          <input
+            name="addressLine1"
+            class="form-control"
+            [(ngModel)]="model.addressLine1"
+            [disabled]="useDefaultAddressChecked"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label>Apartment / complex</label>
+          <input
+            name="addressLine2"
+            class="form-control"
+            [(ngModel)]="model.addressLine2"
+            [disabled]="useDefaultAddressChecked"
+          />
         </div>
 
         <div class="form-grid">
           <div class="form-group">
             <label>Suburb</label>
-            <input name="suburb" class="form-control" [(ngModel)]="model.suburb" required />
+            <input
+              name="suburb"
+              class="form-control"
+              [(ngModel)]="model.suburb"
+              [disabled]="useDefaultAddressChecked"
+              required
+            />
           </div>
 
           <div class="form-group">
             <label>City</label>
-            <input name="city" class="form-control" [(ngModel)]="model.city" required />
+            <input
+              name="city"
+              class="form-control"
+              [(ngModel)]="model.city"
+              [disabled]="useDefaultAddressChecked"
+              required
+            />
           </div>
 
           <div class="form-group">
             <label>Province</label>
-            <select name="province" class="form-control" [(ngModel)]="model.province" required>
+            <select
+              name="province"
+              class="form-control"
+              [(ngModel)]="model.province"
+              [disabled]="useDefaultAddressChecked"
+              required
+            >
               <option value="">Select province</option>
               <option *ngFor="let province of provinces" [value]="province">
                 {{ province }}
@@ -75,7 +137,13 @@
 
           <div class="form-group">
             <label>Postal code</label>
-            <input name="postalCode" class="form-control" [(ngModel)]="model.postalCode" required />
+            <input
+              name="postalCode"
+              class="form-control"
+              [(ngModel)]="model.postalCode"
+              [disabled]="useDefaultAddressChecked"
+              required
+            />
           </div>
         </div>
       </div>
@@ -91,7 +159,6 @@
             value="Standard Delivery"
             [(ngModel)]="model.deliveryMethod"
           />
-
           <label for="standardDelivery">
             <strong>{{ cart().deliveryMethod }}</strong>
             <span>{{ cart().deliveryMessage }}</span>
@@ -120,7 +187,7 @@
           class="ziva-btn-dark"
           [disabled]="checkoutForm.invalid || isSubmitting || cart().items.length === 0"
         >
-          {{ isSubmitting ? 'Opening PayFast...' : 'Pay With PayFast' }}
+          {{ isSubmitting ? 'Starting PayFast...' : 'Pay With PayFast' }}
         </button>
       </div>
     </form>
@@ -131,12 +198,10 @@
       <div class="summary-items">
         <div class="summary-item" *ngFor="let item of cart().items">
           <img [src]="item.imageUrl" [alt]="item.imageAlt" />
-
           <div>
             <strong>{{ item.productName }}</strong>
             <span>Qty {{ item.quantity }} | {{ item.size }}</span>
           </div>
-
           <p>{{ item.lineTotalText }}</p>
         </div>
       </div>
@@ -169,7 +234,7 @@
       </p>
 
       <p class="summary-note">
-        PayFast will open after your order is created. Your order stays pending until PayFast confirms payment.
+        PayFast will open after your order is created. Your order will remain pending until PayFast confirms payment.
       </p>
     </aside>
   </div>

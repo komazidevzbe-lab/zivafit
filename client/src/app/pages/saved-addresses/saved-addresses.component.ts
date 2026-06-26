@@ -39,7 +39,7 @@ export class SavedAddressesComponent {
     this.errorMessage = '';
 
     if (!this.isValidAddress()) {
-      this.errorMessage = 'Please complete the recipient name, phone number, street address, city, province, and postal code.';
+      this.errorMessage = 'Please complete the recipient name, phone number, street address, suburb, city, province, and postal code.';
       return;
     }
 
@@ -93,6 +93,7 @@ export class SavedAddressesComponent {
       this.model.fullName.trim() &&
       this.model.phone.trim() &&
       this.model.addressLine1.trim() &&
+      this.model.suburb.trim() &&
       this.model.city.trim() &&
       this.model.province.trim() &&
       this.model.postalCode.trim()
@@ -109,7 +110,7 @@ export class SavedAddressesComponent {
       addressLine2: '',
       suburb: '',
       city: '',
-      province: 'Gauteng',
+      province: '',
       postalCode: '',
       isDefault: this.customerAddressService?.addresses().length === 0
     };

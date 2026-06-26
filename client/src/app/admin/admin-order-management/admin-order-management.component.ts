@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 
 import { Order, OrderParams } from '../../_models/order';
 import { OrderService } from '../../_services/order.service';
@@ -8,7 +9,7 @@ import { OrderService } from '../../_services/order.service';
 @Component({
   selector: 'app-admin-order-management',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './admin-order-management.component.html',
   styleUrl: './admin-order-management.component.css'
 })
@@ -22,6 +23,8 @@ export class AdminOrderManagementComponent implements OnInit {
   isLoadingDetails = false;
   isSavingStatus = false;
 
+  loadingOrderId?: number;
+
   errorMessage = '';
   successMessage = '';
 
@@ -31,7 +34,7 @@ export class AdminOrderManagementComponent implements OnInit {
     paymentStatus: ''
   };
 
-  orderStatuses = [
+  readonly orderStatuses = [
     'PendingPayment',
     'Processing',
     'Packed',
@@ -41,7 +44,7 @@ export class AdminOrderManagementComponent implements OnInit {
     'Failed'
   ];
 
-  paymentStatuses = [
+  readonly paymentStatuses = [
     'PendingPayment',
     'Paid',
     'Failed',
@@ -52,7 +55,7 @@ export class AdminOrderManagementComponent implements OnInit {
 
   // ===============================
   // Page setup
-  // Loads all orders for admin.
+  // Loads backend orders for admin.
   // ===============================
   ngOnInit(): void {
     this.loadOrders();
@@ -60,23 +63,35 @@ export class AdminOrderManagementComponent implements OnInit {
 
   // ===============================
   // Load orders
-  // Loads admin order list using filters.
+  // Loads admin order list from the database using the active filters.
   // ===============================
-  loadOrders() {
+  loadOrders(): void {
     this.isLoadingOrders = true;
     this.errorMessage = '';
-    this.successMessage = '';
 
     this.orderService.getAdminOrders(this.cleanFilters()).subscribe({
       next: orders => {
         this.orders = orders;
         this.isLoadingOrders = false;
 
-        if (this.selectedOrder) {
-          const refreshed = orders.find(order => order.id === this.selectedOrder?.id);
-          this.selectedOrder = refreshed || this.selectedOrder;
-          this.selectedStatus = this.selectedOrder.orderStatus;
+        if (!this.selectedOrder) {
+          return;
         }
+
+        const refreshedOrder = orders.find(order => order.id === this.selectedOrder?.id);
+
+        if (!refreshedOrder) {
+          this.selectedOrder = undefined;
+          this.selectedStatus = '';
+          return;
+        }
+
+        this.selectedOrder = {
+          ...this.selectedOrder,
+          ...refreshedOrder
+        };
+
+        this.selectedStatus = this.selectedOrder.orderStatus;
       },
       error: error => {
         this.isLoadingOrders = false;
@@ -86,11 +101,26 @@ export class AdminOrderManagementComponent implements OnInit {
   }
 
   // ===============================
-  // Select order
-  // Loads one full order for the details panel.
+  // Toggle order details
+  // Opens the selected order inline under the row instead of using a vertical side panel.
   // ===============================
-  selectOrder(order: Order) {
+  toggleOrderDetails(order: Order): void {
+    if (this.selectedOrder?.id === order.id && !this.isLoadingDetails) {
+      this.selectedOrder = undefined;
+      this.selectedStatus = '';
+      return;
+    }
+
+    this.selectOrder(order);
+  }
+
+  // ===============================
+  // Select order
+  // Loads one full backend order for admin details.
+  // ===============================
+  selectOrder(order: Order): void {
     this.isLoadingDetails = true;
+    this.loadingOrderId = order.id;
     this.errorMessage = '';
     this.successMessage = '';
 
@@ -99,9 +129,11 @@ export class AdminOrderManagementComponent implements OnInit {
         this.selectedOrder = fullOrder;
         this.selectedStatus = fullOrder.orderStatus;
         this.isLoadingDetails = false;
+        this.loadingOrderId = undefined;
       },
       error: error => {
         this.isLoadingDetails = false;
+        this.loadingOrderId = undefined;
         this.errorMessage = error?.error?.message || 'Could not load order details.';
       }
     });
@@ -109,9 +141,9 @@ export class AdminOrderManagementComponent implements OnInit {
 
   // ===============================
   // Update status
-  // Admin updates fulfilment status.
+  // Admin updates fulfilment status through the backend.
   // ===============================
-  updateStatus() {
+  updateStatus(): void {
     if (!this.selectedOrder || !this.selectedStatus) {
       return;
     }
@@ -126,9 +158,13 @@ export class AdminOrderManagementComponent implements OnInit {
       next: order => {
         this.selectedOrder = order;
         this.selectedStatus = order.orderStatus;
+
+        this.orders = this.orders.map(item =>
+          item.id === order.id ? order : item
+        );
+
         this.isSavingStatus = false;
         this.successMessage = 'Order status updated successfully.';
-        this.loadOrders();
       },
       error: error => {
         this.isSavingStatus = false;
@@ -139,9 +175,9 @@ export class AdminOrderManagementComponent implements OnInit {
 
   // ===============================
   // Clear filters
-  // Resets admin order filters.
+  // Resets admin order filters and reloads database orders.
   // ===============================
-  clearFilters() {
+  clearFilters(): void {
     this.filters = {
       search: '',
       orderStatus: '',
@@ -151,11 +187,61 @@ export class AdminOrderManagementComponent implements OnInit {
     this.loadOrders();
   }
 
+  get paidOrders(): number {
+    return this.orders.filter(order => order.paymentStatus === 'Paid').length;
+  }
+
+  get pendingPaymentOrders(): number {
+    return this.orders.filter(order => order.paymentStatus === 'PendingPayment').length;
+  }
+
+  get processingOrders(): number {
+    return this.orders.filter(order => order.orderStatus === 'Processing').length;
+  }
+
+  get visibleOrderValueText(): string {
+    const total = this.orders.reduce((sum, order) => sum + order.totalAmount, 0);
+    return this.formatPrice(total);
+  }
+
+  statusLabel(status: string): string {
+    if (!status) {
+      return '';
+    }
+
+    return status.replace(/([a-z])([A-Z])/g, '$1 $2');
+  }
+
+  getStatusClass(status: string): string {
+    return status
+      .replace(/([a-z])([A-Z])/g, '$1-$2')
+      .toLowerCase();
+  }
+
+  trackByOrderId(index: number, order: Order): number {
+    return order.id;
+  }
+
+  trackByOrderItemId(index: number, item: { id: number }): number {
+    return item.id;
+  }
+
+  trackByPaymentId(index: number, payment: { id: number }): number {
+    return payment.id;
+  }
+
   private cleanFilters(): OrderParams {
     return {
       search: this.filters.search?.trim() || undefined,
       orderStatus: this.filters.orderStatus || undefined,
       paymentStatus: this.filters.paymentStatus || undefined
     };
+  }
+
+  private formatPrice(amount: number): string {
+    return `R${amount.toLocaleString('en-ZA', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    })}`;
   }
 }

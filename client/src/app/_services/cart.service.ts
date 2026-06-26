@@ -1,20 +1,47 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable, computed, inject, signal } from '@angular/core';
+import { Injectable, computed, effect, inject, signal } from '@angular/core';
 import { tap } from 'rxjs';
 
 import { environment } from '../../environments/environment';
 import { AddCartItem, Cart, UpdateCartItem } from '../_models/cart';
+import { AccountService } from './account.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CartService {
   private http = inject(HttpClient);
+  private accountService = inject(AccountService);
   private baseUrl = environment.apiUrl;
 
   currentCart = signal<Cart>(this.getEmptyCart());
 
   cartCount = computed(() => this.currentCart().totalItems);
+  hasCartItems = computed(() => this.cartCount() > 0);
+
+  constructor() {
+    // ===============================
+    // Keep cart badge in sync
+    // Loads the backend cart as soon as a customer logs in or the session is restored.
+    // Clears the local cart count when the user logs out or is not a customer.
+    // ===============================
+    effect(
+      () => {
+        const user = this.accountService.currentUser();
+        const isCustomer = this.accountService.roles().includes('Customer');
+
+        if (!user || !isCustomer) {
+          this.clearLocalCart();
+          return;
+        }
+
+        this.getCart().subscribe({
+          error: () => this.clearLocalCart()
+        });
+      },
+      { allowSignalWrites: true }
+    );
+  }
 
   getCart() {
     return this.http.get<Cart>(this.baseUrl + 'cart').pipe(

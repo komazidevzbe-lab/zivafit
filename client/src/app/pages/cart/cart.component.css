@@ -148,10 +148,15 @@
   cursor: pointer;
 }
 
+.quantity-control button:hover {
+  background: #f5e9dc;
+}
+
 .quantity-control span {
   min-width: 38px;
   text-align: center;
-  font-weight: 800;
+  color: #2b1b13;
+  font-weight: 900;
 }
 
 .item-price {
@@ -162,6 +167,7 @@
 
 .item-price strong {
   color: #2b1b13;
+  font-size: 1rem;
 }
 
 .item-price span {
@@ -171,49 +177,62 @@
 
 .item-price button {
   border: none;
-  background: none;
+  background: transparent;
   color: #b47a4f;
-  font-weight: 800;
+  font-weight: 900;
   cursor: pointer;
   padding: 0;
 }
 
+.item-price button:hover {
+  color: #2b1b13;
+}
+
 .summary-card {
+  position: sticky;
+  top: 130px;
   background: #fff;
   border: 1px solid #eadbcd;
   border-radius: 24px;
   padding: 1.5rem;
-  position: sticky;
-  top: 130px;
 }
 
 .summary-row {
   display: flex;
   justify-content: space-between;
   gap: 1rem;
-  padding: 0.8rem 0;
+  padding: 0.85rem 0;
   border-bottom: 1px solid #f0e2d5;
   color: #2b1b13;
 }
 
+.summary-row strong {
+  text-align: right;
+}
+
 .summary-note {
   color: #735f52;
-  font-size: 0.9rem;
-  margin: 1rem 0;
+  font-size: 0.88rem;
+  line-height: 1.45;
+  margin: 1rem 0 0;
 }
 
 .ziva-btn-dark,
 .ziva-btn-light {
+  min-height: 38px;
   display: inline-flex;
   justify-content: center;
   align-items: center;
   border-radius: 999px;
-  padding: 0.85rem 1.2rem;
-  font-weight: 800;
+  padding: 0 1rem;
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.055rem;
+  text-transform: uppercase;
   text-decoration: none;
   border: 1px solid #2b1b13;
   cursor: pointer;
-  margin-top: 0.75rem;
+  margin-top: 0.65rem;
 }
 
 .ziva-btn-dark {
@@ -224,6 +243,13 @@
 .ziva-btn-light {
   background: #fff;
   color: #2b1b13;
+}
+
+.ziva-btn-dark:hover,
+.ziva-btn-light:hover {
+  background: #b47a4f;
+  border-color: #b47a4f;
+  color: #fffaf4;
 }
 
 .w-100 {
@@ -248,5 +274,22 @@
     grid-column: 2;
     justify-self: start;
     text-align: left;
+  }
+}
+
+@media (max-width: 620px) {
+  .cart-item {
+    grid-template-columns: 1fr;
+  }
+
+  .cart-item img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 5;
+  }
+
+  .quantity-control,
+  .item-price {
+    grid-column: auto;
   }
 }

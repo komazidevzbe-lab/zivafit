@@ -1,193 +1,311 @@
 <section class="admin-page">
-  <div class="admin-header">
+  <div class="admin-page-top">
     <div>
-      <p class="eyebrow">ZivaFit Admin</p>
+      <a routerLink="/admin/dashboard" class="back-label">
+        <i class="bi bi-chevron-left" aria-hidden="true"></i>
+        Management
+      </a>
+
       <h1>Order Management</h1>
-      <p>Manage customer orders, payment status visibility, and fulfilment progress.</p>
+      <p>
+        Review customer orders, PayFast payment status, delivery totals, customer details,
+        and fulfilment progress from the database.
+      </p>
     </div>
 
-    <button type="button" class="admin-btn-dark" (click)="loadOrders()">
-      Refresh Orders
+    <button
+      type="button"
+      class="admin-action primary"
+      [disabled]="isLoadingOrders"
+      (click)="loadOrders()"
+    >
+      <i class="bi bi-arrow-clockwise" aria-hidden="true"></i>
+      {{ isLoadingOrders ? 'Refreshing...' : 'Refresh' }}
     </button>
   </div>
 
   <div class="admin-alert error" *ngIf="errorMessage">{{ errorMessage }}</div>
   <div class="admin-alert success" *ngIf="successMessage">{{ successMessage }}</div>
 
-  <div class="filter-card">
-    <div class="form-group">
-      <label>Search</label>
-      <input
-        class="form-control"
-        name="search"
-        [(ngModel)]="filters.search"
-        placeholder="Order number, customer, email, or phone"
-      />
-    </div>
+  <div class="summary-grid">
+    <article class="summary-card">
+      <span>Total Orders</span>
+      <strong>{{ orders.length }}</strong>
+      <small>Visible database orders</small>
+    </article>
 
-    <div class="form-group">
-      <label>Order status</label>
-      <select class="form-control" name="orderStatus" [(ngModel)]="filters.orderStatus">
-        <option value="">All order statuses</option>
-        <option *ngFor="let status of orderStatuses" [value]="status">
-          {{ status }}
-        </option>
-      </select>
-    </div>
+    <article class="summary-card">
+      <span>Paid Orders</span>
+      <strong>{{ paidOrders }}</strong>
+      <small>Confirmed PayFast payments</small>
+    </article>
 
-    <div class="form-group">
-      <label>Payment status</label>
-      <select class="form-control" name="paymentStatus" [(ngModel)]="filters.paymentStatus">
-        <option value="">All payment statuses</option>
-        <option *ngFor="let status of paymentStatuses" [value]="status">
-          {{ status }}
-        </option>
-      </select>
-    </div>
+    <article class="summary-card">
+      <span>Processing</span>
+      <strong>{{ processingOrders }}</strong>
+      <small>Orders being fulfilled</small>
+    </article>
 
-    <div class="filter-actions">
-      <button type="button" class="admin-btn-dark" (click)="loadOrders()">Apply</button>
-      <button type="button" class="admin-btn-light" (click)="clearFilters()">Clear</button>
-    </div>
+    <article class="summary-card">
+      <span>Visible Value</span>
+      <strong>{{ visibleOrderValueText }}</strong>
+      <small>Based on current filters</small>
+    </article>
   </div>
 
-  <div class="admin-layout">
-    <div class="orders-panel">
-      <div class="panel-heading">
-        <h2>Orders</h2>
-        <span>{{ orders.length }} result(s)</span>
+  <section class="content-panel">
+    <div class="panel-heading">
+      <div>
+        <h2>Find Orders</h2>
+        <p>Search by customer details or filter by fulfilment and payment status.</p>
       </div>
+    </div>
 
+    <div class="panel-body">
+      <div class="filter-grid">
+        <div class="form-group">
+          <label>Search</label>
+          <input
+            class="form-control"
+            name="search"
+            [(ngModel)]="filters.search"
+            placeholder="Order number, customer, email, or phone"
+          />
+        </div>
+
+        <div class="form-group">
+          <label>Order Status</label>
+          <select class="form-control" name="orderStatus" [(ngModel)]="filters.orderStatus">
+            <option value="">All order statuses</option>
+            <option *ngFor="let status of orderStatuses" [value]="status">
+              {{ statusLabel(status) }}
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Payment Status</label>
+          <select class="form-control" name="paymentStatus" [(ngModel)]="filters.paymentStatus">
+            <option value="">All payment statuses</option>
+            <option *ngFor="let status of paymentStatuses" [value]="status">
+              {{ statusLabel(status) }}
+            </option>
+          </select>
+        </div>
+
+        <div class="filter-actions">
+          <button type="button" class="admin-action primary" (click)="loadOrders()">
+            Apply
+          </button>
+
+          <button type="button" class="admin-action secondary" (click)="clearFilters()">
+            Clear
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="content-panel orders-panel">
+    <div class="panel-heading">
+      <div>
+        <h2>Orders</h2>
+        <p>{{ orders.length }} result(s) found.</p>
+      </div>
+    </div>
+
+    <div class="panel-body">
       <div class="loading-card" *ngIf="isLoadingOrders">Loading orders...</div>
 
       <div class="empty-state" *ngIf="!isLoadingOrders && orders.length === 0">
-        No orders found.
+        <i class="bi bi-bag-x" aria-hidden="true"></i>
+        <h3>No orders found.</h3>
+        <p>Try clearing the filters or refreshing the order list.</p>
       </div>
 
-      <article
-        class="order-row"
-        *ngFor="let order of orders"
-        [class.active]="selectedOrder?.id === order.id"
-        (click)="selectOrder(order)"
-      >
-        <div>
-          <strong>{{ order.orderNumber }}</strong>
-          <span>{{ order.fullName }} | {{ order.createdAt | date: 'mediumDate' }}</span>
-        </div>
-
-        <div>
-          <p>{{ order.totalText }}</p>
-          <small>{{ order.orderStatus }} | {{ order.paymentStatus }}</small>
-        </div>
-      </article>
-    </div>
-
-    <div class="details-panel">
-      <div class="empty-state" *ngIf="!selectedOrder && !isLoadingDetails">
-        Select an order to view details.
-      </div>
-
-      <div class="loading-card" *ngIf="isLoadingDetails">
-        Loading order details...
-      </div>
-
-      <ng-container *ngIf="selectedOrder && !isLoadingDetails">
-        <div class="details-heading">
-          <div>
-            <p class="eyebrow">Selected order</p>
-            <h2>{{ selectedOrder.orderNumber }}</h2>
-            <span>{{ selectedOrder.createdAt | date: 'medium' }}</span>
-          </div>
-
-          <div class="status-pills">
-            <span>{{ selectedOrder.orderStatus }}</span>
-            <span>{{ selectedOrder.paymentStatus }}</span>
-          </div>
-        </div>
-
-        <div class="status-editor">
-          <div class="form-group">
-            <label>Update order status</label>
-            <select class="form-control" name="selectedStatus" [(ngModel)]="selectedStatus">
-              <option *ngFor="let status of orderStatuses" [value]="status">
-                {{ status }}
-              </option>
-            </select>
-          </div>
-
-          <button
-            type="button"
-            class="admin-btn-dark"
-            [disabled]="isSavingStatus || selectedStatus === selectedOrder.orderStatus"
-            (click)="updateStatus()"
-          >
-            {{ isSavingStatus ? 'Saving...' : 'Save Status' }}
-          </button>
-        </div>
-
-        <div class="summary-grid">
-          <div>
-            <span>Subtotal</span>
-            <strong>{{ selectedOrder.subtotalText }}</strong>
-          </div>
-          <div>
-            <span>Delivery</span>
-            <strong>{{ selectedOrder.deliveryFeeText }}</strong>
-          </div>
-          <div>
-            <span>Total</span>
-            <strong>{{ selectedOrder.totalText }}</strong>
-          </div>
-        </div>
-
-        <div class="details-section">
-          <h3>Customer</h3>
-          <p>{{ selectedOrder.fullName }}</p>
-          <p>{{ selectedOrder.email }}</p>
-          <p>{{ selectedOrder.phoneNumber }}</p>
-        </div>
-
-        <div class="details-section">
-          <h3>Delivery</h3>
-          <p>{{ selectedOrder.addressLine1 }}</p>
-          <p *ngIf="selectedOrder.addressLine2">{{ selectedOrder.addressLine2 }}</p>
-          <p>{{ selectedOrder.suburb }}, {{ selectedOrder.city }}</p>
-          <p>{{ selectedOrder.province }}, {{ selectedOrder.postalCode }}</p>
-          <p>{{ selectedOrder.deliveryMethod }}</p>
-        </div>
-
-        <div class="details-section">
-          <h3>Items</h3>
-
-          <article class="admin-order-item" *ngFor="let item of selectedOrder.items">
-            <img [src]="item.imageUrl" [alt]="item.imageAlt" />
-
-            <div>
-              <strong>{{ item.productName }}</strong>
-              <span>{{ item.size }} | {{ item.colour }} | Qty {{ item.quantity }}</span>
-              <small>{{ item.sku }}</small>
+      <div class="order-list" *ngIf="!isLoadingOrders && orders.length > 0">
+        <article
+          class="order-card"
+          *ngFor="let order of orders; trackBy: trackByOrderId"
+          [class.active]="selectedOrder?.id === order.id"
+        >
+          <div class="order-row">
+            <div class="order-number-block">
+              <span class="eyebrow-text">Order</span>
+              <strong>{{ order.orderNumber }}</strong>
+              <small>{{ order.createdAt | date: 'mediumDate' }}</small>
             </div>
 
-            <p>{{ item.lineTotalText }}</p>
-          </article>
-        </div>
-
-        <div class="details-section">
-          <h3>Payments</h3>
-
-          <div class="payment-row" *ngFor="let payment of selectedOrder.payments">
-            <div>
-              <strong>{{ payment.provider }}</strong>
-              <span>{{ payment.merchantReference }}</span>
+            <div class="customer-block">
+              <span class="eyebrow-text">Customer</span>
+              <strong>{{ order.fullName }}</strong>
+              <small>{{ order.email }}</small>
             </div>
-            <p>{{ payment.status }} | {{ payment.amountText }}</p>
+
+            <div class="amount-block">
+              <span class="eyebrow-text">Total</span>
+              <strong>{{ order.totalText }}</strong>
+              <small>{{ order.totalItems }} item(s)</small>
+            </div>
+
+            <div class="status-stack">
+              <span class="status-pill" [ngClass]="'status-' + getStatusClass(order.orderStatus)">
+                {{ statusLabel(order.orderStatus) }}
+              </span>
+
+              <span class="status-pill" [ngClass]="'status-' + getStatusClass(order.paymentStatus)">
+                {{ statusLabel(order.paymentStatus) }}
+              </span>
+            </div>
+
+            <button
+              type="button"
+              class="admin-action secondary"
+              [attr.aria-expanded]="selectedOrder?.id === order.id"
+              (click)="toggleOrderDetails(order)"
+            >
+              {{ selectedOrder?.id === order.id ? 'Hide Details' : 'View Details' }}
+            </button>
           </div>
 
-          <p *ngIf="selectedOrder.payments.length === 0">
-            No payment record has been created yet.
-          </p>
-        </div>
-      </ng-container>
+          <div class="loading-card inline" *ngIf="loadingOrderId === order.id && isLoadingDetails">
+            Loading order details...
+          </div>
+
+          <ng-container *ngIf="selectedOrder as activeOrder">
+            <div
+              class="details-drawer"
+              *ngIf="activeOrder.id === order.id && !isLoadingDetails"
+            >
+              <div class="details-header">
+                <div>
+                  <p class="eyebrow-text">Selected Order</p>
+                  <h2>{{ activeOrder.orderNumber }}</h2>
+                  <span>{{ activeOrder.createdAt | date: 'medium' }}</span>
+                </div>
+
+                <div class="status-stack horizontal">
+                  <span
+                    class="status-pill"
+                    [ngClass]="'status-' + getStatusClass(activeOrder.orderStatus)"
+                  >
+                    {{ statusLabel(activeOrder.orderStatus) }}
+                  </span>
+
+                  <span
+                    class="status-pill"
+                    [ngClass]="'status-' + getStatusClass(activeOrder.paymentStatus)"
+                  >
+                    {{ statusLabel(activeOrder.paymentStatus) }}
+                  </span>
+                </div>
+              </div>
+
+              <div class="status-editor">
+                <div class="form-group">
+                  <label>Update Fulfilment Status</label>
+                  <select class="form-control" name="selectedStatus" [(ngModel)]="selectedStatus">
+                    <option *ngFor="let status of orderStatuses" [value]="status">
+                      {{ statusLabel(status) }}
+                    </option>
+                  </select>
+                </div>
+
+                <button
+                  type="button"
+                  class="admin-action primary"
+                  [disabled]="isSavingStatus || selectedStatus === activeOrder.orderStatus"
+                  (click)="updateStatus()"
+                >
+                  {{ isSavingStatus ? 'Saving...' : 'Save Status' }}
+                </button>
+              </div>
+
+              <div class="details-summary-grid">
+                <div>
+                  <span>Subtotal</span>
+                  <strong>{{ activeOrder.subtotalText }}</strong>
+                </div>
+
+                <div>
+                  <span>Delivery</span>
+                  <strong>{{ activeOrder.deliveryFeeText }}</strong>
+                </div>
+
+                <div>
+                  <span>Total</span>
+                  <strong>{{ activeOrder.totalText }}</strong>
+                </div>
+
+                <div>
+                  <span>Payment</span>
+                  <strong>{{ statusLabel(activeOrder.paymentStatus) }}</strong>
+                </div>
+              </div>
+
+              <div class="details-info-grid">
+                <section class="details-section">
+                  <h3>Customer</h3>
+                  <p>{{ activeOrder.fullName }}</p>
+                  <p>{{ activeOrder.email }}</p>
+                  <p>{{ activeOrder.phoneNumber }}</p>
+                </section>
+
+                <section class="details-section">
+                  <h3>Delivery Address</h3>
+                  <p>{{ activeOrder.addressLine1 }}</p>
+                  <p *ngIf="activeOrder.addressLine2">{{ activeOrder.addressLine2 }}</p>
+                  <p>{{ activeOrder.suburb }}, {{ activeOrder.city }}</p>
+                  <p>{{ activeOrder.province }}, {{ activeOrder.postalCode }}</p>
+                  <p>{{ activeOrder.deliveryMethod }}</p>
+                </section>
+              </div>
+
+              <section class="details-section">
+                <h3>Items</h3>
+
+                <article
+                  class="admin-order-item"
+                  *ngFor="let item of activeOrder.items; trackBy: trackByOrderItemId"
+                >
+                  <img [src]="item.imageUrl" [alt]="item.imageAlt" />
+
+                  <div>
+                    <strong>{{ item.productName }}</strong>
+                    <span>{{ item.size }} | {{ item.colour }} | Qty {{ item.quantity }}</span>
+                    <small>{{ item.sku }}</small>
+                  </div>
+
+                  <p>{{ item.lineTotalText }}</p>
+                </article>
+              </section>
+
+              <section class="details-section">
+                <h3>Payments</h3>
+
+                <div
+                  class="payment-row"
+                  *ngFor="let payment of activeOrder.payments; trackBy: trackByPaymentId"
+                >
+                  <div>
+                    <strong>{{ payment.provider }}</strong>
+                    <span>{{ payment.merchantReference }}</span>
+                  </div>
+
+                  <div>
+                    <p>{{ statusLabel(payment.status) }}</p>
+                    <small>{{ payment.amountText }}</small>
+                  </div>
+                </div>
+
+                <p *ngIf="activeOrder.payments.length === 0">
+                  No PayFast payment record has been created yet.
+                </p>
+              </section>
+            </div>
+          </ng-container>
+        </article>
+      </div>
     </div>
-  </div>
+  </section>
 </section>
